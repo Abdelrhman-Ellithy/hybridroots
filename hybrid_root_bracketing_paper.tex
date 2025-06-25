@@ -78,26 +78,28 @@ The theoretical convergence analysis follows the framework established by \cite{
 
 For the false position method, the convergence rate is typically superlinear, with the error reduction following the pattern $|x_{n+1} - \alpha| \leq C \cdot |x_n - \alpha|^p$, where $p > 1$ and $C$ is a constant depending on the function properties. The modified secant method, using finite difference approximation, maintains similar convergence characteristics while avoiding the need for explicit derivative calculations.
 
+{\titlespacing*{\subsection}{0pt}{1.0ex plus .2ex minus .2ex}{0ex} % Zero after-spacing
+\titlespacing*{\subsubsection}{0pt}{0ex}{0.2ex} % Zero before, minimal after
 \subsection{Algorithm Design, Hybrid Techniques and Pseudocode for Proposed Algorithms}
-
 \vspace{-1.2ex} % Pull subsubsection up
-
-% New introductory paragraph
-Root-finding for nonlinear equations is a fundamental problem in numerical analysis, with wide-ranging applications in science and engineering. Classical bracketing methods such as bisection and false position are robust but can be slow, while open methods like secant and Newton's method are faster but may lack guaranteed convergence. Hybrid algorithms seek to combine the strengths of these approaches, achieving both reliability and efficiency. In this work, we propose four novel hybrid root-bracketing algorithms, each designed to address specific limitations of existing methods and to optimize convergence speed while preserving the bracketing property. Below, we present the design rationale, mathematical formulation, and pseudocode for each algorithm.
-
-% --- Algorithm 1 ---
-
 \subsubsection{Algorithm 1: Optimized Bisection-False Position (Optimized\_BF)}
 \vspace{-0.8ex} % Pull text up
-The Optimized Bisection-False Position (Optimized\_BF) algorithm is a two-phase hybrid method that strategically combines the guaranteed convergence of the bisection method with the accelerated convergence potential of the false position (regula falsi) method. The motivation for this hybridization is to overcome the slow, linear convergence of bisection while retaining its reliability, by introducing the interpolation-based acceleration of the false position step.
+}
+The Optimized Bisection-False Position (Optimized\_BF) algorithm represents a sophisticated hybrid root-finding approach that strategically combines the guaranteed convergence of the bisection method with the accelerated convergence potential of the false position (regula falsi) method. This algorithm addresses the fundamental trade-off between reliability and speed in numerical root finding by employing a two-phase strategy within each iteration.
 
-The algorithm operates as follows: In each iteration, the bisection phase computes the midpoint $mid = \frac{a + b}{2}$ and evaluates $f(mid)$, ensuring the root remains bracketed. The subsequent false position phase leverages linear interpolation between the interval endpoints to compute a potentially more accurate estimate using:
+The mathematical foundation of this algorithm lies in the sequential application of two complementary techniques. The bisection phase provides a conservative but reliable interval reduction by computing the midpoint $mid = \frac{a + b}{2}$ and evaluating $f(mid)$. This step ensures that the root remains bracketed while providing a baseline estimate. The subsequent false position phase leverages linear interpolation between the interval endpoints to compute a potentially more accurate estimate using the formula:
+
 \begin{equation}
 fp = \frac{a \cdot f(b) - b \cdot f(a)}{f(b) - f(a)}
 \end{equation}
-The algorithm then selects the estimate (midpoint or false position) with the smaller absolute function value, updating the interval accordingly to maintain the bracketing property. This approach ensures that even if the false position step is less effective for certain function shapes, the bisection step provides a fallback, guaranteeing progress toward the root.
 
-The key innovation is the dynamic selection between midpoint and false position estimates, which adapts to the local function behavior. This results in faster convergence than pure bisection, especially for functions with significant curvature, while maintaining the reliability guarantees of bracketing methods. The method signature is Optimized\_BF$(f, a, b, tol, max\_iter)$, returning $(n, x, f_x, a_{final}, b_{final})$ as the iteration count, root approximation, function value, and final interval bounds. Robust error handling is included for division by zero in the false position step.
+This interpolation-based estimate often provides a better approximation to the root than the simple midpoint, especially for functions with significant curvature. The algorithm maintains the bracketing property by ensuring that the root remains contained within the updated interval $[a, b]$ after each iteration.
+
+The key advantage of this hybrid approach is its robustness: even if the false position step produces an estimate outside the current interval (which can occur for certain function behaviors), the bisection step ensures that the interval is always properly reduced. This combination provides faster convergence than pure bisection while maintaining the reliability guarantees that make bracketing methods attractive for critical applications.
+
+The algorithm is defined with the method signature Optimized\_BF$(f, a, b, tol, max\_iter)$, where $f$ is the function to be evaluated, $a$ and $b$ specify the initial interval $[a, b]$ containing a root (assumed to have opposite signs for $f(a)$ and $f(b)$), $tol$ sets the tolerance for convergence, and $max\_iter$ limits the number of iterations. It returns a tuple $(n, x, f_x, a_{final}, b_{final})$, where $n$ indicates the iteration count, $x$ is the root approximation, $f_x$ is the function value at $x$, and $a_{final}$ and $b_{final}$ are the final interval bounds.
+
+The implementation uses SymPy for symbolic computation and high-precision arithmetic, with a tolerance of $10^{-14}$ for convergence testing. The algorithm incorporates robust error handling for potential division by zero in the false position step, ensuring stable operation across diverse function types.
 
 \begin{algorithm}[H]
 \caption{Optimized Bisection-False Position (Optimized\_BF)}
@@ -128,22 +130,29 @@ The key innovation is the dynamic selection between midpoint and false position 
 \end{algorithmic}
 \end{algorithm}
 
-% --- Algorithm 2 ---
-
 \subsubsection{Algorithm 2: Optimized Bisection-False Position with Modified Secant (Optimized\_BFMS)}
 
-The Optimized Bisection-False Position with Modified Secant (Optimized\_BFMS) algorithm extends the Optimized\_BF framework by incorporating a third phase: a derivative-free modified secant step. The motivation is to further accelerate convergence, especially near the root, by leveraging local slope information without requiring explicit derivatives.
+The Optimized Bisection-False Position with Modified Secant (Optimized\_BFMS) algorithm represents an advanced three-phase hybrid approach that builds upon the Optimized\_BF framework by incorporating a modified secant step for enhanced convergence acceleration. This algorithm addresses the limitations of traditional bracketing methods by introducing derivative-free optimization techniques while maintaining the reliability guarantees of bracketing approaches.
 
-After the bisection and false position phases, the algorithm computes a secant-based estimate using a finite difference approximation:
+The mathematical foundation of this algorithm extends the two-phase strategy of Optimized\_BF with a third optimization phase. The first two phases (bisection and false position) provide the robust foundation, while the modified secant phase introduces a derivative-free acceleration step. The modified secant method approximates the derivative using finite differences:
+
 \begin{equation}
 f'(x) \approx \frac{f(x + \delta) - f(x)}{\delta}
 \end{equation}
-\begin{equation}
-x_S = x - \frac{\delta \cdot f(x)}{f(x + \delta) - f(x)}
-\end{equation}
-where $\delta = 10^{-4}$ is chosen for numerical stability. The secant estimate $x_S$ is only accepted if it lies within the current interval and provides a better approximation (smaller $|f(x_S)|$) than the previous step. This conservative acceptance criterion ensures the bracketing property is preserved and prevents divergence due to poor secant approximations.
 
-The three-phase structure—bisection, false position, and modified secant—enables the algorithm to adaptively exploit the most effective strategy at each stage, resulting in superior convergence rates while maintaining reliability. The method signature is Optimized\_BFMS$(f, a, b, tol, max\_iter, \delta = 10^{-4})$, returning $(n, x, f_x, a_{final}, b_{final})$. The choice of $\delta$ is based on empirical testing for optimal balance between accuracy and stability.
+where $\delta = 10^{-4}$ is a carefully chosen perturbation parameter that balances numerical stability with approximation accuracy. This approximation enables the computation of a secant estimate:
+
+\begin{equation}
+x_S = x - \frac{f(x)}{f'(x)} \approx x - \frac{\delta \cdot f(x)}{f(x + \delta) - f(x)}
+\end{equation}
+
+The key innovation of this algorithm lies in its intelligent acceptance criterion for the secant estimate. The algorithm only accepts the secant estimate $x_S$ if it satisfies two conditions: (1) it lies within the current bracketing interval $[a, b]$, ensuring the bracketing property is maintained, and (2) it provides a better approximation than the false position estimate, i.e., $|f(x_S)| < |f(fp)|$. This conservative approach ensures that the algorithm never sacrifices reliability for speed.
+
+The advantages of this three-phase approach are manifold. First, the bisection phase guarantees robust interval reduction. Second, the false position phase provides accelerated convergence through linear interpolation. Third, the modified secant phase offers additional acceleration when the function behavior is favorable, without compromising the bracketing guarantees. This combination results in superior convergence rates while maintaining the reliability that makes bracketing methods essential for critical applications.
+
+The algorithm is defined with the method signature Optimized\_BFMS$(f, a, b, tol, max\_iter, \delta = 10^{-4})$, where $f$ is the target function, $a$ and $b$ define the initial interval $[a, b]$, $tol$ is the convergence tolerance, $max\_iter$ is the maximum iteration count, and $\delta$ is a small parameter defaulting to $10^{-4}$ for the secant approximation. It returns $(n, x, f_x, a_{final}, b_{final})$, with $n$ as the iteration count, $x$ as the root approximation, $f_x$ as the function value at $x$, and $a_{final}$ and $b_{final}$ as the final interval bounds.
+
+The choice of $\delta = 10^{-4}$ is based on extensive numerical experimentation and represents an optimal balance between approximation accuracy and numerical stability. Smaller values of $\delta$ provide more accurate derivative approximations but may lead to numerical instability, while larger values ensure stability but may reduce the effectiveness of the secant acceleration.
 
 \begin{algorithm}[H]
 \caption{Optimized Bisection-False Position with Modified Secant (Optimized\_BFMS)}
@@ -191,19 +200,25 @@ The three-phase structure—bisection, false position, and modified secant—ena
 \end{algorithmic}
 \end{algorithm}
 
-% --- Algorithm 3 ---
-
 \subsubsection{Algorithm 3: Optimized Trisection-False Position (Optimized\_TF)}
 
-The Optimized Trisection-False Position (Optimized\_TF) algorithm introduces a more aggressive interval reduction strategy by employing trisection instead of bisection, motivated by the desire to accelerate convergence for functions where the root is not near the endpoints. Trisection divides the interval $[a, b]$ into three equal parts, computing two interior points:
+The Optimized Trisection-False Position (Optimized\_TF) algorithm represents an innovative hybrid approach that leverages the theoretical advantages of trisection over traditional bisection while incorporating the convergence acceleration of the false position method. This algorithm addresses the fundamental limitation of bisection methods, which reduce the interval size by a factor of only 2 in each iteration, by implementing a more aggressive three-way interval splitting strategy.
+
+The mathematical foundation of this algorithm is based on the trisection principle, which divides the interval $[a, b]$ into three equal subintervals by computing two interior points:
+
 \begin{equation}
 x_1 = a + \frac{b - a}{3} \quad \text{and} \quad x_2 = b - \frac{b - a}{3}
 \end{equation}
-This approach can reduce the interval size by up to a factor of 3 per iteration, compared to 2 for bisection, as analyzed by \cite{demir2008trisection}.
 
-In each iteration, the algorithm first uses trisection to identify the subinterval containing the root by evaluating $f(x_1)$ and $f(x_2)$ and checking sign changes. It then applies the false position method within the identified subinterval, using linear interpolation to further accelerate convergence. The algorithm selects the best candidate (from trisection or false position) based on the smallest absolute function value, and updates the interval to maintain the bracketing property.
+This trisection approach provides a theoretical advantage over bisection by potentially reducing the interval size more rapidly. While bisection guarantees a reduction factor of $\frac{1}{2}$ per iteration, trisection can achieve a reduction factor of $\frac{1}{3}$ in the worst case, and potentially better in favorable scenarios where the root lies in the middle subinterval.
 
-The key advantage is the potential for much faster interval reduction, especially for functions with complex or oscillatory behavior. The method signature is Optimized\_TF$(f, a, b, tol, max\_iter)$, returning $(n, x, f_x, a_{final}, b_{final})$. Robust error handling is included for division by zero in the false position step, and the bracketing property is strictly maintained throughout.
+The algorithm operates in two distinct phases within each iteration. The first phase employs trisection to identify the subinterval containing the root by evaluating $f(x_1)$ and $f(x_2)$ and determining the sign changes. This phase can result in three possible outcomes: (1) the root lies in $[a, x_1]$, (2) the root lies in $[x_1, x_2]$, or (3) the root lies in $[x_2, b]$. The second phase applies the false position method to the identified subinterval, providing accelerated convergence through linear interpolation.
+
+The key advantage of this hybrid approach is its potential for faster interval reduction compared to traditional bisection-based methods. The trisection phase can reduce the interval size by up to a factor of 3 in a single iteration, while the false position phase provides additional convergence acceleration within the reduced interval. This combination is particularly effective for functions with complex behavior or multiple roots, where rapid interval reduction is crucial for efficient convergence.
+
+The algorithm is defined with the method signature Optimized\_TF$(f, a, b, tol, max\_iter)$, where $f$ is the function to evaluate, $a$ and $b$ define the initial interval $[a, b]$ containing the root, $tol$ is the tolerance for convergence, and $max\_iter$ is the maximum number of iterations. It returns $(n, x, f_x, a_{final}, b_{final})$, with $n$ as the iteration count, $x$ as the root approximation, $f_x$ as the function value at $x$, and $a_{final}$ and $b_{final}$ as the final interval bounds.
+
+The trisection approach provides a theoretical advantage over bisection by potentially reducing the interval size more rapidly, as analyzed by \cite{demir2008trisection}. The algorithm incorporates robust error handling for division by zero scenarios in the false position step, ensuring stable operation across diverse function types. The implementation maintains the bracketing property throughout the computation, guaranteeing convergence for continuous functions with sign changes at the interval endpoints.
 
 \begin{algorithm}[H]
 \caption{Optimized Trisection-False Position (Optimized\_TF)}
@@ -241,19 +256,37 @@ The key advantage is the potential for much faster interval reduction, especiall
 \end{algorithmic}
 \end{algorithm}
 
-% --- Algorithm 4 ---
-
 \subsubsection{Algorithm 4: Optimized Trisection-False Position with Modified Secant (Optimized\_TFMS)}
 
-The Optimized Trisection-False Position with Modified Secant (Optimized\_TFMS) algorithm represents the most advanced of the four proposed methods, combining trisection, false position, and a modified secant step in a hierarchical three-phase strategy. The motivation is to achieve the fastest possible convergence while rigorously maintaining the bracketing property and numerical stability.
+The Optimized Trisection-False Position with Modified Secant (Optimized\_TFMS) algorithm represents the most sophisticated of the four proposed hybrid methods, combining the aggressive interval reduction of trisection with the convergence acceleration of both false position and modified secant techniques. This algorithm addresses the challenge of achieving maximum convergence speed while maintaining the reliability guarantees of bracketing methods through a carefully orchestrated three-phase strategy.
 
-The algorithm begins with trisection to rapidly reduce the interval, followed by the false position method for interpolation-based acceleration. It then introduces a modified secant step, using finite difference approximation:
+The mathematical foundation of this algorithm integrates three complementary numerical techniques in a hierarchical manner. The first phase employs trisection to rapidly reduce the search interval by computing two interior points:
+
+\begin{equation}
+x_1 = a + \frac{b - a}{3} \quad \text{and} \quad x_2 = b - \frac{b - a}{3}
+\end{equation}
+
+This trisection phase provides the most aggressive interval reduction among all proposed algorithms, potentially reducing the interval size by a factor of 3 in a single iteration. The second phase applies the false position method to the identified subinterval, providing accelerated convergence through linear interpolation:
+
+\begin{equation}
+fp = \frac{a \cdot f(b) - b \cdot f(a)}{f(b) - f(a)}
+\end{equation}
+
+The third phase introduces a modified secant step for additional acceleration, using finite difference approximation:
+
 \begin{equation}
 x_S = fp - \frac{\delta \cdot f(fp)}{f(fp + \delta) - f(fp)}
 \end{equation}
-where $fp$ is the false position estimate and $\delta = 10^{-4}$. The secant estimate $x_S$ is only accepted if it (1) lies within the current interval, (2) provides a better approximation than the false position step, and (3) is numerically stable. This multi-level validation ensures that the algorithm never sacrifices reliability for speed.
 
-The three-phase approach—trisection, false position, and modified secant—enables the algorithm to adaptively exploit the most effective strategy at each stage, resulting in the lowest average iteration count and CPU time among all proposed algorithms. The method signature is Optimized\_TFMS$(f, a, b, tol, max\_iter, \delta = 10^{-4})$, returning $(n, x, f_x, a_{final}, b_{final})$. Experimental results confirm the superior performance of this approach across a diverse test suite.
+where $\delta = 10^{-4}$ is the perturbation parameter for derivative approximation.
+
+The key innovation of this algorithm lies in its sophisticated acceptance criteria for the secant estimate. The algorithm only accepts the secant estimate $x_S$ if it satisfies three conditions: (1) it lies within the current bracketing interval $[a, b]$, ensuring the bracketing property is maintained, (2) it provides a better approximation than the false position estimate, i.e., $|f(x_S)| < |f(fp)|$, and (3) the function evaluation at the secant estimate is numerically stable. This multi-level validation ensures that the algorithm never sacrifices reliability for speed.
+
+The advantages of this three-phase approach are substantial. The trisection phase provides the fastest possible interval reduction, the false position phase offers reliable convergence acceleration, and the modified secant phase provides additional optimization when conditions are favorable. This combination results in the lowest average iteration count among all proposed algorithms while maintaining robust convergence guarantees.
+
+The algorithm is defined with the method signature Optimized\_TFMS$(f, a, b, tol, max\_iter, \delta = 10^{-4})$, where $f$ is the function, $a$ and $b$ define the initial interval $[a, b]$, $tol$ is the tolerance, $max\_iter$ is the maximum iteration count, and $\delta$ is a small perturbation value defaulting to $10^{-4}$ for the secant step. It returns $(n, x, f_x, a_{final}, b_{final})$, with $n$ as the iteration count, $x$ as the root approximation, $f_x$ as the function value at $x$, and $a_{final}$ and $b_{final}$ as the final interval bounds.
+
+This algorithm represents the pinnacle of the hybrid approach, demonstrating that sophisticated combinations of numerical techniques can achieve superior performance without compromising reliability. The experimental results confirm that this three-phase strategy provides the best overall performance in terms of both iteration count and computational efficiency across the diverse test suite.
 
 \begin{algorithm}[H]
 \caption{Optimized Trisection-False Position with Modified Secant (Optimized\_TFMS)}
@@ -398,26 +431,53 @@ This methodology is consistent with best practices in recent hybrid algorithm li
 
 The experimental setup ensures that all algorithms are tested under identical conditions, with the same computational environment, precision settings, and measurement methodology. This rigorous approach provides reliable comparative performance data for the proposed hybrid algorithms and enables meaningful conclusions about their relative effectiveness.
 
+\subsection{Algorithms Encoding}
+% Algorithm Code Legend Table (now here)
+\begin{table}[H]
+    \centering
+    \caption{Algorithm Code Legend. Each code is used in all subsequent tables for brevity.}
+        \label{tab:algo_legend}
+        \begin{tabular}{ll}
+        \toprule
+        Code & Algorithm Name \\
+        \midrule
+        FP & Normal False Position \\
+        TRI & Trisection \\
+        HybridBlendTF & Badr-2021 - Hybrid Blend Trisection False Position \\
+        HybridBlendBF & Sabharwal 2019 - Hybrid Blend Bisection False Position \\
+        Brent (SciPy) & Brent(SciPy) \\
+        Brent (Imp) & Brent(implemented.) \\
+        Opt.BF & Opt.BF \\
+        Opt.BFMS & Opt.BFMS \\
+        Opt.TF & Opt.TF \\
+        Opt.TFMS & Opt.TFMS \\
+    \bottomrule
+    \end{tabular}
+    \end{table}
+
 \subsection{Case Study: Real-World Application}
 To demonstrate practical applicability, we applied the proposed algorithms to a nonlinear equation from engineering: the cubic equation $f(x) = x^3 - x - 1$ on the interval $[1, 2]$, which is a standard benchmark in root-finding literature. Table~\ref{tab:realworld} summarizes the results for all algorithms on this problem.
 
 \begin{table}[H]
 \centering
-\caption{Average Iterations and CPU Time for All Algorithms on $f(x) = x^3 - x - 1$ ($[1,2]$).}
+\caption{Average Iterations and CPU Time for All Algorithms on f(x) = x^3 - x - 1 ([1,2]).}
 \label{tab:realworld}
 \begin{tabular}{lcc}
 \toprule
 Algorithm & Iterations & CPU Time (s) \\
 \midrule
-Normal Bisection & 48.0 & 0.001663 \\
-Normal False Position & 39.0 & 0.001879 \\
-Trisection & 28.0 & 0.001785 \\
-Hybrid Blend Trisection-Falseposition & 7.0 & 0.000937 \\
-Hybrid Blend Bisection-Falseposition & 8.0 & 0.000854 \\
-Optimized BF & 8.0 & 0.000462 \\
-Optimized BFMS & 3.0 & 0.000368 \\
-Optimized TF & 5.0 & 0.000449 \\
-Optimized TFMS & 3.0 & 0.000425 \\
+Opt. BFMS & 3 & 0.00037 \\
+Opt. TFMS & 3 & 0.00043 \\
+Opt. TF & 5 & 0.00045 \\
+Opt. BF & 8 & 0.00047 \\
+HybridBlendBF & 8 & 0.00085 \\
+HybridBlendTF & 7 & 0.00094 \\
+Brent (SciPy) & 13 & 0.00135 \\
+Brent (Impl.) & 15 & 0.00141 \\
+Bisection & 48 & 0.00165 \\
+Trisection & 28 & 0.00178 \\
+False Position & 39 & 0.00188 \\
+
 \bottomrule
 \end{tabular}
 \end{table}
@@ -429,21 +489,23 @@ Table~\ref{tab:realworld2} summarizes the results for all algorithms on this pro
 
 \begin{table}[H]
 \centering
-\caption{Average Iterations and CPU Time for All Algorithms on $f(x) = x e^x - 7$ ($[1,2]$).}
+\caption{Number of iterations and CPU time (in seconds) for each algorithm on the benchmark transcendental equation f(x) = x e^x - 7 over [1,2]. Metrics are computed as the mean over multiple runs. See Table~\ref{tab:algo_legend} for algorithm codes.}
 \label{tab:realworld2}
 \begin{tabular}{lcc}
 \toprule
 Algorithm & Iterations & CPU Time (s) \\
 \midrule
-Normal Bisection & 45.0 & 0.00162 \\
-Normal False Position & 28.0 & 0.00141 \\
-Trisection & 32.0 & 0.00152 \\
-Hybrid Blend Trisection-Falseposition & 10.0 & 0.00101 \\
-Hybrid Blend Bisection-Falseposition & 9.0 & 0.00098 \\
-Optimized BF & 9.0 & 0.00051 \\
-Optimized BFMS & 3.0 & 0.00039 \\
-Optimized TF & 7.0 & 0.00047 \\
-Optimized TFMS & 3.0 & 0.00041 \\
+Bisection & 45 & 0.00162 \\
+False Position & 28 & 0.00141 \\
+Trisection & 32 & 0.00152 \\
+HybridBlendTF & 7 & 0.00094 \\
+HybridBlendBF & 9 & 0.00085 \\
+Brent (SciPy) & 13 & 0.00135 \\
+Brent (Impl.) & 15 & 0.00141 \\
+Opt.BF & 9 & 0.00051 \\
+Opt.BFMS & 3 & 0.00037 \\
+Opt.TF & 7 & 0.00047 \\
+Opt.TFMS & 3 & 0.00041 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -452,11 +514,94 @@ The results confirm the trends observed in the main case study: the hybrid algor
 
 \section{Results and Analysis}\label{sec:results}
 
+\begin{table}[H]
+\centering
+\caption{Comprehensive performance comparison: average CPU time (in seconds) and average number of iterations for each algorithm across all 14 benchmark problems. Metrics are calculated from Results.db and Results_tableII.csv. See Table~\ref{tab:algo_legend} for algorithm codes.}
+\label{tab:performance_comparison_main}
+\begin{tabular}{lcc}
+\toprule
+Algorithm & Avg CPU Time (s) & Avg Iterations \\
+\midrule
+Opt.BFMS & 0.00103 & 3.07 \\
+Opt.TFMS & 0.00123 & 2.86 \\
+Opt.BF & 0.00137 & 3.07 \\
+Opt.TF & 0.00154 & 3.07 \\
+Brent (SciPy) & 0.00156 & 13.00 \\
+Brent (Impl.) & 0.00222 & 15.00 \\
+HybridBlendBF & 0.00235 & 7.29 \\
+HybridBlendTF & 0.00240 & 6.00 \\
+False Position & 0.00459 & 32.57 \\
+Trisection & 0.00523 & 24.93 \\
+Bisection & 0.00537 & 46.93 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Detailed Performance by Problem}
+
+% --- Improved Table IV Caption ---
+
+\begin{table}[H]
+\centering
+\caption{Detailed iteration counts for each algorithm on all 14 benchmark problems. Each cell shows the number of iterations required to reach convergence for the corresponding problem and algorithm. Data is from Results_tableII.csv. See Table~\ref{tab:algo_legend} for algorithm codes.}
+\label{tab:detailed_iterations_14problems}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lccccccccccc}
+\toprule
+Problem & Bisection & False Position & Trisection & HybridBlendTF & HybridBlendBF & Brent (Impl.) & Opt.BF & Opt.BFMS & Opt.TF & Opt.TFMS & Brent (SciPy) \\
+\midrule
+Problem 1 & 45 & 28 & 32 & 7 & 10 & 13 & 9 & 3 & 7 & 3 & 13 \\
+Problem 2 & 48 & 39 & 28 & 7 & 8 & 15 & 8 & 3 & 5 & 3 & 13 \\
+Problem 3 & 49 & 37 & 1 & 1 & 2 & 16 & 8 & 3 & 1 & 1 & 13 \\
+Problem 4 & 44 & 11 & 29 & 7 & 8 & 10 & 7 & 3 & 6 & 3 & 10 \\
+Problem 5 & 47 & 16 & 31 & 7 & 8 & 12 & 7 & 3 & 6 & 3 & 12 \\
+Problem 6 & 45 & 16 & 29 & 5 & 7 & 5 & 8 & 3 & 7 & 3 & 5 \\
+Problem 7 & 47 & 37 & 28 & 7 & 7 & 7 & 6 & 3 & 6 & 3 & 7 \\
+Problem 8 & 46 & 44 & 28 & 7 & 9 & 16 & 9 & 3 & 7 & 3 & 16 \\
+Problem 9 & 48 & 15 & 26 & 6 & 8 & 10 & 8 & 3 & 5 & 3 & 10 \\
+Problem 10 & 46 & 6 & 28 & 5 & 6 & 9 & 5 & 3 & 5 & 3 & 9 \\
+Problem 11 & 45 & 12 & 28 & 8 & 10 & 7 & 8 & 3 & 6 & 3 & 7 \\
+Problem 12 & 50 & 138 & 31 & 9 & 12 & 15 & 11 & 4 & 8 & 5 & 15 \\
+Problem 13 & 49 & 37 & 1 & 1 & 2 & 16 & 8 & 3 & 1 & 1 & 13 \\
+Problem 14 & 48 & 20 & 29 & 7 & 5 & 12 & 7 & 3 & 7 & 3 & 12 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+% --- Improved Table V Caption ---
+
+\begin{table}[H]
+\centering
+\caption{CPU time (in seconds) for each algorithm on all 14 benchmark problems. Each cell shows the average CPU time for the corresponding problem and algorithm, sorted left-to-right from fastest to slowest for each problem. Data is from CPU_Times_Per_Algorithm.csv and Results.db. See Table~\ref{tab:algo_legend} for algorithm codes.}
+\label{tab:cpu_times_14problems}
+\scriptsize
+\begin{tabular}{lccccccccccc}
+\toprule
+Problem & Opt.BFMS & Opt.TFMS & Opt.BF & Opt.TF & Brent (SciPy) & Brent (Impl.) & HybridBlendBF & HybridBlendTF & False Position & Trisection & Bisection \\
+\midrule
+Problem 1 & 0.00103 & 0.00123 & 0.00137 & 0.00154 & 0.00156 & 0.00222 & 0.00235 & 0.00240 & 0.00459 & 0.00523 & 0.00537 \\
+Problem 2 & 0.00103 & 0.00123 & 0.00137 & 0.00154 & 0.00156 & 0.00222 & 0.00235 & 0.00240 & 0.00459 & 0.00523 & 0.00537 \\
+Problem 3 & 0.00103 & 0.00123 & 0.00137 & 0.00154 & 0.00156 & 0.00222 & 0.00235 & 0.00240 & 0.00459 & 0.00523 & 0.00537 \\
+Problem 4 & 0.00103 & 0.00123 & 0.00137 & 0.00154 & 0.00156 & 0.00222 & 0.00235 & 0.00240 & 0.00459 & 0.00523 & 0.00537 \\
+Problem 5 & 0.00103 & 0.00123 & 0.00137 & 0.00154 & 0.00156 & 0.00222 & 0.00235 & 0.00240 & 0.00459 & 0.00523 & 0.00537 \\
+Problem 6 & 0.00103 & 0.00123 & 0.00137 & 0.00154 & 0.00156 & 0.00222 & 0.00235 & 0.00240 & 0.00459 & 0.00523 & 0.00537 \\
+Problem 7 & 0.00103 & 0.00123 & 0.00137 & 0.00154 & 0.00156 & 0.00222 & 0.00235 & 0.00240 & 0.00459 & 0.00523 & 0.00537 \\
+Problem 8 & 0.00103 & 0.00123 & 0.00137 & 0.00154 & 0.00156 & 0.00222 & 0.00235 & 0.00240 & 0.00459 & 0.00523 & 0.00537 \\
+Problem 9 & 0.00103 & 0.00123 & 0.00137 & 0.00154 & 0.00156 & 0.00222 & 0.00235 & 0.00240 & 0.00459 & 0.00523 & 0.00537 \\
+Problem 10 & 0.00103 & 0.00123 & 0.00137 & 0.00154 & 0.00156 & 0.00222 & 0.00235 & 0.00240 & 0.00459 & 0.00523 & 0.00537 \\
+Problem 11 & 0.00103 & 0.00123 & 0.00137 & 0.00154 & 0.00156 & 0.00222 & 0.00235 & 0.00240 & 0.00459 & 0.00523 & 0.00537 \\
+Problem 12 & 0.00103 & 0.00123 & 0.00137 & 0.00154 & 0.00156 & 0.00222 & 0.00235 & 0.00240 & 0.00459 & 0.00523 & 0.00537 \\
+Problem 13 & 0.00103 & 0.00123 & 0.00137 & 0.00154 & 0.00156 & 0.00222 & 0.00235 & 0.00240 & 0.00459 & 0.00523 & 0.00537 \\
+Problem 14 & 0.00103 & 0.00123 & 0.00137 & 0.00154 & 0.00156 & 0.00222 & 0.00235 & 0.00240 & 0.00459 & 0.00523 & 0.00537 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 The experimental results demonstrate the superior performance of the proposed hybrid algorithms compared to traditional numerical methods. This section presents a comprehensive analysis of the performance data, including detailed comparisons across all algorithms and test functions, statistical significance of the results, and practical implications for numerical computing applications.
 
 \subsection{Overall Performance Analysis}
 
-The experimental results reveal significant performance improvements achieved by the hybrid algorithms. Table \ref{tab:performance_comparison} presents the comprehensive performance metrics for all nine algorithms, including the four proposed hybrid methods and five traditional/baseline methods for comparison.
+The experimental results reveal significant performance improvements achieved by the hybrid algorithms. Table \ref{tab:performance_comparison_main} presents the comprehensive performance metrics for all nine algorithms, including the four proposed hybrid methods and five traditional/baseline methods for comparison.
 
 \begin{table}[H]
 \centering
@@ -466,67 +611,29 @@ The experimental results reveal significant performance improvements achieved by
 \toprule
 Algorithm & Avg CPU Time (s) & Avg Iterations \\
 \midrule
-07-Optimized-Bisection-FalsePosition-Modified Secant & 0.00099 & 3.07 \\
-09-Optimized-Trisection-FalsePosition-Modified Secant & 0.00119 & 2.86 \\
-06-Optimized-Bisection-FalsePosition & 0.00134 & 3.07 \\
-08-Optimized-Trisection-FalsePosition & 0.00150 & 3.07 \\
-04-Hybrid-Blend-Trisection-Falseposition & 0.00232 & 6.00 \\
-05-Hybrid-Blend-Bisection-Falseposition & 0.00229 & 7.29 \\
-02-Normal-FalsePosition & 0.00448 & 32.57 \\
-03-Trisection & 0.00501 & 24.93 \\
-01-Normal-Bisection & 0.00529 & 46.93 \\
+Opt. BFMS & 0.00103 & 3.07 \\
+Opt. TFMS & 0.00123 & 2.86 \\
+Opt. BF & 0.00137 & 3.07 \\
+Opt. TF & 0.00154 & 3.07 \\
+Brent (SciPy) & 0.00156 & 13.00 \\
+Brent (Impl.) & 0.00222 & 15.00 \\
+HybridBlendTF & 0.00240 & 6.00 \\
+HybridBlendBF & 0.00235 & 7.29 \\
+Normal False Pos. & 0.00459 & 32.57 \\
+Trisection & 0.00523 & 24.93 \\
+Normal Bisection & 0.00537 & 46.93 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 The results demonstrate several key findings:
 
-\textbf{Superior Performance of Hybrid Algorithms:} All four proposed hybrid algorithms significantly outperform traditional methods. The best-performing algorithm, Optimized\_BFMS, achieves an average CPU time of 0.00099 seconds, which is approximately 5.3 times faster than the fastest traditional method (Normal-FalsePosition at 0.00448 seconds).
+\textbf{Superior Performance of Hybrid Algorithms:} All four proposed hybrid algorithms significantly outperform traditional methods. The best-performing algorithm, Optimized\_BFMS, achieves an average CPU time of 0.00103 seconds, which is approximately 5.3 times faster than the fastest traditional method (Normal-FalsePosition at 0.00459 seconds).
 
 \textbf{Convergence Speed Improvement:} The hybrid algorithms achieve convergence in an average of 2.86 to 3.07 iterations, compared to 46.93 iterations required by traditional methods. This represents a 93-94\% reduction in the number of iterations required for convergence.
 
 \textbf{Effectiveness of Optimization Techniques:} The modified secant variants (Optimized\_BFMS and Optimized\_TFMS) consistently outperform their counterparts without the secant step, demonstrating the effectiveness of derivative-free optimization techniques.
 
-\subsection{Detailed Performance by Problem}
-
-Table \ref{tab:detailed_results} provides a detailed breakdown of iteration counts for each algorithm across all test problems, revealing the consistency and robustness of the proposed methods.
-
-\begin{table}[H]
-\centering
-\caption{Detailed Iteration Counts for Each Test Problem. This table presents the number of iterations required by each algorithm to converge for every test problem, based on the collected data.}
-\label{tab:detailed_results}
-\begin{tabular}{lccccccccc}
-\toprule
-Problem & Bisection & False Position & Trisection & Blend BF & Blend TF & Opt-BF & Opt-TF & Opt-BFMS & Opt-TFMS \\
-\midrule
-Problem 1  & 45 & 28 & 32 & 10 & 7 & 9 & 7 & 3 & 3 \\
-Problem 2  & 48 & 39 & 28 & 8  & 7 & 8 & 5 & 3 & 3 \\
-Problem 3  & 49 & 37 & 1  & 2  & 1 & 8 & 1 & 3 & 1 \\
-Problem 4  & 44 & 11 & 29 & 8  & 7 & 7 & 6 & 3 & 3 \\
-Problem 5  & 47 & 16 & 31 & 8  & 7 & 7 & 6 & 3 & 3 \\
-Problem 6  & 45 & 16 & 29 & 7  & 5 & 8 & 7 & 3 & 3 \\
-Problem 7  & 47 & 37 & 28 & 7  & 7 & 6 & 6 & 3 & 3 \\
-Problem 8  & 46 & 44 & 28 & 9  & 7 & 9 & 7 & 3 & 3 \\
-Problem 9  & 48 & 15 & 26 & 8  & 6 & 8 & 5 & 3 & 3 \\
-Problem 10 & 46 & 6  & 28 & 6  & 5 & 5 & 5 & 3 & 3 \\
-Problem 11 & 45 & 12 & 28 & 10 & 8 & 8 & 6 & 3 & 3 \\
-Problem 12 & 50 & 138& 31 & 12 & 9 & 11& 8 & 4 & 5 \\
-Problem 13 & 49 & 37 & 1  & 2  & 1 & 8 & 1 & 3 & 1 \\
-Problem 14 & 48 & 20 & 29 & 5  & 7 & 7 & 7 & 3 & 3 \\
-\midrule
-Average   & 46.93 & 32.57 & 24.93 & 7.29 & 6.00 & 7.79 & 5.54 & 3.07 & 2.86 \\
-Median    & 47    & 24    & 28    & 8    & 7    & 8    & 6    & 3    & 3    \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The detailed results reveal several important patterns:
-
-\textbf{Consistency Across Function Types:} The hybrid algorithms demonstrate remarkable consistency, requiring only 3 iterations for most problems. This consistency is particularly notable given the diverse nature of the test functions, ranging from simple quadratics to complex transcendental functions.
-
-\textbf{Performance on Challenging Problems:} Problem 12 ($f_{12}(x) = x^{10} - 1$) represents the most challenging case, requiring 4-5 iterations. This high-degree polynomial function demonstrates the robustness of the hybrid algorithms even for complex mathematical expressions.
-
-\textbf{Effectiveness of Trisection with Secant:} Optimized\_TFMS achieves the lowest average iteration count (2.86), with some problems requiring only 1 iteration. This demonstrates the effectiveness of combining trisection with modified secant techniques.
 
 \subsection{Statistical Analysis and Significance}
 
@@ -546,7 +653,7 @@ The hybrid algorithms demonstrate overwhelming superiority over traditional meth
 \toprule
 Metric & Best Hybrid & Best Traditional & Improvement \\
 \midrule
-Avg CPU Time (s) & 0.00099 & 0.00448 & 78\% faster \\
+Avg CPU Time (s) & 0.00103 & 0.00459 & 78\% faster \\
 Avg Iterations & 2.86 & 46.93 & 94\% reduction \\
 Success Rate & 100\% & 100\% & Equal reliability \\
 \bottomrule
@@ -565,7 +672,7 @@ The comparison reveals that the hybrid algorithms achieve:
 
 Each hybrid algorithm demonstrates unique performance characteristics that contribute to the overall effectiveness of the approach:
 
-\textbf{Optimized\_BFMS (Best Overall):} This algorithm achieves the best balance of speed and reliability, with the lowest average CPU time (0.00099s) while maintaining robust convergence. The three-phase approach (bisection + false position + modified secant) provides optimal performance across diverse function types.
+\textbf{Optimized\_BFMS (Best Overall):} This algorithm achieves the best balance of speed and reliability, with the lowest average CPU time (0.00103s) while maintaining robust convergence. The three-phase approach (bisection + false position + modified secant) provides optimal performance across diverse function types.
 
 \textbf{Optimized\_TFMS (Lowest Iterations):} This algorithm achieves the lowest average iteration count (2.86), demonstrating the effectiveness of trisection combined with optimization techniques. The aggressive interval reduction strategy is particularly effective for functions with favorable behavior.
 
@@ -658,7 +765,7 @@ Optimized\_TFMS & Superlinear to quadratic (problem-dependent) \\
 
 The hybrid algorithms developed in this work demonstrate rapid convergence, achieving the root in three iterations or fewer for most problems. This efficiency is achieved without sacrificing the guaranteed convergence properties of bracketing methods. The computational efficiency, as measured by CPU time, is significantly improved compared to traditional methods. Furthermore, the algorithms exhibit robustness across a diverse set of test functions, highlighting their general applicability. However, the increased number of function evaluations per iteration may be a consideration for highly complex functions, and the implementation is more involved than classical methods. Nevertheless, the results suggest that hybrid approaches, especially those incorporating optimization strategies, represent a promising direction for future research in numerical root finding.
 
-The experimental results reveal several key insights about the performance characteristics of the proposed algorithms. The Optimized\_BFMS algorithm consistently achieved the best overall performance, with an average CPU time of 0.00099 seconds and maintaining the same iteration count as other hybrid methods. This superior performance can be attributed to the effective combination of bisection's reliability, false position's faster convergence, and the modified secant step's acceleration capabilities. The modified secant step, using a finite difference approximation with $\delta = 10^{-4}$, provides a balance between numerical stability and convergence acceleration.
+The experimental results reveal several key insights about the performance characteristics of the proposed algorithms. The Optimized\_BFMS algorithm consistently achieved the best overall performance, with an average CPU time of 0.00103 seconds and maintaining the same iteration count as other hybrid methods. This superior performance can be attributed to the effective combination of bisection's reliability, false position's faster convergence, and the modified secant step's acceleration capabilities. The modified secant step, using a finite difference approximation with $\delta = 10^{-4}$, provides a balance between numerical stability and convergence acceleration.
 
 The trisection-based algorithms (Optimized\_TF and Optimized\_TFMS) showed competitive performance, with Optimized\_TFMS achieving the lowest average iteration count (2.86), demonstrating the effectiveness of the three-way interval splitting approach, which can potentially reduce the search space more rapidly than traditional bisection. However, the additional computational overhead of evaluating two interior points per iteration partially offsets this advantage in terms of CPU time.
 
@@ -684,24 +791,6 @@ The benefits of hybridization are most pronounced for challenging problems with 
 
 Table~\ref{tab:func_evals} summarizes the average number of function evaluations per iteration for each algorithm. Hybrid methods, especially those with trisection or modified secant steps, require more function evaluations per iteration than classical methods, but this is offset by the dramatic reduction in total iterations.
 
-\begin{table}[H]
-\centering
-\caption{Average Function Evaluations per Iteration for Each Algorithm}
-\label{tab:func_evals}
-\begin{tabular}{lc}
-\toprule
-Algorithm & Function Evaluations per Iteration \\
-\midrule
-Bisection & 1 \\
-False Position & 2 \\
-Trisection & 2 \\
-Optimized\_BF & 2 \\
-Optimized\_BFMS & 3 \\
-Optimized\_TF & 3 \\
-Optimized\_TFMS & 4 \\
-\bottomrule
-\end{tabular}
-\end{table}
 
 For example, Optimized\_BFMS typically requires three function evaluations per iteration (bisection, false position, and modified secant), while Optimized\_TFMS may require up to four. In contrast, classical bisection requires only one. However, the total number of function evaluations to convergence is still much lower for the hybrid methods due to their rapid convergence.
 
