@@ -3,7 +3,7 @@
 ## Project Overview
 This project presents four novel hybrid root bracketing algorithms that combine the reliability of traditional bracketing methods with the speed of optimization-based techniques. The algorithms are implemented in Python, evaluated on a diverse set of test functions, and analyzed for convergence and computational efficiency. The results are compiled and discussed in an academic LaTeX paper.
 
-👨‍💻 **Authors:** Abdelrahman Ellithy, Dr. Ahmed Shalaby, Elsayed Badr
+👨‍💻 **Authors:** Abdelrahman Ellithy
 
 ---
 
@@ -50,7 +50,7 @@ All algorithms are designed to guarantee convergence (if the initial interval br
 ## ▶️ How to Run the Algorithms
 1. Ensure you have Python 3.11+ and the required packages:
    ```bash
-   pip install sympy numpy pandas matplotlib seaborn
+   pip install sympy numpy pandas matplotlib scipy
    ```
 2. Run each algorithm script (e.g., `python 06-Optimized-Bisection-FalsePosition.py`). Results will be stored in `Results.db`.
 3. To run all algorithms and regenerate results, you can use the provided scripts in sequence or adapt the CI workflow steps.
