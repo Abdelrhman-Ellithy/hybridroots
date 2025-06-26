@@ -58,7 +58,7 @@ The accurate and efficient determination of roots for nonlinear equations remain
 
 Root finding is a fundamental problem in numerical analysis with applications spanning engineering, physics, economics, and computer science. Traditional root bracketing methods such as bisection, false position, and trisection provide guaranteed convergence but often suffer from slow convergence rates, especially for functions with complex behavior near the root. The motivation for developing hybrid approaches stems from the need to combine the reliability of bracketing methods with the efficiency of optimization techniques. Recent research has shown that hybrid algorithms can significantly improve convergence rates while maintaining the robustness of traditional methods \cite{sabharwal2019blended, badr2022novel}.
 
-Recent advances in root-finding algorithms have improved convergence and robustness by hybridizing classical bracketing methods with optimization techniques. Notable contributions include blended and hybrid algorithms that combine bisection, regula falsi, and secant methods \cite{sabharwal2019hybrid, badr2021comparative}, as well as metaheuristic approaches for nonlinear equations \cite{thota2019trigonometrical, hasan2016numerical}. These works have demonstrated that hybridization can yield significant improvements in both speed and reliability, motivating the development of the new algorithms presented in this paper.
+Recent advances in root-finding algorithms have improved convergence and robustness by hybridizing classical bracketing methods with optimization techniques. Notable contributions include blended and hybrid algorithms that combine bisection, regula falsi, and secant methods \cite{sabharwal2019hybrid, badr2021comparative}, as well as metaheuristic approaches for nonlinear equations\cite{thota2019trigonometrical, hasan2016numerical}. These works have demonstrated that hybridization can yield significant improvements in both speed and reliability, motivating the development of the new algorithms presented in this paper.
 
 The main contributions of this paper are as follows. First, we present four novel hybrid algorithms, each with a solid mathematical foundation, that blend the best aspects of existing root-finding techniques. Second, we provide a comprehensive performance analysis of these algorithms on a diverse set of test functions, demonstrating their effectiveness and generality. Third, we detail the implementation of these methods using the SymPy library for symbolic computation, which allows for high-precision and flexible experimentation. Finally, we offer a comparative analysis with traditional methods, highlighting the advantages and potential of the proposed hybrid approaches in practical numerical computation scenarios.
 
@@ -461,7 +461,7 @@ To demonstrate practical applicability, we applied the proposed algorithms to a 
 
 \begin{table}[H]
 \centering
-\caption{Average Iterations and CPU Time for All Algorithms on f(x) = x^3 - x - 1 ([1,2]).}
+\caption{Average Iterations and CPU Time for All Algorithms on \( f(x) = x^3 - x - 1 \) ([1,2]).}
 \label{tab:realworld}
 \begin{tabular}{lcc}
 \toprule
@@ -490,7 +490,7 @@ Table~\ref{tab:realworld2} summarizes the results for all algorithms on this pro
 
 \begin{table}[H]
 \centering
-\caption{Number of iterations and CPU time (in seconds) for each algorithm on the benchmark transcendental equation f(x) = x e^x - 7 over [1,2]. Metrics are computed as the mean over multiple runs. See Table~\ref{tab:algo_legend} for algorithm codes.}
+\caption{Number of iterations and CPU time (in seconds) for each algorithm on the benchmark transcendental equation \( f(x) = x e^x - 7 \) over [1,2]. Metrics are computed as the mean over multiple runs. See Table~\ref{tab:algo_legend} for algorithm codes.}
 \label{tab:realworld2}
 \begin{tabular}{lcc}
 \toprule
@@ -514,6 +514,12 @@ Opt.TFMS & 3 & 0.00041 \\
 The results confirm the trends observed in the main case study: the hybrid algorithms, especially those with modified secant steps, achieve the fastest convergence and lowest CPU times. This further supports the claim of immediate applicability to scientific and engineering problems involving transcendental equations.
 
 \section{Results and Analysis}\label{sec:results}
+
+The experimental results demonstrate the superior performance of the proposed hybrid algorithms compared to traditional numerical methods. This section presents a comprehensive analysis of the performance data, including detailed comparisons across all algorithms and test functions, statistical significance of the results, and practical implications for numerical computing applications.
+
+\subsection{Overall Performance Analysis}
+
+The experimental results reveal significant performance improvements achieved by the hybrid algorithms. Table \ref{tab:performance_comparison_main} presents the comprehensive performance metrics for all nine algorithms, including the four proposed hybrid methods and five traditional/baseline methods for comparison.
 
 \begin{table}[H]
 \centering
@@ -540,12 +546,12 @@ Bisection & 0.00537 & 46.93 \\
 
 \subsection{Detailed Performance by Problem}
 
-% --- Improved Table IV Caption ---
+Table \ref{tab:detailed_results} provides a detailed breakdown of iteration counts for each algorithm across all test problems, revealing the consistency and robustness of the proposed methods.
 
 \begin{table}[H]
 \centering
-\caption{Detailed iteration counts for each algorithm on all 14 benchmark problems. Each cell shows the number of iterations required to reach convergence for the corresponding problem and algorithm. Data is from Results_tableII.csv. See Table~\ref{tab:algo_legend} for algorithm codes.}
-\label{tab:detailed_iterations_14problems}
+\caption{Detailed iteration counts for each algorithm on all 14 benchmark problems. Each cell shows the number of iterations required to reach convergence for the corresponding problem and algorithm.based on the collected data. See Table~\ref{tab:algo_legend} for algorithm codes.}
+\label{tab:detailed_results}
 \resizebox{\textwidth}{!}{
 \begin{tabular}{lccccccccccc}
 \toprule
@@ -569,7 +575,7 @@ Problem 14 & 48 & 20 & 29 & 7 & 5 & 12 & 7 & 3 & 7 & 3 & 12 \\
 \end{tabular}}
 \end{table}
 
-% --- Improved Table V Caption ---
+Table \ref{tab:cpu_times_14problems} provides a detailed breakdown of cpu time for each algorithm across all test problems, revealing the consistency and robustness of the proposed methods.
 
 \begin{table}[H]
 \centering
@@ -594,35 +600,6 @@ Problem 11 & 0.00103 & 0.00123 & 0.00137 & 0.00154 & 0.00156 & 0.00222 & 0.00235
 Problem 12 & 0.00103 & 0.00123 & 0.00137 & 0.00154 & 0.00156 & 0.00222 & 0.00235 & 0.00240 & 0.00459 & 0.00523 & 0.00537 \\
 Problem 13 & 0.00103 & 0.00123 & 0.00137 & 0.00154 & 0.00156 & 0.00222 & 0.00235 & 0.00240 & 0.00459 & 0.00523 & 0.00537 \\
 Problem 14 & 0.00103 & 0.00123 & 0.00137 & 0.00154 & 0.00156 & 0.00222 & 0.00235 & 0.00240 & 0.00459 & 0.00523 & 0.00537 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The experimental results demonstrate the superior performance of the proposed hybrid algorithms compared to traditional numerical methods. This section presents a comprehensive analysis of the performance data, including detailed comparisons across all algorithms and test functions, statistical significance of the results, and practical implications for numerical computing applications.
-
-\subsection{Overall Performance Analysis}
-
-The experimental results reveal significant performance improvements achieved by the hybrid algorithms. Table \ref{tab:performance_comparison_main} presents the comprehensive performance metrics for all nine algorithms, including the four proposed hybrid methods and five traditional/baseline methods for comparison.
-
-\begin{table}[H]
-\centering
-\caption{Comprehensive Performance Comparison of All Algorithms. This table summarizes the average CPU time and average number of iterations for each algorithm across all test problems, providing a direct comparison of computational efficiency and convergence speed. The results demonstrate the superior performance of the proposed hybrid algorithms.}
-\label{tab:performance_comparison}
-\begin{tabular}{lcc}
-\toprule
-Algorithm & Avg CPU Time (s) & Avg Iterations \\
-\midrule
-Opt. BFMS & 0.00103 & 3.07 \\
-Opt. TFMS & 0.00123 & 2.86 \\
-Opt. BF & 0.00137 & 3.07 \\
-Opt. TF & 0.00154 & 3.07 \\
-Brent (SciPy) & 0.00156 & 13.00 \\
-Brent (Impl.) & 0.00222 & 15.00 \\
-HybridBlendTF & 0.00240 & 6.00 \\
-HybridBlendBF & 0.00235 & 7.29 \\
-Normal False Pos. & 0.00459 & 32.57 \\
-Trisection & 0.00523 & 24.93 \\
-Normal Bisection & 0.00537 & 46.93 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -792,6 +769,24 @@ The benefits of hybridization are most pronounced for challenging problems with 
 
 Table~\ref{tab:func_evals} summarizes the average number of function evaluations per iteration for each algorithm. Hybrid methods, especially those with trisection or modified secant steps, require more function evaluations per iteration than classical methods, but this is offset by the dramatic reduction in total iterations.
 
+\begin{table}[H]
+\centering
+\caption{Average Function Evaluations per Iteration for Each Algorithm}
+\label{tab:func_evals}
+\begin{tabular}{lc}
+\toprule
+Algorithm & Function Evaluations per Iteration \\
+\midrule
+Bisection & 1 \\
+False Position & 2 \\
+Trisection & 2 \\
+Optimized\_BF & 2 \\
+Optimized\_BFMS & 3 \\
+Optimized\_TF & 3 \\
+Optimized\_TFMS & 4 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 For example, Optimized\_BFMS typically requires three function evaluations per iteration (bisection, false position, and modified secant), while Optimized\_TFMS may require up to four. In contrast, classical bisection requires only one. However, the total number of function evaluations to convergence is still much lower for the hybrid methods due to their rapid convergence.
 
