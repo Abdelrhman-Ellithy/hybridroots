@@ -41,7 +41,7 @@
 
 \title{Four New Hybrid Root Bracketing Algorithms: Optimization-Based Approaches for Numerical Root Finding}
 
-\author{Abdelrahman Ellithy$^{1}$\thanks{Email: abdelrhmanellithy@gmail.com}}
+\author{Abdelrahman Ellithy$^{1}$}
 \affiliation{Department of Scientific Computing, Faculty of Computers and Artificial Intelligence, Benha University, Benha, Egypt}
 
 \date{\today}
@@ -50,7 +50,7 @@
 The accurate and efficient determination of roots for nonlinear equations remains a significant challenge in numerical analysis, particularly when dealing with functions that exhibit complex behavior or require robust convergence guarantees. Traditional bracketing methods, such as bisection and false position, offer reliability but often suffer from slow convergence, while optimization-based methods like the secant method provide speed at the cost of stability.This paper presents four novel hybrid root bracketing algorithms that combine the advantages of traditional bracketing methods with optimization techniques. The proposed algorithms—Optimized Bisection-False Position (Optimized\_BF), Optimized Bisection-False Position with Modified Secant (Optimized\_BFMS), Optimized Trisection-False Position (Optimized\_TF), and Optimized Trisection-False Position with Modified Secant (Optimized\_TFMS)—demonstrate improved convergence rates and computational efficiency compared to their traditional counterparts. Through extensive experimentation on 14 diverse test functions using the SymPy library, our algorithms show consistent performance improvements, with Optimized\_BFMS achieving the best overall performance. The hybrid approach leverages the reliability of bracketing methods while incorporating the speed advantages of optimization-based techniques, making these algorithms suitable for a wide range of numerical computing applications.
 \end{abstract}
 
-\keywords{Root finding, numerical analysis, optimization, hybrid algorithms, SymPy}
+\noindent\textbf{Keywords:} hybrid root-finding algorithms, numerical analysis, optimization, bisection method, false position method, trisection method, modified secant, SymPy, computational mathematics, scientific computing, algorithm benchmarking, convergence analysis, CPU time, Python, symbolic computation
 
 \maketitle
 
@@ -104,32 +104,43 @@ The implementation uses SymPy for symbolic computation and high-precision arithm
 
 \begin{algorithm}[H]
 \caption{Pseudocode for the Optimized Bisection-False Position (Optimized\_BF) algorithm. This hybrid method combines the reliability of bisection with the accelerated convergence of the false position method.}
-\begin{algorithmic}[1]
-\State \textbf{Input:} Function $f$, interval $[a, b]$, tolerance $tol$, max iterations $max\_iter$
-\State \textbf{Output:} Root approximation $x$, function value $f(x)$, final interval $[a, b]$
-\State $n \gets 0$
-\While{$n < max\_iter$}
-    \State $n \gets n + 1$
+    \begin{algorithmic}[1]
+    \State \textbf{Input:} Function $f$, interval $[a, b]$, tolerance $tol$, max iterations $max\_iter$
+    \State \textbf{Output:} Iteration count $n$, root approximation $x$, function value $f(x)$, final interval $[a, b]$
     \State $f_a \gets f(a)$, $f_b \gets f(b)$
-    \State $x_B \gets (a + b)/2$, $f_{x_B} \gets f(x_B)$
-    \State $x_F \gets (a f_b - b f_a)/(f_b - f_a)$, $f_{x_F} \gets f(x_F)$
-    \If{$|f_{x_B}| < |f_{x_F}|$}
-        \State $x \gets x_B$, $fx \gets f_{x_B}$
-    \Else
-        \State $x \gets x_F$, $fx \gets f_{x_F}$
-    \EndIf
-    \If{$|fx| \leq tol$}
-        \State \Return $n, x, fx, a, b$
-    \EndIf
-    \If{$f_a \times fx < 0$}
-        \State $b \gets x$
-    \Else
-        \State $a \gets x$
-    \EndIf
-\EndWhile
-\State \Return $max\_iter, x, fx, a, b$
-\end{algorithmic}
-\end{algorithm}
+    \For{$n \gets 1$ \textbf{to} $max\_iter$}
+        \State \textit{// Bisection Step}
+        \State $x_B \gets (a + b) / 2$
+        \State $f_{x_B} \gets f(x_B)$
+        \If{$|f_{x_B}| \leq tol$}
+            \State \Return $n, x_B, f_{x_B}, a, b$
+        \EndIf
+        \If{$f_a \times f_{x_B} < 0$}
+            \State $b \gets x_B$, $f_b \gets f_{x_B}$
+        \Else
+            \State $a \gets x_B$, $f_a \gets f_{x_B}$
+        \EndIf
+    
+        \State \textit{// False Position Step}
+        \If{$f_b - f_a = 0$}
+            \State \textbf{continue} \text{ to next iteration}
+        \EndIf
+        \State $x_F \gets (a f_b - b f_a) / (f_b - f_a)$
+        \State $f_{x_F} \gets f(x_F)$
+        \If{$|f_{x_F}| \leq tol$}
+            \State \Return $n, x_F, f_{x_F}, a, b$
+        \EndIf
+        \If{$f_a \times f_{x_F} < 0$}
+            \State $b \gets x_F$, $f_b \gets f_{x_F}$
+        \Else
+            \State $a \gets x_F$, $f_a \gets f_{x_F}$
+        \EndIf
+    \EndFor
+    \State $x \gets (a + b) / 2$
+    \State $f_x \gets f(x)$
+    \State \Return $max\_iter, x, f_x, a, b$
+    \end{algorithmic}
+    \end{algorithm}
 
 \subsubsection{Algorithm 2: Optimized Bisection-False Position with Modified Secant (Optimized\_BFMS)}
 
@@ -156,49 +167,65 @@ The algorithm is defined with the method signature Optimized\_BFMS$(f, a, b, tol
 The choice of $\delta = 10^{-4}$ is based on extensive numerical experimentation and represents an optimal balance between approximation accuracy and numerical stability. Smaller values of $\delta$ provide more accurate derivative approximations but may lead to numerical instability, while larger values ensure stability but may reduce the effectiveness of the secant acceleration.
 
 \begin{algorithm}[H]
-\caption{Pseudocode for the Optimized Bisection-False Position with Modified Secant (Optimized\_BFMS) algorithm. This three-phase hybrid method integrates bisection, false position, and a derivative-free secant step for enhanced convergence.}
-\begin{algorithmic}[1]
-\State \textbf{Input:} Function $f$, interval $[a, b]$, tolerance $tol$, max iterations $max\_iter$, $\delta = 10^{-4}$
-\State \textbf{Output:} Root approximation $x$, function value $f(x)$, final interval $[a, b]$
-\State $n \gets 0$
-\While{$n < max\_iter$}
-    \State $n \gets n + 1$
+    \caption{Pseudocode for the Hybrid Bisection-False Position-Modified Secant (HbisectionFalseMS) algorithm. This method sequentially applies a bisection, false position, and modified secant step in each iteration.}
+    \begin{algorithmic}[1]
+    \State \textbf{Input:} Function $f$, interval $[a, b]$, tolerance $tol$, max iterations $max\_iter$, perturbation $\delta$
+    \State \textbf{Output:} Iteration count $n$, root approximation $x$, function value $f(x)$, final interval $[a, b]$
     \State $f_a \gets f(a)$, $f_b \gets f(b)$
-    \State $x_B \gets (a + b)/2$, $f_{x_B} \gets f(x_B)$
-    \State $x_F \gets (a f_b - b f_a)/(f_b - f_a)$, $f_{x_F} \gets f(x_F)$
-    \If{$|f_{x_B}| < |f_{x_F}|$}
-        \State $x \gets x_B$, $fx \gets f_{x_B}$
-    \Else
-        \State $x \gets x_F$, $fx \gets f_{x_F}$
-    \EndIf
-    \If{$|fx| \leq tol$}
-        \State \Return $n, x, fx, a, b$
-    \EndIf
-    \If{$f_a \times fx < 0$}
-        \State $b \gets x$
-    \Else
-        \State $a \gets x$
-    \EndIf
-    \State $f_x \gets f(x)$
-    \State $f_{x+\delta} \gets f(x + \delta)$
-    \State $x_S \gets x - \delta \cdot f_x / (f_{x+\delta} - f_x)$
-    \If{$a < x_S < b$}
-        \State $f_{x_S} \gets f(x_S)$
-        \If{$|f_{x_S}| < |fx|$}
-            \If{$f_a \times f_{x_S} < 0$}
-                \State $b \gets x_S$
-            \Else
-                \State $a \gets x_S$
-            \EndIf
-            \If{$|f_{x_S}| \leq tol$}
-                \State \Return $n, x_S, f_{x_S}, a, b$
+    \State $n \gets 0$
+    \While{$n < max\_iter$}
+        \State $n \gets n + 1$
+        
+        \State \textit{// 1. Bisection Step to narrow the interval}
+        \State $x_B \gets (a + b) / 2$
+        \State $f_{x_B} \gets f(x_B)$
+        \If{$f_a \times f_{x_B} < 0$}
+            \State $b \gets x_B$, $f_b \gets f_{x_B}$
+        \Else
+            \State $a \gets x_B$, $f_a \gets f_{x_B}$
+        \EndIf
+    
+        \State \textit{// 2. False Position Step using the updated interval}
+        \If{$f_b - f_a = 0$}
+            \State $x_F \gets x_B$, $f_{x_F} \gets f_{x_B}$
+        \Else
+            \State $x_F \gets (a f_b - b f_a) / (f_b - f_a)$
+            \State $f_{x_F} \gets f(x_F)$
+        \EndIf
+        \If{$f_a \times f_{x_F} < 0$}
+            \State $b \gets x_F$, $f_b \gets f_{x_F}$
+        \Else
+            \State $a \gets x_F$, $f_a \gets f_{x_F}$
+        \EndIf
+        \If{$|f_{x_F}| \leq tol$}
+            \State \Return $n, x_F, f_{x_F}, a, b$
+        \EndIf
+    
+        \State \textit{// 3. Modified Secant Step for acceleration}
+        \State $f_{x_F+\delta} \gets f(x_F + \delta)$
+        \If{$f_{x_F+\delta} - f_{x_F} \neq 0$}
+            \State $x_S \gets x_F - \delta \cdot f_{x_F} / (f_{x_F+\delta} - f_{x_F})$
+            \If{$a < x_S < b$}
+                \State $f_{x_S} \gets f(x_S)$
+                \If{$|f_{x_S}| < |f_{x_F}|$}
+                    \If{$f_a \times f_{x_S} < 0$}
+                        \State $b \gets x_S$, $f_b \gets f_{x_S}$
+                    \Else
+                        \State $a \gets x_S$, $f_a \gets f_{x_S}$
+                    \EndIf
+                    \If{$|f_{x_S}| \leq tol$}
+                        \State \Return $n, x_S, f_{x_S}, a, b$
+                    \EndIf
+                \EndIf
             \EndIf
         \EndIf
-    \EndIf
-\EndWhile
-\State \Return $max\_iter, x, fx, a, b$
-\end{algorithmic}
-\end{algorithm}
+    \EndWhile
+    \State \textit{// Max iterations reached, return the midpoint of the final interval}
+    \State $x \gets (a + b) / 2$
+    \State $f_x \gets f(x)$
+    \State \Return $n, x, f_x, a, b$
+    \end{algorithmic}
+    \end{algorithm}
 
 \subsubsection{Algorithm 3: Optimized Trisection-False Position (Optimized\_TF)}
 
@@ -221,39 +248,56 @@ The algorithm is defined with the method signature Optimized\_TF$(f, a, b, tol, 
 The trisection approach provides a theoretical advantage over bisection by potentially reducing the interval size more rapidly, as analyzed by \cite{demir2008trisection}. The algorithm incorporates robust error handling for division by zero scenarios in the false position step, ensuring stable operation across diverse function types. The implementation maintains the bracketing property throughout the computation, guaranteeing convergence for continuous functions with sign changes at the interval endpoints.
 
 \begin{algorithm}[H]
-\caption{Pseudocode for the Optimized Trisection-False Position (Optimized\_TF) algorithm. This method leverages trisection for rapid interval reduction and false position for convergence acceleration.}
-\begin{algorithmic}[1]
-\State \textbf{Input:} Function $f$, interval $[a, b]$, tolerance $tol$, max iterations $max\_iter$
-\State \textbf{Output:} Root approximation $x$, function value $f(x)$, final interval $[a, b]$
-\State $n \gets 0$
-\While{$n < max\_iter$}
-    \State $n \gets n + 1$
+    \caption{Pseudocode for the Optimized Trisection-False Position (Optimized\_TF) algorithm. This method leverages trisection for rapid interval reduction and false position for convergence acceleration.}
+    \begin{algorithmic}[1]
+    \State \textbf{Input:} Function $f$, interval $[a, b]$, tolerance $tol$, max iterations $max\_iter$
+    \State \textbf{Output:} Root approximation $x$, function value $f(x)$, final interval $[a, b]$
     \State $f_a \gets f(a)$, $f_b \gets f(b)$
-    \State $x_1 \gets (2a + b)/3$, $x_2 \gets (a + 2b)/3$
-    \State $f_{x_1} \gets f(x_1)$, $f_{x_2} \gets f(x_2)$
-    \If{$|f_{x_1}| < |f_{x_2}|$}
-        \State $x_T \gets x_1$, $fx_T \gets f_{x_1}$
-    \Else
-        \State $x_T \gets x_2$, $fx_T \gets f_{x_2}$
-    \EndIf
-    \State $x_F \gets (a f_b - b f_a)/(f_b - f_a)$, $f_{x_F} \gets f(x_F)$
-    \If{$|fx_T| < |f_{x_F}|$}
-        \State $x \gets x_T$, $fx \gets fx_T$
-    \Else
-        \State $x \gets x_F$, $fx \gets f_{x_F}$
-    \EndIf
-    \If{$|fx| \leq tol$}
-        \State \Return $n, x, fx, a, b$
-    \EndIf
-    \If{$f_a \times fx < 0$}
-        \State $b \gets x$
-    \Else
-        \State $a \gets x$
-    \EndIf
-\EndWhile
-\State \Return $max\_iter, x, fx, a, b$
-\end{algorithmic}
-\end{algorithm}
+    \For{$n \gets 1$ \textbf{to} $max\_iter$}
+        \State \textit{// 1. Trisection Step}
+        \State $x_1 \gets a + (b-a)/3$
+        \State $x_2 \gets b - (b-a)/3$
+        \State $f_{x_1} \gets f(x_1)$, $f_{x_2} \gets f(x_2)$
+        \If{$|f_{x_1}| \leq tol$}
+            \State \Return $n, x_1, f_{x_1}, a, b$
+        \EndIf
+        \If{$|f_{x_2}| \leq tol$}
+            \State \Return $n, x_2, f_{x_2}, a, b$
+        \EndIf
+        
+        \State \textit{// Update interval based on trisection}
+        \If{$f_a \times f_{x_1} < 0$}
+            \State $b \gets x_1$, $f_b \gets f_{x_1}$
+        \ElsIf{$f_{x_1} \times f_{x_2} < 0$}
+            \State $a \gets x_1$, $f_a \gets f_{x_1}$
+            \State $b \gets x_2$, $f_b \gets f_{x_2}$
+        \Else
+            \State $a \gets x_2$, $f_a \gets f_{x_2}$
+        \EndIf
+    
+        \State \textit{// 2. False Position Step}
+        \If{$f_b - f_a = 0$}
+            \State \textbf{continue} \text{ to next iteration}
+        \EndIf
+        \State $x_F \gets (a f_b - b f_a) / (f_b - f_a)$
+        \State $f_{x_F} \gets f(x_F)$
+        \If{$|f_{x_F}| \leq tol$}
+            \State \Return $n, x_F, f_{x_F}, a, b$
+        \EndIf
+    
+        \State \textit{// Update interval based on false position}
+        \If{$f_a \times f_{x_F} < 0$}
+            \State $b \gets x_F$, $f_b \gets f_{x_F}$
+        \Else
+            \State $a \gets x_F$, $f_a \gets f_{x_F}$
+        \EndIf
+    \EndFor
+    \State \textit{// Max iterations reached}
+    \State $x \gets (a+b)/2$
+    \State $f_x \gets f(x)$
+    \State \Return $max\_iter, x, f_x, a, b$
+    \end{algorithmic}
+    \end{algorithm}
 
 \subsubsection{Algorithm 4: Optimized Trisection-False Position with Modified Secant (Optimized\_TFMS)}
 
@@ -288,55 +332,67 @@ The algorithm is defined with the method signature Optimized\_TFMS$(f, a, b, tol
 This algorithm represents the pinnacle of the hybrid approach, demonstrating that sophisticated combinations of numerical techniques can achieve superior performance without compromising reliability. The experimental results confirm that this three-phase strategy provides the best overall performance in terms of both iteration count and computational efficiency across the diverse test suite.
 
 \begin{algorithm}[H]
-\caption{Pseudocode for the Optimized Trisection-False Position with Modified Secant (Optimized\_TFMS) algorithm. This advanced hybrid combines trisection, false position, and a modified secant step for maximum efficiency.}
-\begin{algorithmic}[1]
-\State \textbf{Input:} Function $f$, interval $[a, b]$, tolerance $tol$, max iterations $max\_iter$, $\delta = 10^{-4}$
-\State \textbf{Output:} Root approximation $x$, function value $f(x)$, final interval $[a, b]$
-\State $n \gets 0$
-\While{$n < max\_iter$}
-    \State $n \gets n + 1$
+    \caption{Pseudocode for the Optimized Trisection-False Position with Modified Secant (Optimized\_TFMS) algorithm. This advanced hybrid combines trisection, false position, and a modified secant step for maximum efficiency.}
+    \begin{algorithmic}[1]
+    \State \textbf{Input:} Function $f$, interval $[a, b]$, tolerance $tol$, max iterations $max\_iter$, $\delta = 10^{-4}$
+    \State \textbf{Output:} Root approximation $x$, function value $f(x)$, final interval $[a, b]$
     \State $f_a \gets f(a)$, $f_b \gets f(b)$
-    \State $x_1 \gets (2a + b)/3$, $x_2 \gets (a + 2b)/3$
-    \State $f_{x_1} \gets f(x_1)$, $f_{x_2} \gets f(x_2)$
-    \If{$|f_{x_1}| < |f_{x_2}|$}
-        \State $x_T \gets x_1$, $fx_T \gets f_{x_1}$
-    \Else
-        \State $x_T \gets x_2$, $fx_T \gets f_{x_2}$
-    \EndIf
-    \State $x_F \gets (a f_b - b f_a)/(f_b - f_a)$, $f_{x_F} \gets f(x_F)$
-    \If{$|fx_T| < |f_{x_F}|$}
-        \State $x \gets x_T$, $fx \gets fx_T$
-    \Else
-        \State $x \gets x_F$, $fx \gets f_{x_F}$
-    \EndIf
-    \If{$|fx| \leq tol$}
-        \State \Return $n, x, fx, a, b$
-    \EndIf
-    \If{$f_a \times fx < 0$}
-        \State $b \gets x$
-    \Else
-        \State $a \gets x$
-    \EndIf
-    \State $f_x \gets f(x)$
-    \State $f_{x+\delta} \gets f(x + \delta)$
-    \State $x_S \gets x - \delta \cdot f_x / (f_{x+\delta} - f_x)$
-    \If{$a < x_S < b$}
-        \State $f_{x_S} \gets f(x_S)$
-        \If{$|f_{x_S}| < |fx|$}
-            \If{$f_a \times f_{x_S} < 0$}
-                \State $b \gets x_S$
-            \Else
-                \State $a \gets x_S$
-            \EndIf
-            \If{$|f_{x_S}| \leq tol$}
-                \State \Return $n, x_S, f_{x_S}, a, b$
+    \For{$n \gets 1$ \textbf{to} $max\_iter$}
+        \State \textit{// 1. Trisection Step}
+        \State $x_1 \gets a + (b-a)/3$, $x_2 \gets b - (b-a)/3$
+        \State $f_{x_1} \gets f(x_1)$, $f_{x_2} \gets f(x_2)$
+        \If{$|f_{x_1}| \leq tol$} \State \Return $n, x_1, f_{x_1}, a, b$ \EndIf
+        \If{$|f_{x_2}| \leq tol$} \State \Return $n, x_2, f_{x_2}, a, b$ \EndIf
+        
+        \State \textit{// Update interval based on trisection results}
+        \If{$f_a \times f_{x_1} < 0$}
+            \State $b \gets x_1$, $f_b \gets f_{x_1}$
+        \ElsIf{$f_{x_1} \times f_{x_2} < 0$}
+            \State $a \gets x_1$, $f_a \gets f_{x_1}$
+            \State $b \gets x_2$, $f_b \gets f_{x_2}$
+        \Else
+            \State $a \gets x_2$, $f_a \gets f_{x_2}$
+        \EndIf
+    
+        \State \textit{// 2. False Position Step}
+        \If{$f_b - f_a = 0$}
+            \State \textbf{continue} \text{ to next iteration}
+        \EndIf
+        \State $x_F \gets (a f_b - b f_a) / (f_b - f_a)$
+        \State $f_{x_F} \gets f(x_F)$
+        
+        \State \textit{// Update interval based on false position result}
+        \If{$f_a \times f_{x_F} < 0$}
+            \State $b \gets x_F$, $f_b \gets f_{x_F}$
+        \Else
+            \State $a \gets x_F$, $f_a \gets f_{x_F}$
+        \EndIf
+        \If{$|f_{x_F}| \leq tol$}
+            \State \Return $n, x_F, f_{x_F}, a, b$
+        \EndIf
+    
+        \State \textit{// 3. Modified Secant Step}
+        \State $x_S \gets x_F - \delta \cdot f_{x_F} / (f(x_F + \delta) - f_{x_F})$
+        \If{$a < x_S < b$}
+            \State $f_{x_S} \gets f(x_S)$
+            \If{$|f_{x_S}| < |f_{x_F}|$}
+                \If{$f_a \times f_{x_S} < 0$}
+                    \State $b \gets x_S$, $f_b \gets f_{x_S}$
+                \Else
+                    \State $a \gets x_S$, $f_a \gets f_{x_S}$
+                \EndIf
+                \If{$|f_{x_S}| \leq tol$}
+                    \State \Return $n, x_S, f_{x_S}, a, b$
+                \EndIf
             \EndIf
         \EndIf
-    \EndIf
-\EndWhile
-\State \Return $max\_iter, x, fx, a, b$
-\end{algorithmic}
-\end{algorithm}
+    \EndFor
+    \State \textit{// Max iterations reached}
+    \State $x \gets (a+b)/2$
+    \State $f_x \gets f(x)$
+    \State \Return $max\_iter, x, f_x, a, b$
+    \end{algorithmic}
+    \end{algorithm}
 
 
 \setlength{\parskip}{1.5ex plus 0.5ex minus 0.2ex}
