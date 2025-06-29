@@ -3,7 +3,7 @@
 ## Project Overview
 This project presents four novel hybrid root bracketing algorithms that combine the reliability of traditional bracketing methods with the speed of optimization-based techniques. The algorithms are implemented in Python, evaluated on a diverse set of test functions, and analyzed for convergence and computational efficiency. The results are compiled and discussed in an academic LaTeX paper.
 
-👨‍💻 **Authors:** Abdelrahman Ellithy
+👨‍💻 **Authors:** Abdelrahman Ellithy.
 
 ---
 
