@@ -67,7 +67,10 @@ for c in range(1):
         f = sp.lambdify('x', func)
         t1 = time.perf_counter()
         for j in range(1):
-            z = optimize.brentq(f=f, a=a, b=b,xtol= tol)
+            try:
+                z = optimize.brentq(f=f, a=a, b=b,xtol= tol)
+            except Exception:
+                z = None
         t2 = time.perf_counter()
         t = t2 - t1
         records.append((i+1, method, t))
