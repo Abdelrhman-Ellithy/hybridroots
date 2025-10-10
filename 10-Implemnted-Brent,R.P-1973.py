@@ -52,7 +52,7 @@ def safe_eval(f, x):
     except Exception:
         return None
 
-def BrentsMethod(f, a, b, tol, max_iter=1000):
+def BrentsMethod(f, a, b, tol, max_iter=10000):
     fa, fb = f(a), f(b)
     if fa * fb >= 0:
         return max_iter, (a + b) * 0.5, f((a + b) * 0.5), a, b

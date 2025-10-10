@@ -98,7 +98,7 @@ def safe_eval(f, x):
     except Exception:
         return None
 # Define the bisection function
-def HbisectionFalse(f, a, b, tol, max_iter=1000):
+def HbisectionFalse(f, a, b, tol, max_iter=10000):
     fa, fb = f(a), f(b)
     eps = 1e-20
     

@@ -54,7 +54,7 @@ def safe_eval(f, x):
     except Exception:
         return None
     
-def blendBF(f, a, b, tol, max_iter=1000):
+def blendBF(f, a, b, tol, max_iter=10000):
     """
     Implements Sabharwal's Blended Algorithm (Bisection + False Position), Algorithm 3, page 11.
     Parameters:

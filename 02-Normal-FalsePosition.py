@@ -54,7 +54,7 @@ def safe_eval(f, x):
     except Exception:
         return None
     
-def false_position(f, a, b, tol, max_iter=1000):
+def false_position(f, a, b, tol, max_iter=10000):
     """
     This function implements the False Position method to find a root of the function (f)
     within the interval [a, b] with a given tolerance (tol).

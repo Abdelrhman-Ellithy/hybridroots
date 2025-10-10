@@ -54,7 +54,7 @@ def safe_eval(f, x):
     except Exception:
         return None
     
-def HbisectionFalseMS(f, a, b, tol, max_iter=1000, delta=1e-4):
+def HbisectionFalseMS(f, a, b, tol, max_iter=10000, delta=1e-4):
     fa, fb = f(a), f(b)
     n = 0
     eps = 1e-20

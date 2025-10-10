@@ -54,7 +54,7 @@ def safe_eval(f, x):
     except Exception:
         return None
     
-def blendTF(f, a, b, tol, max_iter=1000):
+def blendTF(f, a, b, tol, max_iter=10000):
     """
     Implements Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms and Traditional Method (Trisection + False Position), Algorithm 7, page 8.
     This function implements the Hybrid Method of Trisection and False-Position to find
