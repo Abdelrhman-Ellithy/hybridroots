@@ -8,7 +8,9 @@ Created on Wed Mar 20 08:54:54 2024
 # Import modules
 import sympy as sp
 import time
+import math
 import sqlite3
+import json
 def rest_data():
     con = sqlite3.connect('Results.db')
     cursor = con.cursor()
@@ -21,7 +23,6 @@ def rest_data():
             )""")
     con.commit()
     con.close()
-
 def record_speeds(records):
     try:
         with sqlite3.connect('Results.db') as con:
@@ -30,10 +31,41 @@ def record_speeds(records):
             con.commit()
     except sqlite3.Error as e:
         print(f"Database error: {e}")
-    
-def HtrisectionFalseMS(f, a, b, tol, max_iter=100, delta=1e-4):
+# Function to load dataset from JSON file
+def load_dataset(file_path='dataset.json'):
+    with open(file_path, 'r') as f:
+        data = json.load(f)
+    dataset = []
+    for item in data:
+        expr = sp.sympify(item['expression'])
+        a = item['a']
+        b = item['b']
+        dataset.append((expr, a, b))
+    return dataset
 
+# Safe evaluation helper to guard domain/overflow issues
+def safe_eval(f, x):
+    try:
+        y = f(x)
+        y = float(y)
+        if math.isfinite(y):
+            return y
+        return None
+    except Exception:
+        return None
+    
+def HtrisectionFalseMS(f, a, b, tol, max_iter=1000, delta=1e-4):
     fa, fb = f(a), f(b)
+    eps = 1e-20
+    
+    # Check if either bound is a root
+    if abs(fa) <= tol:
+        return 1, a, fa, a, b
+    if abs(fb) <= tol:
+        return 1, b, fb, a, b
+    
+    if fa * fb >= 0:
+        return None, None, None, None, None
     for n in range(1, max_iter + 1):
         diff = b - a
         x1 = a + diff/3
@@ -52,8 +84,9 @@ def HtrisectionFalseMS(f, a, b, tol, max_iter=100, delta=1e-4):
             dx = (a * fb) - (b * fa)
             fp = dx / (fb - fa )
             ffp = f(fp)
-        except ZeroDivisionError:
-            continue
+        except (ValueError, OverflowError, ZeroDivisionError):
+            fp = dx / ((fb - fa) + eps)
+            ffp = f(fp)
         if fa * ffp < 0:
             b, fb = fp, ffp
         else:
@@ -62,7 +95,10 @@ def HtrisectionFalseMS(f, a, b, tol, max_iter=100, delta=1e-4):
         if abs(ffp) <= tol:
             return n, fp, ffp, a, b
             
-        xS = fp - delta * ffp / (f(fp + delta) - ffp)
+        try:
+            xS = fp - delta * ffp / (f(fp + delta) - ffp)
+        except (ValueError, OverflowError, ZeroDivisionError):
+            xS = fp - delta * ffp / ((f(fp + delta) - ffp) + eps)
         if (a < xS< b):
             fxS = f(xS)
             if abs(fxS) < abs(ffp):
@@ -79,38 +115,27 @@ def HtrisectionFalseMS(f, a, b, tol, max_iter=100, delta=1e-4):
 
 # Define the symbolic variable x
 x = sp.Symbol('x')
-dataset=[
-         (x * sp.exp(x) - 7,1,2)
-         ,(x**3-x-1,1,2)
-         ,(x**2-x-2,1,4)
-         ,(x-sp.cos(x),0,1)
-         ,(x**2-10,3,4)
-         ,(sp.sin(x)-x**2,0.5,1)
-         ,(x+sp.ln(x),0.1,1)
-         ,(sp.exp(x)-3*x-2,2,3)
-         ,(x**2+sp.exp(x/2)-5,1,2)
-         ,(x*sp.sin(x)-1,0,2)
-         ,(x*sp.cos(x)+1,-2,4)
-         ,(x**10-1,0,1.3)
-         ,(x**2-x-2,1,4)
-         ,(x**2+2*x-7,1,3)
-         ]
+# Load the dataset from JSON
+dataset = load_dataset()
 tol = 1e-14
 method='09-Optimized_Trisection-FalsePosition-Modified Secant.py'
 print(method)
 rest_data()
 print("\t\tIter\t\t Root\t\tFunction Value\t\t Lower Bound\t\t Upper Bound\t\t Time")
 records = []
-for c in range(1000):
+for c in range(1):
     for i, (func, a, b) in enumerate(dataset):
         f = sp.lambdify('x', func)
         t1 = time.perf_counter()
-        for j in range(100):
+        for j in range(1):
             n, x_val, fx, a_val, b_val = HtrisectionFalseMS(f, a, b, tol)
         t2 = time.perf_counter()
         t = t2 - t1
         records.append((i+1, method, t))
-        print(f"problem{i+1}| \t{n} \t {x_val:.16f} \t {fx:.16f} \t {a_val:.16f} \t {b_val:.16f} \t {t:.20f}")
+        if None in (n, x_val, fx, a_val, b_val):
+            print(f"problem{i+1}| \tFailed: No root found in interval")
+        else:
+            print(f"problem{i+1}| \t{n} \t {x_val:.16f} \t {fx:.16f} \t {a_val:.16f} \t {b_val:.16f} \t {t:.20f}")
 
 if records:
     record_speeds(records)

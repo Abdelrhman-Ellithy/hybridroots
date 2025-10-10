@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Mar 20 08:54:54 2024
-Implements Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms and Traditional Method (Trisection + False Position), Algorithm 7, page 8.
+
 @author: Abdelrahman Ellithy
 """
+
+# Import modules
 import sympy as sp
 import time
+import math
 import sqlite3
 def rest_data():
     con = sqlite3.connect('Results.db')
@@ -19,7 +22,6 @@ def rest_data():
             )""")
     con.commit()
     con.close()
-
 def record_speeds(records):
     try:
         with sqlite3.connect('Results.db') as con:
@@ -28,6 +30,29 @@ def record_speeds(records):
             con.commit()
     except sqlite3.Error as e:
         print(f"Database error: {e}")
+import json
+# Function to load dataset from JSON file
+def load_dataset(file_path='dataset.json'):
+    with open(file_path, 'r') as f:
+        data = json.load(f)
+    dataset = []
+    for item in data:
+        expr = sp.sympify(item['expression'])
+        a = item['a']
+        b = item['b']
+        dataset.append((expr, a, b))
+    return dataset
+
+# Safe evaluation helper to guard domain/overflow issues
+def safe_eval(f, x):
+    try:
+        y = f(x)
+        y = float(y)
+        if math.isfinite(y):
+            return y
+        return None
+    except Exception:
+        return None
     
 def blendTF(f, a, b, tol, max_iter=1000):
     """
@@ -77,7 +102,11 @@ def blendTF(f, a, b, tol, max_iter=1000):
         fxT2 = f(xT2)
         
         # Calculate xF using the false-position method
-        xF = a - (fa*(b-a)) / (fb-fa)
+        try:
+            xF = a - (fa*(b-a)) / (fb-fa)
+        except (ValueError, OverflowError, ZeroDivisionError):
+            eps = 1e-20
+            xF = a - (fa*(b-a)) / ((fb-fa) + eps)
         fxF = f(xF)
         
         # Choose the root with the smaller error
@@ -122,38 +151,27 @@ def blendTF(f, a, b, tol, max_iter=1000):
 
 # Define the symbolic variable x
 x = sp.Symbol('x')
-dataset=[
-         (x * sp.exp(x) - 7,1,2)
-         ,(x**3-x-1,1,2)
-         ,(x**2-x-2,1,4)
-         ,(x-sp.cos(x),0,1)
-         ,(x**2-10,3,4)
-         ,(sp.sin(x)-x**2,0.5,1)
-         ,(x+sp.ln(x),0.1,1)
-         ,(sp.exp(x)-3*x-2,2,3)
-         ,(x**2+sp.exp(x/2)-5,1,2)
-         ,(x*sp.sin(x)-1,0,2)
-         ,(x*sp.cos(x)+1,-2,4)
-         ,(x**10-1,0,1.3)
-         ,(x**2-x-2,1,4)
-         ,(x**2+2*x-7,1,3)
-         ]
+# Load the dataset from JSON
+dataset = load_dataset()
 tol = 1e-14
 method='04-Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms-Hybrid-Blend-Trisection-Falseposition'
 print(method)
 rest_data()
 print("\t\tIter\t\t Root\t\tFunction Value\t\t Lower Bound\t\t Upper Bound\t\t Time")
 records = []
-for c in range(1000):
+for c in range(1):
     for i, (func, a, b) in enumerate(dataset):
         f = sp.lambdify('x', func)
         t1 = time.perf_counter()
-        for j in range(100):
+        for j in range(1):
             n, x_val, fx, a_val, b_val = blendTF(f, a, b, tol)
         t2 = time.perf_counter()
         t = t2 - t1
         records.append((i+1, method, t))
-        print(f"problem{i+1}| \t{n} \t {x_val:.16f} \t {fx:.16f} \t {a_val:.16f} \t {b_val:.16f} \t {t:.20f}")
+        if None in (n, x_val, fx, a_val, b_val):
+            print(f"problem{i+1}| \tFailed: No root found in interval")
+        else:
+            print(f"problem{i+1}| \t{n} \t {x_val:.16f} \t {fx:.16f} \t {a_val:.16f} \t {b_val:.16f} \t {t:.20f}")
 
 if records:
     record_speeds(records)
