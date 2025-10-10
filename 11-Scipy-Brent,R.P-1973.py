@@ -68,7 +68,7 @@ for c in range(100):
         t1 = time.perf_counter()
         for j in range(100):
             try:
-                z = optimize.brentq(f=f, a=a, b=b,xtol= tol)
+                z = optimize.brentq(f=f, a=a, b=b,rtol= tol,xtol=tol, maxiter=10000, full_output=True)
             except Exception:
                 z = None
         t2 = time.perf_counter()
