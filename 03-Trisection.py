@@ -125,11 +125,11 @@ print(method)
 rest_data()
 print("\t\tIter\t\t Root\t\tFunction Value\t\t Lower Bound\t\t Upper Bound\t\t Time")
 records = []
-for c in range(1):
+for c in range(100):
     for i, (func, a, b) in enumerate(dataset):
         f = sp.lambdify('x', func)
         t1 = time.perf_counter()
-        for j in range(1):
+        for j in range(100):
             n, x_val, fx, a_val, b_val = trisection(f, a, b, tol)
         t2 = time.perf_counter()
         t = t2 - t1

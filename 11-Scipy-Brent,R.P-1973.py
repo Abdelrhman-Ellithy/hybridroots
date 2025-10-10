@@ -62,11 +62,11 @@ print(method)
 rest_data()
 print("\t\tIter\t\t Time")
 records = []
-for c in range(1):
+for c in range(100):
     for i, (func, a, b) in enumerate(dataset):
         f = sp.lambdify('x', func)
         t1 = time.perf_counter()
-        for j in range(1):
+        for j in range(100):
             try:
                 z = optimize.brentq(f=f, a=a, b=b,xtol= tol)
             except Exception:
