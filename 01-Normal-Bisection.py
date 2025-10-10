@@ -106,6 +106,7 @@ def bisection(f, a, b, tol, max_iter=10000):
 x = sp.Symbol('x')
 
 tol = 1e-14
+rest_data()
 method='01-Normal-Bisection'
 # Load the dataset from JSON
 dataset = load_dataset()
