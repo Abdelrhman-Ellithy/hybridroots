@@ -31,6 +31,24 @@ def record_speeds(records):
     except sqlite3.Error as e:
         print(f"Database error: {e}")
 import json
+import os
+
+
+def _load_iters_from_config(cfg_file='config.json'):
+    try:
+        if os.path.exists(cfg_file):
+            with open(cfg_file, 'r', encoding='utf-8') as fh:
+                cfg = json.load(fh)
+            outer = int(cfg.get('outer_iterations', 100))
+            inner = int(cfg.get('inner_iterations', 100))
+        else:
+            outer, inner = 100, 100
+    except Exception:
+        outer, inner = 100, 100
+    return outer, inner
+
+
+OUTER_ITERS, INNER_ITERS = _load_iters_from_config()
 # Function to load dataset from JSON file
 def load_dataset(file_path='dataset.json'):
     with open(file_path, 'r') as f:
@@ -102,11 +120,11 @@ print(method)
 rest_data()
 print("\t\tIter\t\t Root\t\tFunction Value\t\t Lower Bound\t\t Upper Bound\t\t Time")
 records = []
-for c in range(100):
+for c in range(OUTER_ITERS):
     for i, (func, a, b) in enumerate(dataset):
         f = sp.lambdify('x', func)
         t1 = time.perf_counter()
-        for j in range(100):
+        for j in range(INNER_ITERS):
             n, x_val, fx, a_val, b_val = false_position(f, a, b, tol)
         t2 = time.perf_counter()
         t = t2 - t1

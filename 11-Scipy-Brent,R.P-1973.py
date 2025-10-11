@@ -9,7 +9,22 @@ import time
 import sqlite3
 import json
 import math
+import os
 
+def _load_iters_from_config(cfg_file='config.json'):
+    try:
+        if os.path.exists(cfg_file):
+            with open(cfg_file, 'r', encoding='utf-8') as fh:
+                cfg = json.load(fh)
+            outer = int(cfg.get('outer_iterations', 100))
+            inner = int(cfg.get('inner_iterations', 100))
+        else:
+            outer, inner = 100, 100
+    except Exception:
+        outer, inner = 100, 100
+    return outer, inner
+
+OUTER_ITERS, INNER_ITERS = _load_iters_from_config()
 def rest_data():
     con = sqlite3.connect('Results.db')
     cursor = con.cursor()
@@ -62,11 +77,11 @@ print(method)
 rest_data()
 print("\t\tIter\t\t Time")
 records = []
-for c in range(100):
+for c in range(OUTER_ITERS):
     for i, (func, a, b) in enumerate(dataset):
         f = sp.lambdify('x', func)
         t1 = time.perf_counter()
-        for j in range(100):
+        for j in range(INNER_ITERS):
             try:
                 z = optimize.brentq(f=f, a=a, b=b,rtol= tol,xtol=tol, maxiter=10000, full_output=True)
             except Exception:
