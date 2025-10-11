@@ -97,9 +97,9 @@ def HtrisectionFalseMS(f, a, b, tol, max_iter=10000, delta=1e-4):
         elif fx1 * fx2 < 0:
             a, b, fa, fb = x1, x2, fx1, fx2
         else:
-            a, fa = x2, fx2
-        dx = (a * fb) - (b * fa)    
+            a, fa = x2, fx2    
         try:
+            dx = (a * fb) - (b * fa)
             fp = dx / (fb - fa )
             ffp = f(fp)
         except (ValueError, OverflowError, ZeroDivisionError):
@@ -112,12 +112,13 @@ def HtrisectionFalseMS(f, a, b, tol, max_iter=10000, delta=1e-4):
 
         if abs(ffp) <= tol:
             return n, fp, ffp, a, b
-        p1=fp - delta * ffp
-        p2=(f(fp + delta) - ffp) 
+
         try:
-            xS = p1 / p2
+            xS = fp - delta * ffp / (f(fp + delta) - ffp)
+
         except (ValueError, OverflowError, ZeroDivisionError):
-            xS = p1/ (p2 + eps)
+            xS = fp - delta * ffp / ((f(fp + delta) - ffp) + eps)
+            
         if (a < xS< b):
             fxS = f(xS)
             if abs(fxS) < abs(ffp):

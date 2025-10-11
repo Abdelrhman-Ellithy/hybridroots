@@ -117,9 +117,9 @@ def HtrisectionFalse(f, a, b, tol, max_iter=10000):
         else:
             a, fa = x2, fx2
             
-        dx = (a * fb - b * fa)
-        dd = fb - fa     
         try:
+            dx = (a * fb - b * fa)
+            dd = fb - fa  
             x = dx / dd
         except (ValueError, OverflowError, ZeroDivisionError):
             x = dx / (dd + eps)
