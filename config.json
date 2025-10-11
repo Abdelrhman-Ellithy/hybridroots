@@ -1,4 +1,4 @@
 {
-  "outer_iterations": 1,
-  "inner_iterations": 1
+  "outer_iterations": 100,
+  "inner_iterations": 100
 }
