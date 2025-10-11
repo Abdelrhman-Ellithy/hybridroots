@@ -109,10 +109,12 @@ def HbisectionFalseMS(f, a, b, tol, max_iter=10000, delta=1e-4):
 
         if abs(ffp) <= tol:
             return n, fp, ffp, a, b
+        p1=fp - delta * ffp
+        p2=(f(fp + delta) - ffp)
         try:
-            xS = fp - delta * ffp / (f(fp + delta) - ffp)
+            xS = p1 / p2
         except (ValueError, OverflowError, ZeroDivisionError):
-            xS = fp - delta * ffp / ((f(fp + delta) - ffp)+eps)
+            xS = p1 / (p2 + eps)
         if (a < xS< b):
             fxS = f(xS)
             if abs(fxS) < abs(ffp):

@@ -138,7 +138,7 @@ def HbisectionFalse(f, a, b, tol, max_iter=10000):
             b, fb = mid, fmid
         else:
             a, fa = mid, fmid
-        dx = (a * fb - b * fa)
+        dx = ((a * fb) - (b * fa))
         try:
             fp = dx / (fb - fa)
         except (ValueError, OverflowError, ZeroDivisionError):
