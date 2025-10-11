@@ -75,137 +75,78 @@ def safe_eval(f, x):
         return None
 
 def QIR(f, a, b, tol, max_iter=10000):
-    """Quadratic Interval Refinement following Abbott (2012).
-
-    This implementation follows the algorithmic idea in John Abbott,
-    "Quadratic Interval Refinement for Real Roots" (arXiv:1203.1227 /
-    ACM Comm. in Comp. Algebra 2014). The method fits a quadratic
-    interpolant to (a,m,b) where m is the midpoint and attempts to
-    take the root of that interpolant inside the interval. If the
-    quadratic step fails to provide an interior point or does not
-    improve over the midpoint, the algorithm falls back to bisection.
-
-    Notes:
-    - Abbott's analysis assumes arbitrary-precision rationals; here
-      we use floating evaluation with safety fallbacks.
-    - We require a sign change on [a,b] for classical convergence.
-
-    Returns: n, x, fx, a, b (or None...,...) on failure to evaluate)
-    """
-    eps = 1e-20
-
+    """A direct and robust implementation of Abbott's QIR."""
     fa = safe_eval(f, a)
     fb = safe_eval(f, b)
-    if fa is None or fb is None:
+
+    if fa is None or fb is None or fa * fb > 0:
         return None, None, None, None, None
 
-    # Immediate roots at endpoints
-    if abs(fa) <= tol:
-        return 1, a, fa, a, b
-    if abs(fb) <= tol:
-        return 1, b, fb, a, b
+    if abs(fa) < tol: return 1, a, fa, a, b
+    if abs(fb) < tol: return 1, b, fb, a, b
 
-    # Require sign change for guaranteed bracketing refinement
-    if fa * fb > 0:
-        return None, None, None, None, None
-
-    for n in range(1, max_iter+1):
-        m = 0.5*(a+b)
+    for n in range(1, max_iter + 1):
+        if abs(b - a) < tol:
+            return n, a, fa, a, b
+        
+        m = 0.5 * (a + b)
         fm = safe_eval(f, m)
-        if fm is None:
-            return None, None, None, None, None
 
-        # If midpoint is already good, return it
-        if abs(fm) <= tol:
+        if fm is None or abs(fm) < tol:
             return n, m, fm, a, b
 
-        # Build quadratic interpolant q(x) through (a,fa),(m,fm),(b,fb)
-        xa, xm, xb = a, m, b
-        try:
-            # Lagrange basis coefficients expansion to produce quadratic coefficients
-            A = fa/((xa-xm)*(xa-xb)) + fm/((xm-xa)*(xm-xb)) + fb/((xb-xa)*(xb-xm))
-            B = - (fa*(xm+xb)/((xa-xm)*(xa-xb)) + fm*(xa+xb)/((xm-xa)*(xm-xb)) + fb*(xa+xm)/((xb-xa)*(xb-xm)))
-            C = fa*(xm*xb)/((xa-xm)*(xa-xb)) + fm*(xa*xb)/((xm-xa)*(xm-xb)) + fb*(xa*xm)/((xb-xa)*(xb-xm))
-        except Exception:
-            # numerical degeneracy: fallback to secant between endpoints
-            try:
-                xsec = b - fb*(b-a)/(fb-fa)
-                fxsec = safe_eval(f, xsec)
-                if fxsec is None:
-                    return None, None, None, None, None
-                if abs(fxsec) <= tol:
-                    return n, xsec, fxsec, a, b
-                # update bracket
-                if fa * fxsec < 0:
-                    b, fb = xsec, fxsec
-                else:
-                    a, fa = xsec, fxsec
-                continue
-            except Exception:
-                # give up
-                return None, None, None, None, None
-
-        # Solve quadratic A x^2 + B x + C = 0 (coeffs in standard basis)
+        # Calculate coefficients for y = Ax^2 + Bx + C
+        # Using divided differences for better stability
+        f_am = (fa - fm) / (a - m)
+        f_mb = (fm - fb) / (m - b)
+        
+        A = (f_am - f_mb) / (a - b)
+        B = f_am - A * (a + m)
+        C = fa - A * a**2 - B * a
+        
+        # Use a numerically stable quadratic formula to find the root
         xq = None
-        if abs(A) < eps:
-            # Linear case: B x + C = 0
-            if abs(B) >= eps:
-                xq = -C / B
-        else:
-            disc = B*B - 4*A*C
-            if disc >= 0:
-                sqrt_d = math.sqrt(disc)
-                r1 = (-B + sqrt_d) / (2*A)
-                r2 = (-B - sqrt_d) / (2*A)
-                # choose root inside (a,b) and closest to midpoint if possible
-                candidates = [r for r in (r1, r2) if a < r < b]
+        if abs(A) > 1e-12: # Check if it's genuinely quadratic
+            discriminant = B**2 - 4*A*C
+            if discriminant >= 0:
+                # Stable formula avoids subtracting nearly equal numbers
+                term = -0.5 * (B + math.copysign(math.sqrt(discriminant), B))
+                r1 = term / A
+                r2 = C / term if abs(term) > 1e-12 else None
+                
+                # Choose the root that is inside the current interval [a,b]
+                candidates = [r for r in (r1, r2) if r is not None and min(a, b) < r < max(a, b)]
                 if candidates:
-                    # choose candidate closest to midpoint
+                    # Pick candidate closest to midpoint m
                     xq = min(candidates, key=lambda r: abs(r - m))
 
-        # If quadratic didn't produce a good interior root, try secant between endpoints
-        if xq is None or not (a < xq < b):
-            try:
-                xsec = b - fb*(b-a)/(fb-fa)
-                if a < xsec < b:
-                    xq = xsec
-            except Exception:
-                xq = None
+        # --- Fallback Logic ---
+        # If quadratic step failed or is unreasonable, try secant
+        if xq is None:
+            if abs(fb - fa) > 1e-12:
+                x_sec = b - fb * (b - a) / (fb - fa)
+                if min(a,b) < x_sec < max(a,b):
+                    xq = x_sec
 
-        # Fallback to midpoint (bisection) if no acceptable candidate
-        if xq is None or not (a < xq < b):
+        # If all else fails, fallback to bisection
+        if xq is None:
             xq = m
 
         fxq = safe_eval(f, xq)
-        if fxq is None:
-            return None, None, None, None, None
-
-        # Accept quadratic/secant step only if it reduces the function magnitude
-        # compared to midpoint (heuristic from Abbott: require improvement)
-        if abs(fxq) > abs(fm):
-            # do bisection instead
-            xq = m
-            fxq = fm
-
-        if abs(fxq) <= tol:
+        if fxq is None: # If evaluation fails, default to bisection
+            xq, fxq = m, fm
+        
+        if abs(fxq) < tol:
             return n, xq, fxq, a, b
-
-        # Update bracket
+        
+        # Update the interval
         if fa * fxq < 0:
             b, fb = xq, fxq
         else:
             a, fa = xq, fxq
+            
+    return max_iter, b, fb, a, b
 
-        # If interval width is small enough, return midpoint
-        if abs(b - a) <= tol:
-            final = 0.5*(a+b)
-            ffinal = safe_eval(f, final)
-            return n, final, ffinal, a, b
-
-    # Max iterations reached
-    final = 0.5*(a+b)
-    ffinal = safe_eval(f, final)
-    return max_iter, final, ffinal, a, b
 
 x = sp.Symbol('x')
 tol = 1e-14
@@ -218,10 +159,12 @@ records = []
 rest_data()
 for c in range(OUTER_ITERS):
     for i, (func, a, b) in enumerate(dataset):
-        f = sp.lambdify('x', func)
+        f = sp.lambdify('x', func, 'numpy')
         t1 = time.perf_counter()
+        # Create copies of a and b for each inner loop to reset the interval
+        a_start, b_start = a, b
         for j in range(INNER_ITERS):
-            n, x_val, fx, a_val, b_val = QIR(f, a, b, tol)
+            n, x_val, fx, a_val, b_val = QIR(f, a_start, b_start, tol)
         t2 = time.perf_counter()
         t = t2 - t1
         records.append((i+1, method, t))

@@ -1,0 +1,133 @@
+alg_a,alg_b,median_ratio_a_over_b
+07-Optimized-Bisection-FalsePosition-Modified Secant.py,09-Optimized_Trisection-FalsePosition-Modified Secant.py,0.8714057003831243
+07-Optimized-Bisection-FalsePosition-Modified Secant.py,06-Optimized-Bisection-FalsePosition,0.8489438308741628
+07-Optimized-Bisection-FalsePosition-Modified Secant.py,08-Optimized-Trisection-FalsePosition,0.7173602400471148
+07-Optimized-Bisection-FalsePosition-Modified Secant.py,"11-Scipy-Brent,R.P-1973",0.3980778852812794
+07-Optimized-Bisection-FalsePosition-Modified Secant.py,"10-Brent,R.P-1973",0.4622646937892971
+07-Optimized-Bisection-FalsePosition-Modified Secant.py,05-Sabharwal-2019-Hybrid-Blend-Bisection-Falseposition,0.4634908724937893
+07-Optimized-Bisection-FalsePosition-Modified Secant.py,04-Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms-Hybrid-Blend-Trisection-Falseposition,0.39369819498922837
+07-Optimized-Bisection-FalsePosition-Modified Secant.py,12-Quadratic-Interval-Refinement,0.42982235276535474
+07-Optimized-Bisection-FalsePosition-Modified Secant.py,01-Normal-Bisection,0.2042616823642769
+07-Optimized-Bisection-FalsePosition-Modified Secant.py,03-Trisection,0.1900201819105362
+07-Optimized-Bisection-FalsePosition-Modified Secant.py,02-Normal-FalsePosition,0.3067472924232274
+09-Optimized_Trisection-FalsePosition-Modified Secant.py,07-Optimized-Bisection-FalsePosition-Modified Secant.py,1.1477874345393535
+09-Optimized_Trisection-FalsePosition-Modified Secant.py,06-Optimized-Bisection-FalsePosition,0.9833454795179573
+09-Optimized_Trisection-FalsePosition-Modified Secant.py,08-Optimized-Trisection-FalsePosition,0.8811950344334538
+09-Optimized_Trisection-FalsePosition-Modified Secant.py,"11-Scipy-Brent,R.P-1973",0.4830801750154347
+09-Optimized_Trisection-FalsePosition-Modified Secant.py,"10-Brent,R.P-1973",0.5795607547454147
+09-Optimized_Trisection-FalsePosition-Modified Secant.py,05-Sabharwal-2019-Hybrid-Blend-Bisection-Falseposition,0.5355132137596406
+09-Optimized_Trisection-FalsePosition-Modified Secant.py,04-Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms-Hybrid-Blend-Trisection-Falseposition,0.4873015797211131
+09-Optimized_Trisection-FalsePosition-Modified Secant.py,12-Quadratic-Interval-Refinement,0.43484742637727003
+09-Optimized_Trisection-FalsePosition-Modified Secant.py,01-Normal-Bisection,0.23957612189554706
+09-Optimized_Trisection-FalsePosition-Modified Secant.py,03-Trisection,0.23628640991272773
+09-Optimized_Trisection-FalsePosition-Modified Secant.py,02-Normal-FalsePosition,0.33763932696066995
+06-Optimized-Bisection-FalsePosition,07-Optimized-Bisection-FalsePosition-Modified Secant.py,1.177995717674065
+06-Optimized-Bisection-FalsePosition,09-Optimized_Trisection-FalsePosition-Modified Secant.py,1.0169433745467567
+06-Optimized-Bisection-FalsePosition,08-Optimized-Trisection-FalsePosition,0.8714478808118387
+06-Optimized-Bisection-FalsePosition,"11-Scipy-Brent,R.P-1973",0.5041244898746755
+06-Optimized-Bisection-FalsePosition,"10-Brent,R.P-1973",0.5466931310014826
+06-Optimized-Bisection-FalsePosition,05-Sabharwal-2019-Hybrid-Blend-Bisection-Falseposition,0.5278243529511697
+06-Optimized-Bisection-FalsePosition,04-Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms-Hybrid-Blend-Trisection-Falseposition,0.47594672120317405
+06-Optimized-Bisection-FalsePosition,12-Quadratic-Interval-Refinement,0.5254111738001679
+06-Optimized-Bisection-FalsePosition,01-Normal-Bisection,0.25586258385961125
+06-Optimized-Bisection-FalsePosition,03-Trisection,0.23679684219417096
+06-Optimized-Bisection-FalsePosition,02-Normal-FalsePosition,0.3836916121486996
+08-Optimized-Trisection-FalsePosition,07-Optimized-Bisection-FalsePosition-Modified Secant.py,1.3940002272997698
+08-Optimized-Trisection-FalsePosition,09-Optimized_Trisection-FalsePosition-Modified Secant.py,1.134951637852506
+08-Optimized-Trisection-FalsePosition,06-Optimized-Bisection-FalsePosition,1.1475188104826435
+08-Optimized-Trisection-FalsePosition,"11-Scipy-Brent,R.P-1973",0.5702823851179368
+08-Optimized-Trisection-FalsePosition,"10-Brent,R.P-1973",0.7167221790464775
+08-Optimized-Trisection-FalsePosition,05-Sabharwal-2019-Hybrid-Blend-Bisection-Falseposition,0.6125066514595436
+08-Optimized-Trisection-FalsePosition,04-Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms-Hybrid-Blend-Trisection-Falseposition,0.5736706471631972
+08-Optimized-Trisection-FalsePosition,12-Quadratic-Interval-Refinement,0.5793267953949052
+08-Optimized-Trisection-FalsePosition,01-Normal-Bisection,0.29777974992887246
+08-Optimized-Trisection-FalsePosition,03-Trisection,0.28882469214607825
+08-Optimized-Trisection-FalsePosition,02-Normal-FalsePosition,0.43420471104418745
+"11-Scipy-Brent,R.P-1973",07-Optimized-Bisection-FalsePosition-Modified Secant.py,2.5129414346063506
+"11-Scipy-Brent,R.P-1973",09-Optimized_Trisection-FalsePosition-Modified Secant.py,2.076557200726017
+"11-Scipy-Brent,R.P-1973",06-Optimized-Bisection-FalsePosition,1.983651025549896
+"11-Scipy-Brent,R.P-1973",08-Optimized-Trisection-FalsePosition,1.7537191239226315
+"11-Scipy-Brent,R.P-1973","10-Brent,R.P-1973",1.0389601295127937
+"11-Scipy-Brent,R.P-1973",05-Sabharwal-2019-Hybrid-Blend-Bisection-Falseposition,1.0378086488411533
+"11-Scipy-Brent,R.P-1973",04-Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms-Hybrid-Blend-Trisection-Falseposition,0.9695776301502699
+"11-Scipy-Brent,R.P-1973",12-Quadratic-Interval-Refinement,0.986373806078046
+"11-Scipy-Brent,R.P-1973",01-Normal-Bisection,0.46715237761600215
+"11-Scipy-Brent,R.P-1973",03-Trisection,0.2786548653448167
+"11-Scipy-Brent,R.P-1973",02-Normal-FalsePosition,0.48024686319223536
+"10-Brent,R.P-1973",07-Optimized-Bisection-FalsePosition-Modified Secant.py,2.1688714882844256
+"10-Brent,R.P-1973",09-Optimized_Trisection-FalsePosition-Modified Secant.py,1.725494301555172
+"10-Brent,R.P-1973",06-Optimized-Bisection-FalsePosition,1.8296831383132481
+"10-Brent,R.P-1973",08-Optimized-Trisection-FalsePosition,1.3952950488353744
+"10-Brent,R.P-1973","11-Scipy-Brent,R.P-1973",0.9625142794906314
+"10-Brent,R.P-1973",05-Sabharwal-2019-Hybrid-Blend-Bisection-Falseposition,0.9661348814743513
+"10-Brent,R.P-1973",04-Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms-Hybrid-Blend-Trisection-Falseposition,0.9042812585410703
+"10-Brent,R.P-1973",12-Quadratic-Interval-Refinement,0.9692942233724766
+"10-Brent,R.P-1973",01-Normal-Bisection,0.48260185015256174
+"10-Brent,R.P-1973",03-Trisection,0.40007582130753533
+"10-Brent,R.P-1973",02-Normal-FalsePosition,0.6356591614625602
+05-Sabharwal-2019-Hybrid-Blend-Bisection-Falseposition,07-Optimized-Bisection-FalsePosition-Modified Secant.py,2.157539804394191
+05-Sabharwal-2019-Hybrid-Blend-Bisection-Falseposition,09-Optimized_Trisection-FalsePosition-Modified Secant.py,1.8673690679407913
+05-Sabharwal-2019-Hybrid-Blend-Bisection-Falseposition,06-Optimized-Bisection-FalsePosition,1.894569779828236
+05-Sabharwal-2019-Hybrid-Blend-Bisection-Falseposition,08-Optimized-Trisection-FalsePosition,1.6326581950107262
+05-Sabharwal-2019-Hybrid-Blend-Bisection-Falseposition,"11-Scipy-Brent,R.P-1973",0.9635847693236221
+05-Sabharwal-2019-Hybrid-Blend-Bisection-Falseposition,"10-Brent,R.P-1973",1.035083189571756
+05-Sabharwal-2019-Hybrid-Blend-Bisection-Falseposition,04-Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms-Hybrid-Blend-Trisection-Falseposition,0.9014043700090425
+05-Sabharwal-2019-Hybrid-Blend-Bisection-Falseposition,12-Quadratic-Interval-Refinement,0.9601833264760349
+05-Sabharwal-2019-Hybrid-Blend-Bisection-Falseposition,01-Normal-Bisection,0.4710118350659589
+05-Sabharwal-2019-Hybrid-Blend-Bisection-Falseposition,03-Trisection,0.4300009424175473
+05-Sabharwal-2019-Hybrid-Blend-Bisection-Falseposition,02-Normal-FalsePosition,0.6358925073285503
+04-Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms-Hybrid-Blend-Trisection-Falseposition,07-Optimized-Bisection-FalsePosition-Modified Secant.py,2.5412050534527246
+04-Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms-Hybrid-Blend-Trisection-Falseposition,09-Optimized_Trisection-FalsePosition-Modified Secant.py,2.052131801179768
+04-Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms-Hybrid-Blend-Trisection-Falseposition,06-Optimized-Bisection-FalsePosition,2.1010763608554752
+04-Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms-Hybrid-Blend-Trisection-Falseposition,08-Optimized-Trisection-FalsePosition,1.7431604878294067
+04-Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms-Hybrid-Blend-Trisection-Falseposition,"11-Scipy-Brent,R.P-1973",1.0353371748761893
+04-Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms-Hybrid-Blend-Trisection-Falseposition,"10-Brent,R.P-1973",1.1059050744486716
+04-Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms-Hybrid-Blend-Trisection-Falseposition,05-Sabharwal-2019-Hybrid-Blend-Bisection-Falseposition,1.1093901898082414
+04-Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms-Hybrid-Blend-Trisection-Falseposition,12-Quadratic-Interval-Refinement,1.0496501389087567
+04-Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms-Hybrid-Blend-Trisection-Falseposition,01-Normal-Bisection,0.49248685329663233
+04-Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms-Hybrid-Blend-Trisection-Falseposition,03-Trisection,0.49135256760090706
+04-Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms-Hybrid-Blend-Trisection-Falseposition,02-Normal-FalsePosition,0.7571904386761087
+12-Quadratic-Interval-Refinement,07-Optimized-Bisection-FalsePosition-Modified Secant.py,2.3266318040757414
+12-Quadratic-Interval-Refinement,09-Optimized_Trisection-FalsePosition-Modified Secant.py,2.3004279371833984
+12-Quadratic-Interval-Refinement,06-Optimized-Bisection-FalsePosition,1.903610040904256
+12-Quadratic-Interval-Refinement,08-Optimized-Trisection-FalsePosition,1.7261993808234428
+12-Quadratic-Interval-Refinement,"11-Scipy-Brent,R.P-1973",1.0138159709223848
+12-Quadratic-Interval-Refinement,"10-Brent,R.P-1973",1.0316786575549062
+12-Quadratic-Interval-Refinement,05-Sabharwal-2019-Hybrid-Blend-Bisection-Falseposition,1.0414925196683151
+12-Quadratic-Interval-Refinement,04-Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms-Hybrid-Blend-Trisection-Falseposition,0.9534667097950493
+12-Quadratic-Interval-Refinement,01-Normal-Bisection,0.5341463775523935
+12-Quadratic-Interval-Refinement,03-Trisection,0.47061829672388833
+12-Quadratic-Interval-Refinement,02-Normal-FalsePosition,0.5489065319464546
+01-Normal-Bisection,07-Optimized-Bisection-FalsePosition-Modified Secant.py,4.8958186592728445
+01-Normal-Bisection,09-Optimized_Trisection-FalsePosition-Modified Secant.py,4.174048807353824
+01-Normal-Bisection,06-Optimized-Bisection-FalsePosition,3.90843436738518
+01-Normal-Bisection,08-Optimized-Trisection-FalsePosition,3.3582143244188356
+01-Normal-Bisection,"11-Scipy-Brent,R.P-1973",2.147460607652053
+01-Normal-Bisection,"10-Brent,R.P-1973",2.077437774349314
+01-Normal-Bisection,05-Sabharwal-2019-Hybrid-Blend-Bisection-Falseposition,2.1241480698849897
+01-Normal-Bisection,04-Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms-Hybrid-Blend-Trisection-Falseposition,2.0312898841219877
+01-Normal-Bisection,12-Quadratic-Interval-Refinement,1.8725768526447286
+01-Normal-Bisection,03-Trisection,0.9665409070851889
+01-Normal-Bisection,02-Normal-FalsePosition,1.2385247907925807
+03-Trisection,07-Optimized-Bisection-FalsePosition-Modified Secant.py,5.264975032013238
+03-Trisection,09-Optimized_Trisection-FalsePosition-Modified Secant.py,4.232153369791346
+03-Trisection,06-Optimized-Bisection-FalsePosition,4.226930537337902
+03-Trisection,08-Optimized-Trisection-FalsePosition,3.462761115524743
+03-Trisection,"11-Scipy-Brent,R.P-1973",3.5895540954184293
+03-Trisection,"10-Brent,R.P-1973",2.501623552518267
+03-Trisection,05-Sabharwal-2019-Hybrid-Blend-Bisection-Falseposition,2.3256071324586176
+03-Trisection,04-Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms-Hybrid-Blend-Trisection-Falseposition,2.0358092124656695
+03-Trisection,12-Quadratic-Interval-Refinement,2.1314598536223404
+03-Trisection,01-Normal-Bisection,1.0346445323359723
+03-Trisection,02-Normal-FalsePosition,1.4737423449604217
+02-Normal-FalsePosition,07-Optimized-Bisection-FalsePosition-Modified Secant.py,3.268378421468662
+02-Normal-FalsePosition,09-Optimized_Trisection-FalsePosition-Modified Secant.py,2.966978617804224
+02-Normal-FalsePosition,06-Optimized-Bisection-FalsePosition,2.621777121172995
+02-Normal-FalsePosition,08-Optimized-Trisection-FalsePosition,2.3075653365554274
+02-Normal-FalsePosition,"11-Scipy-Brent,R.P-1973",2.089789429499653
+02-Normal-FalsePosition,"10-Brent,R.P-1973",1.5734780076341779
+02-Normal-FalsePosition,05-Sabharwal-2019-Hybrid-Blend-Bisection-Falseposition,1.5743311215144495
+02-Normal-FalsePosition,04-Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms-Hybrid-Blend-Trisection-Falseposition,1.3227471865205431
+02-Normal-FalsePosition,12-Quadratic-Interval-Refinement,1.838544126682041
+02-Normal-FalsePosition,01-Normal-Bisection,0.8078097785479039
+02-Normal-FalsePosition,03-Trisection,0.6817838282582305
