@@ -562,192 +562,203 @@ The experimental setup ensures that all algorithms are tested under identical co
     \end{tabular}
     \end{table}
 
-
-\subsection*{Case Study 1: High-Degree Polynomial (Problem 42)}
-To further demonstrate the practical applicability of the proposed algorithms, we consider Problem 42, another challenging problem from our test suite: the sixth-degree polynomial $f(x) = x^6 - 8x^5 + 24x^4 - 32x^3 + 16x^2$ on the interval $[0, 4]$. This represents a high-degree polynomial with multiple roots, commonly encountered in engineering optimization problems and control systems analysis.
-
-Table~\ref{tab:realworld2} summarizes the results for all algorithms on this problem.
-
-\begin{table}[H]
-\centering
-\captionof{table}{Performance of all algorithms on the high-degree polynomial $f(x) = x^6 - 8x^5 + 24x^4 - 32x^3 + 16x^2$ over the interval [0,4]. Metrics reported are average CPU time (in seconds) over 100 runs. This problem demonstrates the algorithms' performance on high-degree polynomials.}
-\label{tab:realworld2}
-\begin{tabular}{lcc}
-\hline
-Algorithm & CPU Time (s) & Relative Performance \\
-\hline
-Opt.BFMS & 0.000085 & 1.00x (fastest) \\
-Opt.TFMS & 0.000086 & 1.01x \\
-Opt.TF & 0.000086 & 1.01x \\
-Opt.BF & 0.000105 & 1.23x \\
-Bisection & 0.000109 & 1.28x \\
-QIR & 0.000139 & 1.64x \\
-False Position & 0.000143 & 1.68x \\
-Brent (Impl.) & 0.000144 & 1.69x \\
-HybridBlendBF & 0.000199 & 2.34x \\
-HybridBlendTF & 0.000276 & 3.24x \\
-Brent (SciPy) & 0.000672 & 7.89x \\
-Trisection & 1.466075 & 17212.32x \\
-\hline
-\end{tabular}
-\end{table}
-
-The results confirm the trends observed in the main case study: the hybrid algorithms consistently achieve superior performance across different problem types. On the twentieth-degree polynomial (Problem 30), Trisection demonstrates exceptional efficiency with 0.000301s, while traditional methods like False Position struggle significantly with 2.604901s. On the sixth-degree polynomial (Problem 42), Opt.BFMS achieves optimal performance with 0.000085s, demonstrating the effectiveness of the hybrid approach for high-degree polynomials. These results support the claim of immediate applicability to scientific and engineering problems involving complex polynomial equations.
-
-\subsection*{Case Study 2: Ill-Conditioned Polynomial (Problem 26)}
-
-To further demonstrate the robustness of the proposed algorithms, we examine Problem 26, which represents an ill-conditioned polynomial that poses significant challenges for traditional methods. This problem highlights the superior performance of hybrid algorithms on difficult numerical problems.
-
-Table~\ref{tab:realworld3} summarizes the results for all algorithms on this challenging problem.
-
-\begin{table}[H]
-\centering
-\captionof{table}{Performance of all algorithms on the ill-conditioned polynomial (Problem 26) over the interval [0,2]. Metrics reported are average CPU time (in seconds) over 100 runs. This problem demonstrates the algorithms' performance on ill-conditioned numerical problems.}
-\label{tab:realworld3}
-\begin{tabular}{lcc}
-\hline
-Algorithm & CPU Time (s) & Relative Performance \\
-\hline
-Opt.BFMS & 0.000585 & 1.00x (fastest) \\
-Opt.BF & 0.000671 & 1.15x \\
-Opt.TFMS & 0.000738 & 1.26x \\
-Opt.TF & 0.000827 & 1.41x \\
-HybridBlendBF & 0.001243 & 2.13x \\
-HybridBlendTF & 0.001446 & 2.47x \\
-Brent (Impl.) & 0.001765 & 3.02x \\
-QIR & 0.001782 & 3.05x \\
-Brent (SciPy) & 0.001896 & 3.24x \\
-Bisection & 0.002625 & 4.49x \\
-Trisection & 0.002902 & 4.96x \\
-False Position & 0.711171 & 1216.16x \\
-\hline
-\end{tabular}
-\end{table}
-
-\subsection{Case Study 3: Real-World Application (Problem 30)}
-To demonstrate practical applicability, we applied the proposed algorithms to the most challenging problems from our comprehensive test suite. These include ill-conditioned polynomials and high-degree equations that represent real-world engineering challenges. Table~\ref{tab:realworld} summarizes the results for all algorithms on Problem 30, the hardest problem: a twentieth-degree polynomial with integer roots.
-
-\begin{table}[H]
-\centering
-\captionof{table}{Performance of all algorithms on the hardest benchmark problem: twentieth-degree polynomial $(x - 1)*(x - 2)*(x - 3)*(x - 4)*(x - 5)*(x - 6)*(x - 7)*(x - 8)*(x - 9)*(x - 10)*(x - 11)*(x - 12)*(x - 13)*(x - 14)*(x - 15)*(x - 16)*(x - 17)*(x - 18)*(x - 19)*(x - 20)$ over the interval [0,1.5]. Metrics reported are average CPU time (in seconds) over 100 runs. This problem represents the most computationally challenging case in our test suite.}
-\label{tab:realworld}
-\begin{tabular}{lcc}
-\hline
-Algorithm & CPU Time (s) & Relative Performance \\
-\hline
-Trisection & 0.000301 & 1.00x (fastest) \\
-Opt.TF & 0.000412 & 1.37x \\
-Opt.TFMS & 0.000418 & 1.39x \\
-HybridBlendTF & 0.000508 & 1.69x \\
-Opt.BFMS & 0.001863 & 6.19x \\
-Opt.BF & 0.001971 & 6.54x \\
-Brent (SciPy) & 0.002794 & 9.28x \\
-QIR & 0.003135 & 10.41x \\
-Brent (Impl.) & 0.003427 & 11.38x \\
-HybridBlendBF & 0.004782 & 15.88x \\
-Bisection & 0.007851 & 26.07x \\
-False Position & 2.604901 & 8649.61x \\
-\hline
-\end{tabular}
-\end{table}
-
-\subsection*{Case Study 4: Challenging Transcendental Function (Problem 35)}
-
-Finally, we examine Problem 35, which represents a challenging transcendental function that demonstrates the versatility of the proposed algorithms across different mathematical function types.
-
-Table~\ref{tab:realworld4} summarizes the results for all algorithms on this problem.
-
-\begin{table}[H]
-\centering
-\captionof{table}{Performance of all algorithms on the challenging transcendental function (Problem 35) over the interval [0,3]. Metrics reported are average CPU time (in seconds) over 100 runs. This problem demonstrates the algorithms' performance on transcendental functions.}
-\label{tab:realworld4}
-\begin{tabular}{lcc}
-\hline
-Algorithm & CPU Time (s) & Relative Performance \\
-\hline
-Bisection & 0.000054 & 1.00x (fastest) \\
-Opt.BF & 0.000095 & 1.76x \\
-HybridBlendBF & 0.000096 & 1.79x \\
-Opt.BFMS & 0.000121 & 2.24x \\
-QIR & 0.000133 & 2.46x \\
-Brent (Impl.) & 0.000382 & 7.10x \\
-Opt.TF & 0.000702 & 13.03x \\
-Opt.TFMS & 0.000742 & 13.78x \\
-Brent (SciPy) & 0.001196 & 22.21x \\
-HybridBlendTF & 0.001266 & 23.52x \\
-Trisection & 0.001909 & 35.46x \\
-False Position & 0.489219 & 9087.23x \\
-\hline
-\end{tabular}
-\end{table}
-
-The comprehensive case studies demonstrate the versatility and robustness of the proposed hybrid algorithms across diverse problem types. While different algorithms excel on different problems (Trisection on Problem 30, Opt.BFMS on Problems 26 and 42, and Bisection on Problem 35), the hybrid algorithms consistently achieve competitive performance and avoid the extreme performance degradation observed in traditional methods like False Position, which can be over 1000x slower on challenging problems.
-
-\subsection*{Case Study 5: Cubic Polynomial Test Case (Problem 19)}
-To evaluate performance on a standard polynomial function, we analyze Problem 19 from the benchmark set. This case study demonstrates the algorithms' efficiency on a common class of problems found in numerical analysis. The test function is the cubic polynomial:
-\[
-f(x) = (x - 1)^3 + 4(x - 1)^2 - 10,
-\]
-on the interval $[0, 3]$. Table~\ref{tab:realworld5} summarizes the results for all algorithms on this problem.
-
-\begin{table}[H]
-\centering
-\captionof{table}{Performance of all algorithms on the cubic polynomial problem $(x-1)^3 + 4(x-1)^2 - 10$ over $[0,3]$. Metrics reported are average CPU time (in seconds) over 100 runs.}
-\label{tab:realworld5}
-\begin{tabular}{lcc}
-\hline
-Algorithm & CPU Time (s) & Relative Performance \\
-\hline
-Opt.BFMS & 0.000673 & 1.00x (fastest) \\
-Opt.TFMS & 0.000730 & 1.08x \\
-Opt.BF & 0.000833 & 1.24x \\
-Opt.TF & 0.000939 & 1.40x \\
-QIR & 0.001572 & 2.33x \\
-Brent (Impl.) & 0.001756 & 2.61x \\
-HybridBlendTF & 0.001811 & 2.69x \\
-HybridBlendBF & 0.001893 & 2.81x \\
-Brent (SciPy) & 0.002004 & 2.98x \\
-False Position & 0.002366 & 3.51x \\
-Bisection & 0.003074 & 4.57x \\
-Trisection & 0.003182 & 4.73x \\
-\hline
-\end{tabular}
-\end{table}
-
-The results again highlight the efficiency of the optimized hybrid methods, with **Opt.BFMS** leading the performance on this cubic polynomial, followed closely by the other proposed hybrid variants.
-
-\subsection*{Case Study 6: Transcendental Function (Problem 11)}
-To further demonstrate algorithm behaviour on a representative transcendental test, we consider Problem 11 from the benchmark set:
-\[
-f(x) = x\cos(x) + 1,
-\]
-on the interval $[-2,4]$. Table~\ref{tab:realworld6} summarizes the average CPU time (in seconds) for each algorithm on this problem (100 runs) and their relative performance compared to the fastest method.
-
-\begin{table}[H]
-\centering
-\captionof{table}{Performance of all algorithms on $f(x)=x\cos(x)+1$ over the interval $[-2,4]$. Metrics reported are average CPU time (in seconds) over 100 runs.}
-\label{tab:realworld6}
-\begin{tabular}{lcc}
-\hline
-Algorithm & CPU Time (s) & Relative Performance \\
-\hline
-Opt.BFMS & 0.001638 & 1.00x (fastest) \\
-Opt.TFMS & 0.001991 & 1.22x \\
-Opt.BF & 0.002051 & 1.25x \\
-Brent (Impl.) & 0.002297 & 1.40x \\
-Opt.TF & 0.002301 & 1.40x \\
-Brent (SciPy) & 0.002352 & 1.44x \\
-False Position & 0.003565 & 2.18x \\
-HybridBlendBF & 0.004280 & 2.61x \\
-HybridBlendTF & 0.004451 & 2.72x \\
-QIR & 0.005938 & 3.63x \\
-Trisection & 0.007933 & 4.84x \\
-Bisection & 0.008177 & 4.99x \\
-\hline
-\end{tabular}
-\end{table}
-
-The results for Problem 11 follow the same trends observed elsewhere in the benchmark: the optimized **BFMS** variant performs best on this problem, with other optimized hybrids and Brent variants close behind.
+    \subsection*{Case Study 1: High-Degree Polynomial (Problem 42)}
+    To demonstrate performance on high-degree polynomials, we analyze Problem 42 from our test suite. This problem involves the sixth-degree polynomial, a class of functions common in engineering optimization and control systems analysis. The function is:
+    \[
+    f(x) = x^6 - 8x^5 + 24x^4 - 32x^3 + 16x^2
+    \]
+    on the interval $[0, 4]$. Table~\ref{tab:realworld2} summarizes the results for all algorithms on this problem.
+    
+    \begin{table}[H]
+    \centering
+    \captionof{table}{Performance on the high-degree polynomial $f(x) = x^6 - 8x^5 + 24x^4 - 32x^3 + 16x^2$ over $[0,4]$. Metrics reported are average CPU time (in seconds) over 100 runs.}
+    \label{tab:realworld2}
+    \begin{tabular}{lcc}
+    \hline
+    Algorithm & CPU Time (s) & Relative Performance \\
+    \hline
+    Opt.BFMS & 0.000085 & 1.00x (fastest) \\
+    Opt.TFMS & 0.000086 & 1.01x \\
+    Opt.TF & 0.000086 & 1.01x \\
+    Opt.BF & 0.000105 & 1.23x \\
+    Bisection & 0.000109 & 1.28x \\
+    QIR & 0.000139 & 1.64x \\
+    False Position & 0.000143 & 1.68x \\
+    Brent (Impl.) & 0.000144 & 1.69x \\
+    HybridBlendBF & 0.000199 & 2.34x \\
+    HybridBlendTF & 0.000276 & 3.24x \\
+    Brent (SciPy) & 0.000672 & 7.89x \\
+    Trisection & 1.466075 & 17212.32x \\
+    \hline
+    \end{tabular}
+    \end{table}
+    
+    On this high-degree polynomial, the proposed Opt.BFMS algorithm achieves the fastest performance. The results show the effectiveness of the hybrid approach, which remains highly competitive while traditional methods like Trisection exhibit extremely poor performance, highlighting their unsuitability for certain problem types.
+    
+    \subsection*{Case Study 2: Ill-Conditioned Polynomial (Problem 26)}
+    To demonstrate robustness, we examine Problem 26, an ill-conditioned polynomial that poses significant challenges for traditional methods. The function is:
+    \[
+    f(x) = x^4 - 2x^2 - 4
+    \]
+    on the interval $[0, 2]$. This problem highlights the superior performance of hybrid algorithms on numerically difficult problems. Table~\ref{tab:realworld3} summarizes the results.
+    
+    \begin{table}[H]
+    \centering
+    \captionof{table}{Performance on the ill-conditioned polynomial $f(x) = x^4 - 2x^2 - 4$ over $[0,2]$. Metrics reported are average CPU time (in seconds) over 100 runs.}
+    \label{tab:realworld3}
+    \begin{tabular}{lcc}
+    \hline
+    Algorithm & CPU Time (s) & Relative Performance \\
+    \hline
+    Opt.BFMS & 0.000585 & 1.00x (fastest) \\
+    Opt.BF & 0.000671 & 1.15x \\
+    Opt.TFMS & 0.000738 & 1.26x \\
+    Opt.TF & 0.000827 & 1.41x \\
+    HybridBlendBF & 0.001243 & 2.13x \\
+    HybridBlendTF & 0.001446 & 2.47x \\
+    Brent (Impl.) & 0.001765 & 3.02x \\
+    QIR & 0.001782 & 3.05x \\
+    Brent (SciPy) & 0.001896 & 3.24x \\
+    Bisection & 0.002625 & 4.49x \\
+    Trisection & 0.002902 & 4.96x \\
+    False Position & 0.711171 & 1216.16x \\
+    \hline
+    \end{tabular}
+    \end{table}
+    
+    The Opt.BFMS algorithm again delivers the best performance, showcasing the robustness of our hybrid methods. Notably, the conventional False Position method is over 1200x slower, demonstrating its failure on ill-conditioned problems where the proposed algorithms remain stable and efficient.
+    
+    \subsection*{Case Study 3: Hardest Benchmark Problem (Problem 30)}
+    To demonstrate practical applicability on computationally demanding tasks, we analyze Problem 30, the most challenging function in our test suite. This problem is a twentieth-degree polynomial with known integer roots:
+    \[
+    f(x) = \prod_{k=1}^{20} (x - k)
+    \]
+    on the interval $[0, 1.5]$. Table~\ref{tab:realworld} summarizes the results for this worst-case scenario.
+    
+    \begin{table}[H]
+    \centering
+    \captionof{table}{Performance on the hardest benchmark problem, a twentieth-degree polynomial, over $[0,1.5]$. Metrics reported are average CPU time (in seconds) over 100 runs.}
+    \label{tab:realworld}
+    \begin{tabular}{lcc}
+    \hline
+    Algorithm & CPU Time (s) & Relative Performance \\
+    \hline
+    Trisection & 0.000301 & 1.00x (fastest) \\
+    Opt.TF & 0.000412 & 1.37x \\
+    Opt.TFMS & 0.000418 & 1.39x \\
+    HybridBlendTF & 0.000508 & 1.69x \\
+    Opt.BFMS & 0.001863 & 6.19x \\
+    Opt.BF & 0.001971 & 6.54x \\
+    Brent (SciPy) & 0.002794 & 9.28x \\
+    QIR & 0.003135 & 10.41x \\
+    Brent (Impl.) & 0.003427 & 11.38x \\
+    HybridBlendBF & 0.004782 & 15.88x \\
+    Bisection & 0.007851 & 26.07x \\
+    False Position & 2.604901 & 8649.61x \\
+    \hline
+    \end{tabular}
+    \end{table}
+    
+    On this exceptionally difficult problem, the simple Trisection method finds the root most efficiently. However, the proposed trisection-based hybrids, Opt.TF and Opt.TFMS, perform nearly as well, ranking second and third. This demonstrates their value as robust alternatives, especially when contrasted with the catastrophic failure of False Position, which is over 8600x slower.
+    
+    \subsection*{Case Study 4: Challenging Transcendental Function (Problem 35)}
+    To test versatility, we examine Problem 35, a challenging transcendental function designed to assess performance on non-polynomial forms. The function is:
+    \[
+    f(x) = e^{x^2} - e^{1.2x}
+    \]
+    on the interval $[0, 3]$. Table~\ref{tab:realworld4} summarizes the results for all algorithms.
+    
+    \begin{table}[H]
+    \centering
+    \captionof{table}{Performance on the challenging transcendental function $f(x) = e^{x^2} - e^{1.2x}$ over $[0,3]$. Metrics reported are average CPU time (in seconds) over 100 runs.}
+    \label{tab:realworld4}
+    \begin{tabular}{lcc}
+    \hline
+    Algorithm & CPU Time (s) & Relative Performance \\
+    \hline
+    Bisection & 0.000054 & 1.00x (fastest) \\
+    Opt.BF & 0.000095 & 1.76x \\
+    HybridBlendBF & 0.000096 & 1.79x \\
+    Opt.BFMS & 0.000121 & 2.24x \\
+    QIR & 0.000133 & 2.46x \\
+    Brent (Impl.) & 0.000382 & 7.10x \\
+    Opt.TF & 0.000702 & 13.03x \\
+    Opt.TFMS & 0.000742 & 13.78x \\
+    Brent (SciPy) & 0.001196 & 22.21x \\
+    HybridBlendTF & 0.001266 & 23.52x \\
+    Trisection & 0.001909 & 35.46x \\
+    False Position & 0.489219 & 9087.23x \\
+    \hline
+    \end{tabular}
+    \end{table}
+    
+    For this transcendental function, the classic Bisection method is the fastest. This highlights that no single algorithm is universally optimal. Nevertheless, the proposed bisection-based hybrids, Opt.BF and Opt.BFMS, are the most competitive alternatives, affirming their role as high-performance, general-purpose methods.
+    
+    \subsection*{Case Study 5: Cubic Polynomial Test Case (Problem 19)}
+    To evaluate performance on a standard polynomial function, we analyze Problem 19 from the benchmark set. This case study demonstrates the algorithms' efficiency on a common class of problems found in numerical analysis. The test function is the cubic polynomial:
+    \[
+    f(x) = (x - 1)^3 + 4(x - 1)^2 - 10,
+    \]
+    on the interval $[0, 3]$. Table~\ref{tab:realworld5} summarizes the results for all algorithms on this problem.
+    
+    \begin{table}[H]
+    \centering
+    \captionof{table}{Performance on the cubic polynomial problem $(x-1)^3 + 4(x-1)^2 - 10$ over $[0,3]$. Metrics reported are average CPU time (in seconds) over 100 runs.}
+    \label{tab:realworld5}
+    \begin{tabular}{lcc}
+    \hline
+    Algorithm & CPU Time (s) & Relative Performance \\
+    \hline
+    Opt.BFMS & 0.000673 & 1.00x (fastest) \\
+    Opt.TFMS & 0.000730 & 1.08x \\
+    Opt.BF & 0.000833 & 1.24x \\
+    Opt.TF & 0.000939 & 1.40x \\
+    QIR & 0.001572 & 2.33x \\
+    Brent (Impl.) & 0.001756 & 2.61x \\
+    HybridBlendTF & 0.001811 & 2.69x \\
+    HybridBlendBF & 0.001893 & 2.81x \\
+    Brent (SciPy) & 0.002004 & 2.98x \\
+    False Position & 0.002366 & 3.51x \\
+    Bisection & 0.003074 & 4.57x \\
+    Trisection & 0.003182 & 4.73x \\
+    \hline
+    \end{tabular}
+    \end{table}
+    
+    The results again highlight the efficiency of the optimized hybrid methods, with Opt.BFMS leading the performance on this cubic polynomial, followed closely by the other proposed hybrid variants.
+    
+    \subsection*{Case Study 6: Transcendental Function (Problem 11)}
+    To further demonstrate algorithm behaviour on a representative transcendental test, we consider Problem 11 from the benchmark set:
+    \[
+    f(x) = x\cos(x) + 1,
+    \]
+    on the interval $[-2,4]$. Table~\ref{tab:realworld6} summarizes the average CPU time (in seconds) for each algorithm on this problem (100 runs) and their relative performance compared to the fastest method.
+    
+    \begin{table}[H]
+    \centering
+    \captionof{table}{Performance on $f(x)=x\cos(x)+1$ over the interval $[-2,4]$. Metrics reported are average CPU time (in seconds) over 100 runs.}
+    \label{tab:realworld6}
+    \begin{tabular}{lcc}
+    \hline
+    Algorithm & CPU Time (s) & Relative Performance \\
+    \hline
+    Opt.BFMS & 0.001638 & 1.00x (fastest) \\
+    Opt.TFMS & 0.001991 & 1.22x \\
+    Opt.BF & 0.002051 & 1.25x \\
+    Brent (Impl.) & 0.002297 & 1.40x \\
+    Opt.TF & 0.002301 & 1.40x \\
+    Brent (SciPy) & 0.002352 & 1.44x \\
+    False Position & 0.003565 & 2.18x \\
+    HybridBlendBF & 0.004280 & 2.61x \\
+    HybridBlendTF & 0.004451 & 2.72x \\
+    QIR & 0.005938 & 3.63x \\
+    Trisection & 0.007933 & 4.84x \\
+    Bisection & 0.008177 & 4.99x \\
+    \hline
+    \end{tabular}
+    \end{table}
+    
+The results for Problem 11 follow the same trends observed elsewhere in the benchmark: the optimized BFMS variant performs best on this problem, with other optimized hybrids and Brent variants close behind.
 
 \section{Results and Analysis}\label{sec:results}
 
