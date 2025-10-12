@@ -42,7 +42,7 @@
 
 
 \begin{abstract}
-The accurate and efficient determination of roots for nonlinear equations remains a significant challenge in numerical analysis, particularly when dealing with functions that exhibit complex behavior or require robust convergence guarantees. Traditional bracketing methods, such as bisection and false position, offer reliability but often suffer from slow convergence, while optimization-based methods like the secant method provide speed at the cost of stability.This paper presents four novel hybrid root bracketing algorithms that combine the advantages of traditional bracketing methods with optimization techniques. The proposed algorithms—Optimized Bisection-False Position (Optimized\_BF), Optimized Bisection-False Position with Modified Secant (Optimized\_BFMS), Optimized Trisection-False Position (Optimized\_TF), and Optimized Trisection-False Position with Modified Secant (Optimized\_TFMS)—demonstrate improved convergence rates and computational efficiency compared to their traditional counterparts. Through extensive experimentation on 14 diverse test functions using the SymPy library, our algorithms show consistent performance improvements, with Optimized\_BFMS achieving the best overall performance. The hybrid approach leverages the reliability of bracketing methods while incorporating the speed advantages of optimization-based techniques, making these algorithms suitable for a wide range of numerical computing applications.
+The accurate and efficient determination of roots for nonlinear equations remains a significant challenge in numerical analysis, particularly when dealing with functions that exhibit complex behavior or require robust convergence guarantees. Traditional bracketing methods, such as bisection and false position, offer reliability but often suffer from slow convergence, while optimization-based methods like the secant method provide speed at the cost of stability.This paper presents four novel hybrid root bracketing algorithms that combine the advantages of traditional bracketing methods with optimization techniques. The proposed algorithm Optimized Bisection-False Position (Optimized\_BF), Optimized Bisection-False Position with Modified Secant (Optimized\_BFMS), Optimized Trisection-False Position (Optimized\_TF), and Optimized Trisection-False Position with Modified Secant (Optimized\_TFMS)—demonstrate improved convergence rates and computational efficiency compared to their traditional counterparts. Through extensive experimentation on 42 diverse test functions using the SymPy library, our algorithms show consistent performance improvements, with Optimized\_BFMS achieving the best overall performance. The hybrid approach leverages the reliability of bracketing methods while incorporating the speed advantages of optimization-based techniques, making these algorithms suitable for a wide range of numerical computing applications.
 \end{abstract}
 
 \maketitle
@@ -562,34 +562,8 @@ The experimental setup ensures that all algorithms are tested under identical co
     \end{tabular}
     \end{table}
 
-\subsection{Case Study 1: Real-World Application (Problem 30)}
-To demonstrate practical applicability, we applied the proposed algorithms to the most challenging problems from our comprehensive test suite. These include ill-conditioned polynomials and high-degree equations that represent real-world engineering challenges. Table~\ref{tab:realworld} summarizes the results for all algorithms on Problem 30, the hardest problem: a twentieth-degree polynomial with integer roots.
 
-\begin{table}[H]
-\centering
-\captionof{table}{Performance of all algorithms on the hardest benchmark problem: twentieth-degree polynomial $(x - 1)*(x - 2)*(x - 3)*(x - 4)*(x - 5)*(x - 6)*(x - 7)*(x - 8)*(x - 9)*(x - 10)*(x - 11)*(x - 12)*(x - 13)*(x - 14)*(x - 15)*(x - 16)*(x - 17)*(x - 18)*(x - 19)*(x - 20)$ over the interval [0,1.5]. Metrics reported are average CPU time (in seconds) over 100 runs. This problem represents the most computationally challenging case in our test suite.}
-\label{tab:realworld}
-\begin{tabular}{lcc}
-\hline
-Algorithm & CPU Time (s) & Relative Performance \\
-\hline
-Trisection & 0.000301 & 1.00x (fastest) \\
-Opt.TF & 0.000412 & 1.37x \\
-Opt.TFMS & 0.000418 & 1.39x \\
-HybridBlendTF & 0.000508 & 1.69x \\
-Opt.BFMS & 0.001863 & 6.19x \\
-Opt.BF & 0.001971 & 6.54x \\
-Brent (SciPy) & 0.002794 & 9.28x \\
-QIR & 0.003135 & 10.41x \\
-Brent (Impl.) & 0.003427 & 11.38x \\
-HybridBlendBF & 0.004782 & 15.88x \\
-Bisection & 0.007851 & 26.07x \\
-False Position & 2.604901 & 8649.61x \\
-\hline
-\end{tabular}
-\end{table}
-
-\subsection*{Case Study 2: High-Degree Polynomial (Problem 42)}
+\subsection*{Case Study 1: High-Degree Polynomial (Problem 42)}
 To further demonstrate the practical applicability of the proposed algorithms, we consider Problem 42, another challenging problem from our test suite: the sixth-degree polynomial $f(x) = x^6 - 8x^5 + 24x^4 - 32x^3 + 16x^2$ on the interval $[0, 4]$. This represents a high-degree polynomial with multiple roots, commonly encountered in engineering optimization problems and control systems analysis.
 
 Table~\ref{tab:realworld2} summarizes the results for all algorithms on this problem.
@@ -620,7 +594,7 @@ Trisection & 1.466075 & 17212.32x \\
 
 The results confirm the trends observed in the main case study: the hybrid algorithms consistently achieve superior performance across different problem types. On the twentieth-degree polynomial (Problem 30), Trisection demonstrates exceptional efficiency with 0.000301s, while traditional methods like False Position struggle significantly with 2.604901s. On the sixth-degree polynomial (Problem 42), Opt.BFMS achieves optimal performance with 0.000085s, demonstrating the effectiveness of the hybrid approach for high-degree polynomials. These results support the claim of immediate applicability to scientific and engineering problems involving complex polynomial equations.
 
-\subsection*{Case Study 3: Ill-Conditioned Polynomial (Problem 26)}
+\subsection*{Case Study 2: Ill-Conditioned Polynomial (Problem 26)}
 
 To further demonstrate the robustness of the proposed algorithms, we examine Problem 26, which represents an ill-conditioned polynomial that poses significant challenges for traditional methods. This problem highlights the superior performance of hybrid algorithms on difficult numerical problems.
 
@@ -646,6 +620,33 @@ Brent (SciPy) & 0.001896 & 3.24x \\
 Bisection & 0.002625 & 4.49x \\
 Trisection & 0.002902 & 4.96x \\
 False Position & 0.711171 & 1216.16x \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Case Study 3: Real-World Application (Problem 30)}
+To demonstrate practical applicability, we applied the proposed algorithms to the most challenging problems from our comprehensive test suite. These include ill-conditioned polynomials and high-degree equations that represent real-world engineering challenges. Table~\ref{tab:realworld} summarizes the results for all algorithms on Problem 30, the hardest problem: a twentieth-degree polynomial with integer roots.
+
+\begin{table}[H]
+\centering
+\captionof{table}{Performance of all algorithms on the hardest benchmark problem: twentieth-degree polynomial $(x - 1)*(x - 2)*(x - 3)*(x - 4)*(x - 5)*(x - 6)*(x - 7)*(x - 8)*(x - 9)*(x - 10)*(x - 11)*(x - 12)*(x - 13)*(x - 14)*(x - 15)*(x - 16)*(x - 17)*(x - 18)*(x - 19)*(x - 20)$ over the interval [0,1.5]. Metrics reported are average CPU time (in seconds) over 100 runs. This problem represents the most computationally challenging case in our test suite.}
+\label{tab:realworld}
+\begin{tabular}{lcc}
+\hline
+Algorithm & CPU Time (s) & Relative Performance \\
+\hline
+Trisection & 0.000301 & 1.00x (fastest) \\
+Opt.TF & 0.000412 & 1.37x \\
+Opt.TFMS & 0.000418 & 1.39x \\
+HybridBlendTF & 0.000508 & 1.69x \\
+Opt.BFMS & 0.001863 & 6.19x \\
+Opt.BF & 0.001971 & 6.54x \\
+Brent (SciPy) & 0.002794 & 9.28x \\
+QIR & 0.003135 & 10.41x \\
+Brent (Impl.) & 0.003427 & 11.38x \\
+HybridBlendBF & 0.004782 & 15.88x \\
+Bisection & 0.007851 & 26.07x \\
+False Position & 2.604901 & 8649.61x \\
 \hline
 \end{tabular}
 \end{table}
@@ -679,6 +680,7 @@ False Position & 0.489219 & 9087.23x \\
 \hline
 \end{tabular}
 \end{table}
+
 
 The comprehensive case studies demonstrate the versatility and robustness of the proposed hybrid algorithms across diverse problem types. While different algorithms excel on different problems (Trisection on Problem 30, Opt.BFMS on Problems 26 and 42, and Bisection on Problem 35), the hybrid algorithms consistently achieve competitive performance and avoid the extreme performance degradation observed in traditional methods like False Position, which can be over 1000x slower on challenging problems.
 
