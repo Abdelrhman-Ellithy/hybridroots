@@ -7,7 +7,8 @@
 \usepackage{hyperref}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
-\usepackage{titlesec}
+\usepackage{caption}
+\captionsetup[algorithm]{labelfont=bf} 
 \usepackage{float}
 \usepackage{placeins}
 \usepackage{geometry}
@@ -22,13 +23,6 @@
     filecolor=magenta,      
     urlcolor=cyan,
 }
-
-\titlespacing*{\section}{0pt}{1.0ex plus .2ex minus .2ex}{0.5ex plus .1ex}
-\titlespacing*{\subsection}{0pt}{0.8ex plus .2ex minus .2ex}{0.4ex plus .1ex}
-\titlespacing*{\subsubsection}{0pt}{0.6ex plus .2ex minus .2ex}{0.2ex plus .1ex}
-
-\titleformat{\subsection}[hang]{\raggedright\bfseries}{\thesubsection}{1em}{}
-\titleformat{\subsubsection}[hang]{\raggedright\bfseries}{\thesubsubsection}{1em}{}
 
 
 \setlength{\parskip}{1em}
@@ -79,13 +73,8 @@ The theoretical convergence analysis follows the framework established by \cite{
 
 For the false position method, the convergence rate is typically superlinear, with the error reduction following the pattern $|x_{n+1} - \alpha| \leq C \cdot |x_n - \alpha|^p$, where $p > 1$ and $C$ is a constant depending on the function properties. The modified secant method, using finite difference approximation, maintains similar convergence characteristics while avoiding the need for explicit derivative calculations.
 
-{\titlespacing*{\subsection}{0pt}{1.0ex plus .2ex minus .2ex}{0ex}
-\titlespacing*{\subsubsection}{0pt}{0ex}{0.2ex} 
 \subsection{Algorithm Design, Hybrid Techniques and Pseudocode for Proposed Algorithms}
-\vspace{-1.2ex} 
 \subsubsection{Algorithm 1: Optimized Bisection-False Position (Optimized\_BF)}
-\vspace{-0.8ex}
-}
 
 The Optimized Bisection-False Position (Optimized\_BF) algorithm represents a sophisticated hybrid root-finding approach that strategically combines the guaranteed convergence of the bisection method with the accelerated convergence potential of the false position (regula falsi) method. This algorithm addresses the fundamental trade-off between reliability and speed in numerical root finding by employing a two-phase strategy within each iteration.
 
@@ -103,8 +92,8 @@ The algorithm is defined with the method signature Optimized\_BF$(f, a, b, tol, 
 
 The implementation uses SymPy for symbolic computation and high-precision arithmetic, with a tolerance of $10^{-14}$ for convergence testing. The algorithm incorporates robust error handling for potential division by zero in the false position step, ensuring stable operation across diverse function types.
 
-\begin{algorithm}[H]
-\caption{Pseudocode for the Optimized Bisection-False Position (Optimized\_BF) algorithm. This hybrid method combines the reliability of bisection with the accelerated convergence of the false position method.}
+
+\captionof{algorithm}{Pseudocode for the Optimized Bisection-False Position (Optimized\_BF) algorithm. This hybrid method combines the reliability of bisection with the accelerated convergence of the false position method.}
     \begin{algorithmic}[1]
     \State \textbf{Input:} Function $f$, interval $[a, b]$, tolerance $tol$, max iterations $max\_iter$
     \State \textbf{Output:} Iteration count $n$, root approximation $x$, function value $f(x)$, final interval $[a, b]$
@@ -153,7 +142,6 @@ The implementation uses SymPy for symbolic computation and high-precision arithm
     \State $f_{final\_x} \gets f(final\_x)$
     \State \Return $max\_iter, final\_x, f_{final\_x}, a, b$
     \end{algorithmic}
-    \end{algorithm}
 
 \subsubsection{Algorithm 2: Optimized Bisection-False Position with Modified Secant (Optimized\_BFMS)}
 
@@ -179,8 +167,7 @@ The algorithm is defined with the method signature Optimized\_BFMS$(f, a, b, tol
 
 The choice of $\delta = 10^{-4}$ is based on extensive numerical experimentation and represents an optimal balance between approximation accuracy and numerical stability. Smaller values of $\delta$ provide more accurate derivative approximations but may lead to numerical instability, while larger values ensure stability but may reduce the effectiveness of the secant acceleration.
 
-\begin{algorithm}[H]
-    \caption{Pseudocode for the Hybrid Bisection-False Position-Modified Secant (HbisectionFalseMS) algorithm. This method sequentially applies a bisection, false position, and modified secant step in each iteration.}
+\captionof{algorithm}{Pseudocode for the Hybrid Bisection-False Position-Modified Secant (HbisectionFalseMS) algorithm. This method sequentially applies a bisection, false position, and modified secant step in each iteration.}
     \begin{algorithmic}[1]
     \State \textbf{Input:} Function $f$, interval $[a, b]$, tolerance $tol$, max iterations $max\_iter$, perturbation $\delta$
     \State \textbf{Output:} Iteration count $n$, root approximation $x$, function value $f(x)$, final interval $[a, b]$
@@ -247,7 +234,6 @@ The choice of $\delta = 10^{-4}$ is based on extensive numerical experimentation
     \State $f_x \gets f(x)$
     \State \Return $n, x, f_x, a, b$
     \end{algorithmic}
-    \end{algorithm}
 
 \subsubsection{Algorithm 3: Optimized Trisection-False Position (Optimized\_TF)}
 
@@ -269,8 +255,8 @@ The algorithm is defined with the method signature Optimized\_TF$(f, a, b, tol, 
 
 The trisection approach provides a theoretical advantage over bisection by potentially reducing the interval size more rapidly, as analyzed by \cite{demir2008trisection}. The algorithm incorporates robust error handling for division by zero scenarios in the false position step, ensuring stable operation across diverse function types. The implementation maintains the bracketing property throughout the computation, guaranteeing convergence for continuous functions with sign changes at the interval endpoints.
 
-\begin{algorithm}[H]
-    \caption{Pseudocode for the Optimized Trisection-False Position (Optimized\_TF) algorithm. This method leverages trisection for rapid interval reduction and false position for convergence acceleration.}
+
+\captionof{algorithm}{Pseudocode for the Optimized Trisection-False Position (Optimized\_TF) algorithm. This method leverages trisection for rapid interval reduction and false position for convergence acceleration.}
     \begin{algorithmic}[1]
     \State \textbf{Input:} Function $f$, interval $[a, b]$, tolerance $tol$, max iterations $max\_iter$
     \State \textbf{Output:} Root approximation $x$, function value $f(x)$, final interval $[a, b]$
@@ -328,7 +314,6 @@ The trisection approach provides a theoretical advantage over bisection by poten
     \State $f_x \gets f(x)$
     \State \Return $max\_iter, x, f_x, a, b$
     \end{algorithmic}
-    \end{algorithm}
 
 \subsubsection{Algorithm 4: Optimized Trisection-False Position with Modified Secant (Optimized\_TFMS)}
 
@@ -362,8 +347,8 @@ The algorithm is defined with the method signature Optimized\_TFMS$(f, a, b, tol
 
 This algorithm represents the pinnacle of the hybrid approach, demonstrating that sophisticated combinations of numerical techniques can achieve superior performance without compromising reliability. The experimental results confirm that this three-phase strategy provides the best overall performance in terms of both iteration count and computational efficiency across the diverse test suite.
 
-\begin{algorithm}[H]
-    \caption{Pseudocode for the Optimized Trisection-False Position with Modified Secant (Optimized\_TFMS) algorithm. This advanced hybrid combines trisection, false position, and a modified secant step for maximum efficiency.}
+
+\captionof{algorithm}{Pseudocode for the Optimized Trisection-False Position with Modified Secant (Optimized\_TFMS) algorithm. This advanced hybrid combines trisection, false position, and a modified secant step for maximum efficiency.}
     \begin{algorithmic}[1]
     \State \textbf{Input:} Function $f$, interval $[a, b]$, tolerance $tol$, max iterations $max\_iter$, $\delta = 10^{-4}$
     \State \textbf{Output:} Root approximation $x$, function value $f(x)$, final interval $[a, b]$
@@ -435,7 +420,6 @@ This algorithm represents the pinnacle of the hybrid approach, demonstrating tha
     \State $f_x \gets f(x)$
     \State \Return $max\_iter, x, f_x, a, b$
     \end{algorithmic}
-    \end{algorithm}
 
 
 \setlength{\parskip}{1.5ex plus 0.5ex minus 0.2ex}
@@ -556,7 +540,7 @@ The experimental setup ensures that all algorithms are tested under identical co
 \subsection{Algorithm Code Legend}
 \begin{table}[H]
     \centering
-    \caption{Algorithm code legend used throughout all tables. Each code corresponds to a specific root-finding algorithm, as defined in the methodology.}
+    \captionof{table}{Algorithm code legend used throughout all tables. Each code corresponds to a specific root-finding algorithm, as defined in the methodology.}
         \label{tab:algo_legend}
         \begin{tabular}{ll}
         \hline
@@ -583,7 +567,7 @@ To demonstrate practical applicability, we applied the proposed algorithms to th
 
 \begin{table}[H]
 \centering
-\caption{Performance of all algorithms on the hardest benchmark problem: twentieth-degree polynomial $(x - 1)*(x - 2)*(x - 3)*(x - 4)*(x - 5)*(x - 6)*(x - 7)*(x - 8)*(x - 9)*(x - 10)*(x - 11)*(x - 12)*(x - 13)*(x - 14)*(x - 15)*(x - 16)*(x - 17)*(x - 18)*(x - 19)*(x - 20)$ over the interval [0,1.5]. Metrics reported are average CPU time (in seconds) over 100 runs. This problem represents the most computationally challenging case in our test suite.}
+\captionof{table}{Performance of all algorithms on the hardest benchmark problem: twentieth-degree polynomial $(x - 1)*(x - 2)*(x - 3)*(x - 4)*(x - 5)*(x - 6)*(x - 7)*(x - 8)*(x - 9)*(x - 10)*(x - 11)*(x - 12)*(x - 13)*(x - 14)*(x - 15)*(x - 16)*(x - 17)*(x - 18)*(x - 19)*(x - 20)$ over the interval [0,1.5]. Metrics reported are average CPU time (in seconds) over 100 runs. This problem represents the most computationally challenging case in our test suite.}
 \label{tab:realworld}
 \begin{tabular}{lcc}
 \hline
@@ -612,7 +596,7 @@ Table~\ref{tab:realworld2} summarizes the results for all algorithms on this pro
 
 \begin{table}[H]
 \centering
-\caption{Performance of all algorithms on the high-degree polynomial $f(x) = x^6 - 8x^5 + 24x^4 - 32x^3 + 16x^2$ over the interval [0,4]. Metrics reported are average CPU time (in seconds) over 100 runs. This problem demonstrates the algorithms' performance on high-degree polynomials.}
+\captionof{table}{Performance of all algorithms on the high-degree polynomial $f(x) = x^6 - 8x^5 + 24x^4 - 32x^3 + 16x^2$ over the interval [0,4]. Metrics reported are average CPU time (in seconds) over 100 runs. This problem demonstrates the algorithms' performance on high-degree polynomials.}
 \label{tab:realworld2}
 \begin{tabular}{lcc}
 \hline
@@ -644,7 +628,7 @@ Table~\ref{tab:realworld3} summarizes the results for all algorithms on this cha
 
 \begin{table}[H]
 \centering
-\caption{Performance of all algorithms on the ill-conditioned polynomial (Problem 26) over the interval [0,2]. Metrics reported are average CPU time (in seconds) over 100 runs. This problem demonstrates the algorithms' performance on ill-conditioned numerical problems.}
+\captionof{table}{Performance of all algorithms on the ill-conditioned polynomial (Problem 26) over the interval [0,2]. Metrics reported are average CPU time (in seconds) over 100 runs. This problem demonstrates the algorithms' performance on ill-conditioned numerical problems.}
 \label{tab:realworld3}
 \begin{tabular}{lcc}
 \hline
@@ -674,7 +658,7 @@ Table~\ref{tab:realworld4} summarizes the results for all algorithms on this pro
 
 \begin{table}[H]
 \centering
-\caption{Performance of all algorithms on the challenging transcendental function (Problem 35) over the interval [0,3]. Metrics reported are average CPU time (in seconds) over 100 runs. This problem demonstrates the algorithms' performance on transcendental functions.}
+\captionof{table}{Performance of all algorithms on the challenging transcendental function (Problem 35) over the interval [0,3]. Metrics reported are average CPU time (in seconds) over 100 runs. This problem demonstrates the algorithms' performance on transcendental functions.}
 \label{tab:realworld4}
 \begin{tabular}{lcc}
 \hline
@@ -708,7 +692,7 @@ The experimental results reveal significant performance improvements achieved by
 
 \begin{table}[H]
 \centering
-\caption{Comprehensive comparison of all root-finding algorithms across 42 diverse benchmark problems. Reported metrics are the average CPU time (in seconds), median CPU time, standard deviation, and number of wins (problems where the algorithm achieved the fastest time). Algorithm codes are defined in Table~\ref{tab:algo_legend}. Lower values indicate better performance.}
+\captionof{table}{Comprehensive comparison of all root-finding algorithms across 42 diverse benchmark problems. Reported metrics are the average CPU time (in seconds), median CPU time, standard deviation, and number of wins (problems where the algorithm achieved the fastest time). Algorithm codes are defined in Table~\ref{tab:algo_legend}. Lower values indicate better performance.}
 \label{tab:performance_comparison_main}
 \begin{tabular}{lcccc}
 \hline
@@ -736,7 +720,7 @@ Table \ref{tab:detailed_results} provides a detailed breakdown of CPU times for 
 
 \begin{table}[H]
 \centering
-\caption{Average CPU time (in seconds) for each algorithm on all 42 benchmark problems. Each cell shows the mean CPU time over 100 runs for the corresponding problem and algorithm. See Table~\ref{tab:algo_legend} for algorithm codes.}
+\captionof{table}{Average CPU time (in seconds) for each algorithm on all 42 benchmark problems. Each cell shows the mean CPU time over 100 runs for the corresponding problem and algorithm. See Table~\ref{tab:algo_legend} for algorithm codes.}
 \label{tab:detailed_results}
 \resizebox{\textwidth}{!}{
 \begin{tabular}{lcccccccccccc}
@@ -814,7 +798,7 @@ The hybrid algorithms demonstrate overwhelming superiority over traditional meth
 
 \begin{table}[H]
 \centering
-\caption{Performance Comparison: Hybrid vs Traditional Methods. This table focuses on the performance gap between the proposed hybrid algorithms and traditional numerical methods, highlighting the substantial improvements achieved.}
+\captionof{table}{Performance Comparison: Hybrid vs Traditional Methods. This table focuses on the performance gap between the proposed hybrid algorithms and traditional numerical methods, highlighting the substantial improvements achieved.}
 \label{tab:traditional_comparison}
 \begin{tabular}{lccc}
 \hline
@@ -838,7 +822,7 @@ The proposed hybrid algorithms also demonstrate superior performance compared to
 
 \begin{table}[H]
 \centering
-\caption{Performance Comparison: Hybrid vs State-of-the-Art Methods. This table compares the proposed hybrid algorithms with modern methods including QIR and Brent's method, demonstrating the continued superiority of our approach.}
+\captionof{table}{Performance Comparison: Hybrid vs State-of-the-Art Methods. This table compares the proposed hybrid algorithms with modern methods including QIR and Brent's method, demonstrating the continued superiority of our approach.}
 \label{tab:state_of_art_comparison}
 \begin{tabular}{lccc}
 \hline
@@ -876,14 +860,14 @@ The experimental results confirm that the hybrid approach successfully addresses
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{avg_cpu_time_per_algorithm.png}
-    \caption{Average CPU time (in seconds) for each algorithm across all test problems. Lower values indicate higher computational efficiency.}
+    \captionof{figure}{Average CPU time (in seconds) for each algorithm across all test problems. Lower values indicate higher computational efficiency.}
     \label{fig:avg_cpu_time}
 \end{figure} 
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{cpu_time_lineplot_per_problem.png}
-    \caption{CPU time per test problem for each algorithm. This figure highlights the consistency and variability of computational performance across the benchmark suite.}
+    \captionof{figure}{CPU time per test problem for each algorithm. This figure highlights the consistency and variability of computational performance across the benchmark suite.}
     \label{fig:cpu_time_per_problem}
 \end{figure}
 
@@ -892,14 +876,14 @@ The experimental results confirm that the hybrid approach successfully addresses
     \begin{minipage}{\linewidth}
         \centering
         \includegraphics[width=0.8\linewidth]{fastest_algorithm_per_problem_lineplot.png}
-        \caption{Fastest algorithm for each test problem, as determined by minimum CPU time. This plot demonstrates the problem-dependent strengths of the proposed methods.}
+        \captionof{figure}{Fastest algorithm for each test problem, as determined by minimum CPU time. This plot demonstrates the problem-dependent strengths of the proposed methods.}
         \label{fig:fastest_algorithm}
     \end{minipage}
     \vspace{-15pt} 
     \begin{minipage}{\linewidth}
         \centering
         \includegraphics[width=0.8\linewidth]{avg_cpu_time_lineplot_overall.png}
-        \caption{Overall average CPU time trend across all problems and algorithms. This figure provides a holistic view of computational efficiency.}
+        \captionof{figure}{Overall average CPU time trend across all problems and algorithms. This figure provides a holistic view of computational efficiency.}
         \label{fig:avg_cpu_time_overall}
     \end{minipage}
 \end{figure}
@@ -907,7 +891,7 @@ The experimental results confirm that the hybrid approach successfully addresses
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{top3_fastest_algorithms_lineplot.png}
-    \caption{Top three fastest algorithms per problem, ranked by CPU time. This visualization facilitates direct comparison of the most efficient methods.}
+    \captionof{figure}{Top three fastest algorithms per problem, ranked by CPU time. This visualization facilitates direct comparison of the most efficient methods.}
     \label{fig:top3_fastest}
 \end{figure}
 
@@ -939,7 +923,7 @@ Thus, the overall convergence of the hybrid algorithms is superlinear in typical
 
 \begin{table}[H]
 \centering
-\caption{Summary of theoretical convergence rates.}
+\captionof{table}{Summary of theoretical convergence rates.}
 \label{tab:convergence}
 \begin{tabular}{|l|c|}
 \hline
@@ -984,7 +968,7 @@ Table~\ref{tab:func_evals} summarizes the average number of function evaluations
 
 \begin{table}[H]
 \centering
-\caption{Average Function Evaluations per Iteration for Each Algorithm}
+\captionof{table}{Average Function Evaluations per Iteration for Each Algorithm}
 \label{tab:func_evals}
 \begin{tabular}{lc}
 \toprule
