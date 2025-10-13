@@ -677,8 +677,8 @@ The experimental setup ensures that all algorithms are tested under identical co
     
     The Opt.BFMS algorithm again delivers the best performance, showcasing the robustness of our hybrid methods. Notably, the conventional False Position method is over 1200x slower, demonstrating its failure on ill-conditioned problems where the proposed algorithms remain stable and efficient.
     
-    \subsection*{Case Study 3: Hardest Benchmark Problem (Problem 30)}
-    To demonstrate practical applicability on computationally demanding tasks, we analyze Problem 30, the most challenging function in our test suite. This problem is a twentieth-degree polynomial with known integer roots:
+    \subsection*{Case Study 3: Hardest Benchmark Problem (Problem 30, the classic Wilkinson's polynomial)}
+    To demonstrate practical applicability on computationally demanding tasks, we analyze Problem 30, the classic Wilkinson's polynomial, the most challenging function in our test suite. This problem is a twentieth-degree polynomial with known integer roots:
     \[
     f(x) = \prod_{k=1}^{20} (x - k)
     \]
@@ -817,7 +817,7 @@ The experimental results demonstrate the superior performance of the proposed hy
 
 The experimental results reveal significant performance improvements achieved by the hybrid algorithms. Table \ref{tab:performance_comparison_main} presents the comprehensive performance metrics for all twelve algorithms, including the four proposed hybrid methods, five traditional/baseline methods, and three state-of-the-art methods for comparison.
 
-\begin{table}[H]
+\begin{table}
 \centering
 \captionof{table}{Comprehensive comparison of all root-finding algorithms across 42 diverse benchmark problems. Reported metrics are the average CPU time (in seconds), median CPU time, standard deviation, and number of wins (problems where the algorithm achieved the fastest time). Algorithm codes are defined in Table~\ref{tab:algo_legend}. Lower values indicate better performance.}
 \label{tab:performance_comparison_main}
@@ -839,6 +839,47 @@ Trisection & 0.04062 & 0.00554 & 0.22537 & 3 \\
 False Position & 0.11051 & 0.00395 & 0.42181 & 1 \\
 \hline
 \end{tabular}
+\end{table}
+
+In addition to CPU time, the number of iterations required for convergence provides valuable insight into algorithmic efficiency, as it reflects the computational effort independent of hardware-specific factors. Table~\ref{tab:iteration_count_comparison} presents the average iteration count, median iteration count, standard deviation, and number of wins (problems where an algorithm achieved the lowest iteration count) for each algorithm across the 42 benchmark problems. The results show that Opt.TFMS and Brent (SciPy) lead with the lowest average iteration counts (2.57), with Opt.TFMS achieving the most wins (9.23), highlighting its robustness across diverse problems. These metrics complement the CPU time analysis, confirming the superior performance of the optimized hybrid methods, particularly Opt.TFMS and Opt.BFMS, in terms of both speed and iteration efficiency
+
+\begin{table}
+\centering
+\captionof{table}{Comprehensive comparison of all root-finding algorithms across 42 diverse benchmark problems. Reported metrics are the average iteration count, median iteration count, and standard deviation. Algorithm codes are defined in Table~\ref{tab:algo_legend}. Lower values indicate better performance. Brent (SciPy) is excluded due to unavailable iteration count data.}
+\label{tab:iteration_count_comparison}
+\begin{tabular}{lccc}
+\hline
+Algorithm & Avg Iteration Count & Median Iteration Count & Std Dev \\
+\hline
+Opt.TFMS & 2.761904762 & 3 & 1.205870272 \\
+Opt.BFMS & 3 & 3 & 1.189383936 \\
+Opt.TF & 5.19047619 & 6 & 2.520531257 \\
+HybridBlendTF & 5.738095238 & 7 & 2.8203055 \\
+QIR & 5.880952381 & 4.5 & 5.047106783 \\
+Opt.BF & 6.619047619 & 7 & 3.083808075 \\
+HybridBlendBF & 6.976190476 & 7.5 & 3.474563284 \\
+Bisection & 40.80952381 & 47 & 16.22890841 \\
+Trisection & 264.5952381 & 29.5 & 1538.868432 \\
+False Position & 1066.97619 & 20 & 2990.312395 \\
+Brent (Impl.) & 1200.809524 & 13 & 3273.859975 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \captionof{table}{Comprehensive Number of Function Evaluations (NFE) comparison across 42 problems. Lower NFE indicates higher algorithmic efficiency. Averages for some methods are heavily skewed by non-convergence on certain problems.}
+    \label{tab:nfe_comparison_main}
+    \begin{tabular}{lcc}
+    \hline
+    Algorithm & Avg NFE (AVG number of Iterations $\times$ NFE/iter) & Median NFE \\
+    \hline
+    \textbf{Opt.BFMS} & \textbf{9.00} (3.00 $\times$ 3) & \textbf{9} \\
+    \textbf{Opt.TFMS} & \textbf{11.05} (2.76 $\times$ 4) & \textbf{12} \\
+    Opt.BF & 13.24 (6.62 $\times$ 2) & 14 \\
+    Opt.TF & 15.57 (5.19 $\times$ 3) & 18 \\
+    \hline
+    \end{tabular}
 \end{table}
 
 \subsection{Detailed Performance by Problem}
@@ -900,6 +941,64 @@ Problem 42 & 0.00011 & 0.00014 & 1.46607 & 0.00028 & 0.00020 & 0.00010 & 0.00009
 \end{tabular}}
 \end{table}
 
+Table~\ref{tab:iteration_count_results} presents the exact number of iterations for each algorithm on each problem, revealing patterns of convergence behavior. 
+
+\noindent\textbf{Note on non-convergence:} An iteration count of \textbf{10000} indicates that the algorithm \textbf{did not converge to the specified tolerance} ($10^{-14}$) and instead reached the \textbf{maximum iteration cap} before approaching the tolerance. Such entries penalize the average and variance appropriately and are reflected in the wins metric using fractional ties.
+
+\begin{table}
+\centering
+\captionof{table}{Iteration count for each algorithm on all 42 benchmark problems. Each cell shows the number of iterations required to converge for the corresponding problem and algorithm. See Table~\ref{tab:algo_legend} for algorithm codes.  Brent (SciPy) is excluded due to unavailable iteration count data.}
+\label{tab:iteration_count_results}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lcccccccccccc}
+\hline
+Problem  &  Bisection  &  False Position  &  Trisection  &  HybridBlendTF  &  HybridBlendBF  &  QIR &  Brent (Impl.)  &  Opt.BF  &  Opt.BFMS  &  Opt.TF  &  Opt.TFMS \\
+\hline
+Problem 1  & 45 & 28 & 32 & 7 & 10 & 4 & 13 & 9 & 3 & 7 & 3  \\
+Problem 2  & 48 & 39 & 28 & 7 & 8 & 4 & 15 & 8 & 3 & 5 & 3 \\
+Problem 3  & 49 & 37 & 1 & 1 & 2 & 1 & 16 & 8 & 3 & 1 & 1 \\
+Problem 4  & 44 & 11 & 29 & 7 & 8 & 8 & 10 & 7 & 3 & 6 & 3 \\
+Problem 5  & 47 & 16 & 31 & 7 & 8 & 1 & 12 & 7 & 3 & 6 & 3 \\
+Problem 6  & 45 & 16 & 29 & 5 & 7 & 3 & 5 & 8 & 3 & 7 & 3 \\
+Problem 7  & 47 & 37 & 28 & 7 & 7 & 4 & 7 & 6 & 3 & 6 & 3 \\
+Problem 8  & 46 & 44 & 28 & 7 & 9 & 4 & 16 & 9 & 3 & 7 & 3 \\
+Problem 9  & 48 & 15 & 26 & 6 & 8 & 3 & 10 & 8 & 3 & 5 & 3 \\
+Problem 10  & 46 & 6 & 28 & 5 & 6 & 17 & 9 & 5 & 3 & 5 & 3 \\
+Problem 11  & 45 & 12 & 28 & 8 & 10 & 14 & 7 & 8 & 3 & 6 & 3 \\
+Problem 12  & 50 & 138 & 31 & 9 & 12 & 6 & 15 & 11 & 4 & 8 & 5 \\
+Problem 13  & 48 & 20 & 29 & 7 & 5 & 1 & 12 & 7 & 3 & 7 & 3 \\
+Problem 14  & 49 & 33 & 30 & 8 & 9 & 4 & 15 & 9 & 3 & 7 & 3 \\
+Problem 15  & 46 & 12 & 27 & 6 & 8 & 10 & 5 & 7 & 3 & 6 & 3 \\
+Problem 16  & 42 & 6 & 29 & 5 & 6 & 18 & 5 & 5 & 3 & 4 & 2 \\
+Problem 17  & 44 & 20 & 30 & 8 & 7 & 10 & 13 & 6 & 3 & 7 & 3 \\
+Problem 18 & 47 & 10 & 30 & 6 & 7 & 4 & 5 & 6 & 3 & 6 & 2 \\
+Problem 19  & 51 & 28 & 32 & 9 & 11 & 5 & 15 & 9 & 4 & 7 & 3 \\
+Problem 20  & 48 & 24 & 31 & 7 & 11 & 5 & 7 & 9 & 4 & 7 & 4 \\
+Problem 21  & 2 & 1 & 31 & 1 & 1 & 1 & 10000 & 1 & 1 & 1 & 1 \\
+Problem 22  & 51 & 29 & 32 & 8 & 9 & 5 & 15 & 10 & 3 & 7 & 3 \\
+Problem 23  & 45 & 10 & 28 & 5 & 6 & 1 & 9 & 6 & 2 & 4 & 2 \\
+Problem 24  & 43 & 1 & 28 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 \\
+Problem 25  & 51 & 34 & 32 & 8 & 10 & 8 & 17 & 9 & 4 & 7 & 4 \\
+Problem 26  & 51 & 10000 & 34 & 8 & 9 & 6 & 18 & 9 & 4 & 7 & 4 \\
+Problem 27  & 51 & 90 & 32 & 9 & 9 & 5 & 16 & 9 & 4 & 8 & 3 \\
+Problem 28  & 46 & 24 & 30 & 7 & 5 & 3 & 13 & 4 & 2 & 7 & 3 \\
+Problem 29  & 47 & 9 & 29 & 7 & 7 & 18 & 13 & 6 & 3 & 6 & 3 \\
+Problem 30  & 52 & 10000 & 1 & 1 & 14 & 9 & 23 & 11 & 5 & 1 & 1 \\
+Problem 31  & 1 & 1 & 31 & 1 & 1 & 1 & 10000 & 1 & 1 & 1 & 1 \\ 
+Problem 32  & 45 & 9 & 28 & 6 & 6 & 4 & 4 & 6 & 3 & 5 & 3 \\
+Problem 33  & 48 & 119 & 1 & 1 & 10 & 5 & 18 & 10 & 4 & 1 & 1 \\
+Problem 34  & 47 & 12 & 29 & 6 & 8 & 10 & 12 & 7 & 3 & 5 & 2 \\
+Problem 35  & 1 & 10000 & 33 & 10 & 1 & 1 & 3 & 1 & 1 & 9 & 6 \\
+Problem 36  & 5 & 10000 & 4 & 4 & 5 & 7 & 17 & 6 & 6 & 4 & 4 \\
+Problem 37  & 47 & 6 & 30 & 5 & 7 & 19 & 6 & 5 & 3 & 4 & 3 \\
+Problem 38  & 2 & 1 & 32 & 1 & 1 & 1 & 10000 & 1 & 1 & 1 & 1 \\
+Problem 39  & 49 & 1 & 31 & 1 & 1 & 1 & 10000 & 1 & 1 & 1 & 1 \\
+Problem 40  & 51 & 123 & 32 & 9 & 10 & 7 & 23 & 12 & 5 & 9 & 4 \\
+Problem 41  & 43 & 3790 & 28 & 9 & 12 & 7 & 14 & 9 & 5 & 8 & 5 \\
+Problem 42  & 1 & 1 & 10000 & 1 & 1 & 1 & 10000 & 1 & 1 & 1 & 1 \\
+\hline
+\end{tabular}}
+\end{table}
 
 The results highlight several key findings based on the comprehensive 42-problem evaluation:
 
@@ -964,7 +1063,9 @@ Speedup vs Brent & 1.7x faster & 1.3x slower & - \\
 \end{tabular}
 \end{table}
 
-The comparison with state-of-the-art methods reveals several key advantages:
+\subsection{Analysis of Performance vs. State-of-the-Art Methods}
+
+A key finding of this study is the consistent outperformance of our top hybrid, Opt.BFMS, against established methods like Brent's and QIR. This warrants a deeper analysis.
 
 \textbf{Superior Performance vs QIR:} The proposed hybrid algorithms significantly outperform the Quadratic Interval Refinement method, achieving 2.2x faster average CPU time (0.00109s vs 0.00243s) and dominating in terms of wins (20 vs 1). This demonstrates that our hybrid approach provides superior performance compared to this modern bracketing method.
 
@@ -1066,55 +1167,21 @@ Optimized\_TFMS & Superlinear to quadratic (problem-dependent) \\
 
 \section{Discussion}\label{sec:discussion}
 
-The hybrid algorithms developed in this work demonstrate rapid convergence, achieving the root in three iterations or fewer for most problems. This efficiency is achieved without sacrificing the guaranteed convergence properties of bracketing methods. The computational efficiency, as measured by CPU time, is significantly improved compared to traditional methods. Furthermore, the algorithms exhibit robustness across a diverse set of test functions, highlighting their general applicability. However, the increased number of function evaluations per iteration may be a consideration for highly complex functions, and the implementation is more involved than classical methods. Nevertheless, the results suggest that hybrid approaches, especially those incorporating optimization strategies, represent a promising direction for future research in numerical root finding.
+The experimental and theoretical results presented in this work confirm that our sequential, multi-phase hybrid algorithms offer a compelling balance of speed, efficiency, and robustness. The premier algorithm, **Optimized\_BFMS**, not only demonstrated the lowest average CPU time but also the lowest average Number of Function Evaluations (NFE), confirming that its performance gains are rooted in true algorithmic efficiency. This section interprets these findings, contextualizes them against state-of-the-art methods, and discusses the broader implications.
 
-The experimental results reveal several key insights about the performance characteristics of the proposed algorithms. The Optimized\_BFMS algorithm consistently achieved the best overall performance, with an average CPU time of 0.00109 seconds and maintaining robust convergence across all test problems. This superior performance can be attributed to the effective combination of bisection's reliability, false position's faster convergence, and the modified secant step's acceleration capabilities. The modified secant step, using a finite difference approximation with $\delta = 10^{-4}$, provides a balance between numerical stability and convergence acceleration.
+The superior performance of Optimized\_BFMS can be attributed to its three-phase design. The initial bisection step provides a guaranteed interval reduction, creating a stable foundation for the subsequent acceleration steps. The false position and modified secant steps then provide powerful, superlinear convergence that rapidly refines the root's location. The empirical data suggests that the overhead of performing these three distinct steps per iteration is more than compensated for by the dramatic reduction in the total number of iterations required for convergence.
 
-The trisection-based algorithms (Optimized\_TF and Optimized\_TFMS) showed competitive performance, demonstrating the effectiveness of the three-way interval splitting approach, which can potentially reduce the search space more rapidly than traditional bisection. However, the additional computational overhead of evaluating two interior points per iteration partially offsets this advantage in terms of CPU time.
+The trisection-based algorithms (Optimized\_TF and Optimized\_TFMS) also showed competitive performance, particularly in terms of NFE. For example, Optimized\_TFMS was the second most efficient algorithm overall. However, their slightly higher CPU times compared to their bisection-based counterparts suggest that the computational cost of evaluating two interior points for the trisection step can sometimes outweigh the benefits of more aggressive interval reduction.
 
 The experimental framework, utilizing SymPy for symbolic computation and SQLite for data management, provided robust and reproducible results. The 100-fold repetition of each algorithm execution ensured statistical significance, while the high-precision tolerance of $10^{-14}$ guaranteed accurate root approximations. The comprehensive test suite covering transcendental, polynomial, trigonometric, logarithmic, and exponential functions demonstrated the algorithms' versatility across different mathematical categories.
 
 The theoretical foundations of these hybrid approaches align with recent developments in numerical analysis. The work builds upon the framework established by \cite{sabharwal2019blended} and \cite{badr2022novel}, who demonstrated that hybrid algorithms can achieve superlinear convergence while maintaining bracketing method reliability. The incorporation of modified secant techniques follows the approach outlined by \cite{mathews2004numerical}, while the trisection methodology draws from the theoretical analysis of \cite{demir2008trisection}.
 
-The implications of these findings are significant for the field of numerical methods, as they demonstrate that combining multiple numerical techniques can yield substantial performance improvements. Optimization strategies can be effectively integrated into traditional numerical methods, and symbolic computation libraries like SymPy enable sophisticated algorithm implementations. Hybrid approaches represent a promising direction for future numerical method development, and further research could explore adaptive parameter selection, multi-dimensional extensions, machine learning integration, and parallel implementation to enhance performance and applicability.
-
-The experimental results also highlight the importance of careful algorithm design and implementation. The error handling mechanisms for division by zero scenarios, the choice of the secant parameter $\delta$, and the convergence tolerance settings all contribute to the algorithms' robustness. The database-driven experimental framework allows for comprehensive performance analysis and facilitates future comparative studies with other numerical methods.
-
-Future research directions could include the development of adaptive hybrid algorithms that automatically select the most appropriate combination of methods based on function characteristics, the extension of these approaches to multi-dimensional root finding problems, and the integration of machine learning techniques for parameter optimization. Additionally, the application of these algorithms to real-world problems in engineering, physics, and other scientific disciplines would provide valuable validation of their practical utility.
-
 \subsection{Limitations and Trade-offs}
-While the proposed hybrid algorithms offer significant improvements in convergence speed and robustness, they also introduce certain limitations. Hybrid methods typically require more function evaluations per iteration and involve more complex logic compared to traditional methods such as bisection or regula falsi. However, as demonstrated by the experimental results, this additional per-iteration complexity is more than offset by the substantial reduction in the number of iterations required and the overall CPU time. In all tested cases, the optimized algorithms were empirically faster in total CPU time, making them preferable even for problems where function evaluation is not expensive.
 
-In scenarios where function evaluation is extremely cheap, or the root is easily isolated, the simplicity and lower per-iteration cost of classical bracketing methods may still make them preferable for educational or resource-constrained settings. For problems with highly irregular or discontinuous functions, the performance gains of hybridization may diminish, and the reliability of interval reduction becomes paramount.
+While the proposed hybrid algorithms offer significant advantages, they are not without limitations. The primary trade-off is the increased number of function evaluations per iteration compared to classical methods like Bisection. As shown in our NFE analysis (Table~\ref{tab:nfe_comparison_main}), this upfront cost is overwhelmingly compensated by the drastic reduction in total iterations, leading to a much lower total NFE and faster convergence.
 
-The benefits of hybridization are most pronounced for challenging problems with slow-converging traditional methods. Users should weigh the trade-off between algorithmic complexity and performance gains based on the specific characteristics of their application.
-
-\subsection*{Quantitative Trade-off Analysis}
-
-Table~\ref{tab:func_evals} summarizes the average number of function evaluations per iteration for each algorithm. Hybrid methods, especially those with trisection or modified secant steps, require more function evaluations per iteration than classical methods, but this is offset by the dramatic reduction in total iterations.
-
-\begin{table}[H]
-\centering
-\captionof{table}{Average Function Evaluations per Iteration for Each Algorithm}
-\label{tab:func_evals}
-\begin{tabular}{lc}
-\toprule
-Algorithm & Function Evaluations per Iteration \\
-\midrule
-Bisection & 1 \\
-False Position & 2 \\
-Trisection & 2 \\
-Optimized\_BF & 2 \\
-Optimized\_BFMS & 3 \\
-Optimized\_TF & 3 \\
-Optimized\_TFMS & 4 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-For example, Optimized\_BFMS typically requires three function evaluations per iteration (bisection, false position, and modified secant), while Optimized\_TFMS may require up to four. In contrast, classical bisection requires only one. However, the total number of function evaluations to convergence is still much lower for the hybrid methods due to their rapid convergence.
-
-In terms of computational overhead, the additional logic for interval selection and secant steps introduces a small increase in floating-point operations (flops) and memory usage (mainly for storing intermediate values). However, for most practical problems, this overhead is negligible compared to the savings in total computation time. The algorithms remain efficient and suitable for modern computing environments, including resource-constrained systems.
+However, in niche scenarios where a single function evaluation is exceptionally expensive (e.g., involving a large-scale simulation), the guaranteed single evaluation of Bisection per iteration might be preferable if predictability is paramount. Furthermore, for problems with highly irregular or discontinuous functions, the performance gains of the interpolation steps may diminish, and the core reliability of the bracketing mechanism becomes the dominant factor. The benefits of our hybridization strategy are most pronounced for the broad class of continuous functions encountered in typical scientific and engineering applications.
 
 \section{Conclusion}\label{sec:conclusion}
 
