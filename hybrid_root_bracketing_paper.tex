@@ -77,7 +77,7 @@ Our work builds upon this tradition but explores a different structural approach
 
 More recently, Quadratic Interval Refinement (QIR) \cite{abbott2012quadratic, abbott2014quadratic} has been proposed as a method that guarantees quadratic convergence for simple roots by fitting a quadratic model to three points to refine the root's location. While powerful, its performance can depend on the function's local behavior. The algorithms presented in this paper are differentiated by their reliance on simpler linear interpolation and finite-difference steps, which, as our experiments show, can be more efficient on average across a wider variety of function types.
 
-Furthermore, this work is distinct from other recent hybrid methods included in our benchmark, such as those by Sabharwal (2019) \cite{sabharwal2019blendedpaper} and Badr (2021) \cite{badr2021comparativepaper}. Those methods typically employ a "blended" strategy, often involving a conditional choice between, for example, a bisection or a false position update within an iteration. Our proposed algorithms differ fundamentally in their deterministic, \textbf{sequential multi-phase architecture}. For instance, our Optimized\_BF algorithm does not choose between bisection and false position; it executes a bisection step and then a false position step within the newly narrowed interval in every single iteration. This fixed sequential process is a unique architectural choice designed to enforce progress while consistently applying interpolation-based acceleration.
+Furthermore, this work is distinct from other recent hybrid methods included in our benchmark, such as those by Sabharwal (2019) \cite{sabharwal2019blended} and Badr (2021) \cite{badr2021comparative}. Those methods typically employ a "blended" strategy, often involving a conditional choice between, for example, a bisection or a false position update within an iteration. Our proposed algorithms differ fundamentally in their deterministic, \textbf{sequential multi-phase architecture}. For instance, our Optimized\_BF algorithm does not choose between bisection and false position; it executes a bisection step and then a false position step within the newly narrowed interval in every single iteration. This fixed sequential process is a unique architectural choice designed to enforce progress while consistently applying interpolation-based acceleration.
 
 \section{Algorithm Design and Methodology}\label{sec:methodology}
 
@@ -820,7 +820,7 @@ On this challenging high-frequency function, the proposed Opt.BF algorithm demon
 
 \section{Results and Analysis}\label{sec:results}
 
-The experimental results demonstrate the superior performance of the proposed hybrid algorithms compared to traditional numerical methods. This section presents a comprehensive analysis of the performance data, including detailed comparisons across all algorithms and test functions, statistical significance of the results, and practical implications for numerical computing applications.
+This section presents a comprehensive analysis of the performance data, including detailed comparisons across all algorithms and test functions, statistical significance of the results, and practical implications for numerical computing applications.
 
 \subsection{Overall Performance Analysis}
 
@@ -828,7 +828,7 @@ The experimental results reveal significant performance improvements achieved by
 
 \begin{table}
 \centering
-\captionof{table}{Comprehensive comparison of all root-finding algorithms across 42 diverse benchmark problems. Reported metrics are the average CPU time (in seconds), median CPU time, standard deviation, and number of wins (problems where the algorithm achieved the fastest time). Algorithm codes are defined in Table~\ref{tab:algo_legend}. Lower values indicate better performance.}
+\captionof{table}{Comprehensive comparison of all root-finding algorithms across 42 diverse benchmark problems. Reported metrics are the average CPU time (in seconds), median CPU time, standard deviation, and number of wins (problems where the algorithm achieved the fastest time). Algorithm codes are defined in Table~\ref{tab:algo_legend}.}
 \label{tab:performance_comparison_main}
 \begin{tabular}{lcccc}
 \hline
@@ -850,11 +850,11 @@ False Position & 0.11051 & 0.00395 & 0.42181 & 1 \\
 \end{tabular}
 \end{table}
 
-In addition to CPU time, the number of iterations required for convergence provides valuable insight into algorithmic efficiency, as it reflects the computational effort independent of hardware-specific factors. Table~\ref{tab:iteration_count_comparison} presents the average iteration count, median iteration count, standard deviation, and number of wins (problems where an algorithm achieved the lowest iteration count) for each algorithm across the 42 benchmark problems. The results show that Opt.TFMS and Brent (SciPy) lead with the lowest average iteration counts (2.57), with Opt.TFMS achieving the most wins (9.23), highlighting its robustness across diverse problems. These metrics complement the CPU time analysis, confirming the high performance of the optimized hybrid methods, particularly Opt.TFMS and Opt.BFMS, in terms of both speed and iteration efficiency
+In addition to CPU time, the number of iterations required for convergence provides valuable insight into algorithmic efficiency, as it reflects the computational effort independent of hardware-specific factors. Table~\ref{tab:iteration_count_comparison} presents the average iteration count, median iteration count, standard deviation, and number of wins (problems where an algorithm achieved the lowest iteration count) for each algorithm across the 42 benchmark problems.
 
 \begin{table}
 \centering
-\captionof{table}{Comprehensive comparison of all root-finding algorithms across 42 diverse benchmark problems. Reported metrics are the average iteration count, median iteration count, and standard deviation. Algorithm codes are defined in Table~\ref{tab:algo_legend}. Lower values indicate better performance. Brent (SciPy) is excluded due to unavailable iteration count data.}
+\captionof{table}{Comprehensive comparison of all root-finding algorithms across 42 diverse benchmark problems. Reported metrics are the average iteration count, median iteration count, and standard deviation. Algorithm codes are defined in Table~\ref{tab:algo_legend}. Brent (SciPy) is excluded due to unavailable iteration count data.}
 \label{tab:iteration_count_comparison}
 \begin{tabular}{lccc}
 \hline
@@ -952,7 +952,7 @@ Problem 42 & 0.00011 & 0.00014 & 1.46607 & 0.00028 & 0.00020 & 0.00010 & 0.00009
 
 Table~\ref{tab:iteration_count_results} presents the exact number of iterations for each algorithm on each problem, revealing patterns of convergence behavior. 
 
-\noindent\textbf{Note on non-convergence:} An iteration count of \textbf{10000} indicates that the algorithm \textbf{did not converge to the specified tolerance} ($10^{-14}$) and instead reached the \textbf{maximum iteration cap} before approaching the tolerance. Such entries penalize the average and variance appropriately and are reflected in the wins metric using fractional ties.
+\noindent\textbf{Note on non-convergence:} An iteration count of \textbf{10000} indicates that the algorithm \textbf{did not converge to the specified tolerance} ($10^{-14}$) and instead reached the \textbf{maximum iteration cap} before approaching the tolerance.
 
 \begin{table}
 \centering
@@ -1017,10 +1017,6 @@ The results highlight several key findings based on the comprehensive 42-problem
 
 \textbf{3. Traditional Methods Are Significantly Slower:} Classical methods such as Bisection (0.00577s), Trisection (0.04062s), and False Position (0.11051s) require substantially more computational time. False Position shows particularly poor performance with a very high variance (std dev = 0.42181s), indicating inconsistent and unreliable convergence behavior.
 
-\textbf{4. Robustness Across Problems:} The hybrid algorithms maintain their advantage across the diverse 42-problem test suite, with Opt.BFMS achieving wins on nearly half of all problems, indicating strong generalizability and practical utility.
-
-\textbf{5. Statistical Significance:} The coefficient of variation (CV) for CPU time measurements across all algorithms is consistently low for the top-performing methods, indicating high measurement precision and reproducibility. The performance improvements are statistically significant with p-values less than 0.001 in pairwise comparisons.
-
 \subsection{Statistical Analysis and Significance}
 
 The experimental design with 100-fold repetition provides robust statistical data for performance analysis. The coefficient of variation (CV) for CPU time measurements is consistently low (e.g., for Opt.BFMS: $\text{CV} = \frac{\text{std dev}}{\text{mean}} = \frac{0.00100}{0.00109} \approx 0.92$), while for more stable methods it is even lower, indicating high measurement precision.
@@ -1053,7 +1049,7 @@ The comparison reveals that the hybrid algorithms achieve:
 
 \subsection{Comparison with State-of-the-Art Methods}
 
-The proposed hybrid algorithms also demonstrate superior performance compared to modern state-of-the-art methods, including the Quadratic Interval Refinement (QIR) method and Brent's method implementations. Table~\ref{tab:state_of_art_comparison} provides a comprehensive comparison highlighting the advantages of our hybrid approach.
+The proposed hybrid algorithms also demonstrate superior performance compared to modern state-of-the-art methods, including the Quadratic Interval Refinement (QIR) method and Brent's method implementations. Table~\ref{tab:state_of_art_comparison}.
 
 \begin{table}[H]
 \centering
@@ -1142,12 +1138,6 @@ The experimental framework, utilizing SymPy for symbolic computation and SQLite 
 
 The theoretical foundations of these hybrid approaches align with recent developments in numerical analysis. The work builds upon the framework established by \cite{sabharwal2019blended} and \cite{badr2022novel}, who demonstrated that hybrid algorithms can achieve superlinear convergence while maintaining bracketing method reliability. The incorporation of modified secant techniques follows the approach outlined by \cite{mathews2004numerical}, while the trisection methodology draws from the theoretical analysis of \cite{demir2008trisection}.
 
-\subsection{Limitations and Trade-offs}
-
-While the proposed hybrid algorithms offer significant advantages, they are not without limitations. The primary trade-off is the increased number of function evaluations per iteration compared to classical methods like Bisection. As shown in our NFE analysis (Table~\ref{tab:nfe_comparison_main}), this upfront cost is overwhelmingly compensated by the drastic reduction in total iterations, leading to a much lower total NFE and faster convergence.
-
-However, in niche scenarios where a single function evaluation is exceptionally expensive (e.g., involving a large-scale simulation), the guaranteed single evaluation of Bisection per iteration might be preferable if predictability is paramount. Furthermore, for problems with highly irregular or discontinuous functions, the performance gains of the interpolation steps may diminish, and the core reliability of the bracketing mechanism becomes the dominant factor. The benefits of our hybridization strategy are most pronounced for the broad class of continuous functions encountered in typical scientific and engineering applications.
-
 \section{Conclusion}\label{sec:conclusion}
 
 This paper presented four novel hybrid root bracketing algorithms that combine traditional bracketing methods with accelerated interpolation techniques. All four hybrid algorithms achieved much faster convergence than traditional methods, with Optimized\_BFMS showing the best overall performance. The algorithms maintained a 100\% success rate across all test functions, achieving substantial CPU time improvements compared to classical approaches. These results highlight the effectiveness of multi-phase  hybrid methods in numerical root finding and suggest their immediate applicability to a wide range of scientific and engineering problems.
@@ -1161,118 +1151,76 @@ The SymPy implementations of all algorithms and experimental scripts are availab
 
 \begin{thebibliography}{99}
 
-\bibitem{sabharwal2019blended}
-Sabharwal, C. L., and Aggarwal, S. (2019). Blended Root Finding Algorithm Outperforms Bisection and Regula Falsi Algorithms. \textit{International Journal of Computer Applications}, 178(1), 1--6.
+    \bibitem{sabharwal2019blended}
+    Sabharwal, C. L., and Aggarwal, S. (2019). Blended Root Finding Algorithm Outperforms Bisection and Regula Falsi Algorithms. \textit{International Journal of Computer Applications}, 178(1), 1--6.
+    
+    \bibitem{sabharwal2019hybrid}
+    Sabharwal, C. L., and Aggarwal, S. (2019). Hybrid Algorithm Improving Bisection, Regula Falsi, Dekker, Brent Algorithms. \textit{International Journal of Computer Applications}, 178(2), 1--8.
 
-\bibitem{sabharwal2019hybrid}
-Sabharwal, C. L., and Aggarwal, S. (2019). Hybrid Algorithm Improving Bisection, Regula Falsi, Dekker, Brent Algorithms. \textit{International Journal of Computer Applications}, 178(2), 1--8.
+    \bibitem{badr2022novel}
+    Badr, E., and El-Sayed, M. A. (2022). Novel Hybrid Algorithms for Root Finding Problem using Advantages of Open and Bracketing Methods. \textit{Alexandria Engineering Journal}, 61(12), 9437--9448.
+    
+    \bibitem{sabharwal2023wave}
+    Sabharwal, C. L., and Aggarwal, S. (2023). A New Wave of Hybrid Algorithms. \textit{International Journal of Computer Applications}, 181(1), 1--10.
+    
+    \bibitem{sabharwal2021iterative}
+    Sabharwal, C. L., and Aggarwal, S. (2021). An Iterative Hybrid Algorithm for Roots of Non-Linear Equations. \textit{International Journal of Computer Applications}, 175(1), 1--7.
+    
+    \bibitem{badr2021comparative}
+    Badr, E., and El-Sayed, M. A. (2021). A Comparative Study among New Hybrid Root Finding Algorithms and Traditional Methods. \textit{Mathematics}, 9(4), 345.
+    
+    \bibitem{thota2019trigonometrical}
+    Thota, S., and Kavitha, B. (2019). A New Trigonometrical Algorithm for Finding Roots of Non-Linear Equations. \textit{International Journal of Computer Applications}, 178(3), 1--5.
+    
+    \bibitem{hasan2016numerical}
+    Hasan, A. (2016). Numerical Study of Some Iterative Methods for Solving Nonlinear Equations. \textit{International Journal of Engineering Science and Invention}, 5(9), 01--10.
+    
+    \bibitem{burden1985numerical}
+    Burden, R. L., and Faires, J. D. (1985). \textit{Numerical Analysis} (3rd ed.). Prindle, Weber \& Schmidt.
 
-\bibitem{badr2022novel}
-Badr, E., and El-Sayed, M. A. (2022). Novel Hybrid Algorithms for Root Determining using Advantages of Open Methods and Bracketing Methods. \textit{Alexandria Engineering Journal}, 61(12), 12345--12356.
+    \bibitem{harder2019numerical}
+    Harder, D. W. (2019). \textit{Numerical Analysis for Engineering}. University of Waterloo.
+    
+    \bibitem{mathews2004numerical}
+    Mathews, J. H., and Fink, K. D. (2004). \textit{Numerical Methods Using MATLAB} (4th ed.). Prentice-Hall Inc.
+    
+    \bibitem{demir2008trisection}
+    Demir, A. (2008). Trisection method by k-Lucas numbers. \textit{Applied Mathematics and Computation}, 198(1), 339--345.
 
-\bibitem{sabharwal2023wave}
-Sabharwal, C. L., and Aggarwal, S. (2023). A New Wave of Hybrid Algorithms. \textit{International Journal of Computer Applications}, 181(1), 1--10.
+    \bibitem{hasan2015comparative}
+    Hasan, A., and Ahmad, N. (2015). Comparative study of a new iterative method with that Newton's Method for solving algebraic and transcendental equations. \textit{International Journal of Computer Mathematics}, 92(1), 32--37.
+    
+    \bibitem{moazzam2012robust}
+    Moazzam, G., Chakraborty, A., and Bhuiyan, A. (2012). A robust method for solving transcendental equations. \textit{International Journal of Computer Science Issues}, 9(5), 413--419.
+    
 
-\bibitem{sabharwal2021iterative}
-Sabharwal, C. L., and Aggarwal, S. (2021). An Iterative Hybrid Algorithm for Roots of Non-Linear Equations. \textit{International Journal of Computer Applications}, 175(1), 1--7.
-
-\bibitem{badr2021comparative}
-Badr, E., and El-Sayed, M. A. (2021). A Comparative Study among New Hybrid Root Finding Algorithms and Traditional Methods. \textit{Mathematics}, 9(4), 345.
-
-\bibitem{thota2019trigonometrical}
-Thota, S., and Kavitha, B. (2019). A New Trigonometrical Algorithm for Finding Roots of Non-Linear Equations. \textit{International Journal of Computer Applications}, 178(3), 1--5.
-
-\bibitem{hasan2016numerical}
-Hasan, A. (2016). Numerical Study of Some Iterative Methods for Solving Nonlinear Equations. \textit{International Journal of Engineering Science and Invention}, 5, 1--10.
-
-\bibitem{burden1985numerical}
-Burden, R. L., and Faires, J. D. (1985). \textit{Numerical Analysis} (3rd ed.). Prindle, Weber \& Schmidt.
-
-\bibitem{harder2019numerical}
-Harder, D. W. (2019). Numerical Analysis for Engineering. 
-
-\bibitem{mathews2004numerical}
-Mathews, J. H., and Fink, K. D. (2004). \textit{Numerical Methods Using MATLAB} (4th ed.). Prentice-Hall Inc.
-
-\bibitem{demir2008trisection}
-Demir, A. (2008). Trisection method by k-Lucas numbers. \textit{Applied Mathematics and Computation}, 198(1), 339--345.
-
-\bibitem{hasan2015comparative}
-Hasan, A., and Ahmad, N. (2015). Comparative study of a new iterative method with that Newton's Method for solving algebraic and transcendental equations. \textit{International Journal of Computer Mathematics}, 4, 32--37.
-
-\bibitem{lally2015arxiv}
-Lally, C. H. (2015). A faster, high precision algorithm for calculating symmetric and asymmetric. \textit{arXiv preprint}, arXiv:1509.01831.
-
-\bibitem{ehiwario2014bisection}
-Ehiwario, J.C., and Aghamie, S.O. (2014). Comparative Study of Bisection, Newton-Raphson and Secant Methods of Root-Finding Problems. \textit{IOSR J. Eng.}, 4, 1--7.
-
-\bibitem{srivastava2011comparison}
-Srivastava, R.B., and Srivastava, S. (2011). Comparison of numerical rate of convergence of bisection, Newton and secant methods. \textit{J. Chem. Biol. Phys. Sci.}, 2, 472--479.
-
-\bibitem{baskar2016introduction}
-Baskar, S., and Ganesh, S.S. (2016). Introduction to Numerical Analysis. Department of Mathematics, Indian Institute of Technology Bombay Powai, Mumbai, India.
-
-\bibitem{moazzam2012robust}
-Moazzam, G., Chakraborty, A., and Bhuiyan, A. (2012). A robust method for solving transcendental equations. \textit{Int. J. Comput. Sci. Issues}, 9, 413--419.
-
-\bibitem{ait2014geometric}
-Ait-Aoudia, S., and Mana, I. (2004). Numerical solving of geometric constraints by bisection: A distributed approach. \textit{Int. J. Comput. Inf. Sci.}, 2, 66.
-
-\bibitem{chapra2015numerical}
-Chapra, S.C., and Canale, R.P. (2015). Numerical Methods for Engineers, 7th ed., McGraw-Hill, Boston, MA, USA.
-
-\bibitem{heydari2011optimal}
-Heydari, M., Hosseini, S.M., and Loghmani, G.B. (2011). On two new families of iterative methods for solving nonlinear equations with optimal order. \textit{Applicable Anal. Discrete Math.}, 5(1), 93--109.
-
-\bibitem{mansouri2015bee}
-Mansouri, P., Asady, B., and Gupta, N. (2015). The Bisection--Artificial Bee Colony algorithm to solve Fixed point problems. \textit{Appl. Soft Comput.}, 26, 143--148.
-
-\bibitem{karaboga2007abc}
-Karaboga, D., and Basturk, B. (2007). A powerful and efficient algorithm for numerical function optimization: artificial bee colony (ABC) algorithm. \textit{J Glob Optim}, 39(3), 459--471.
-
-\bibitem{kelley1995iterative}
-Kelley, C. T. (1995). \textit{Iterative Methods for Linear and Nonlinear Equations}. Society for Industrial and Applied Mathematics (SIAM).
-
-\bibitem{badr2021comparativepaper} Badr, E., Almotairi, S., and Ghamry, A.E. (2021). A Comparative Study among New Hybrid Root Finding Algorithms and Traditional Methods. \textit{Mathematics}, 9(11), 1306.
-\bibitem{sabharwal2019blendedpaper} Sabharwal, C.L. (2019). Blended Root Finding Algorithm Outperforms Bisection and Regula Falsi Algorithms. \textit{Mathematics}, 7(11), 1118.
-\bibitem{sabharwal2019hybridpaper} Sabharwal, C.L. (2019). Hybrid Algorithm Improving Bisection, Regula Falsi, Dekker, Brent Algorithms. \textit{Mathematics}, 7(12), 1234.
-\bibitem{sabharwal2021iterativepaper} Sabharwal, C.L. (2021). An Iterative Hybrid Algorithm for Roots of Non-Linear Equations. \textit{Mathematics}, 9(5), 567.
-\bibitem{sabharwal2023wavepaper} Sabharwal, C.L. (2023). A New Wave of Hybrid Algorithms. \textit{Mathematics}, 11(2), 234.
-\bibitem{thota2019trigonometricalpaper} Thota, V.K.S., Srivastav, S., and Kumar, M. (2019). A New Trigonometrical Algorithm for Computing Real Root of Non-Linear Transcendental Equations. \textit{International Journal of Applied and Computational Mathematics}, 5(2), 60.
-
+    \bibitem{heydari2011optimal}
+    Heydari, M., Hosseini, S. M., and Loghmani, G. B. (2011). On two new families of iterative methods for solving nonlinear equations with optimal order. \textit{Applicable Analysis and Discrete Mathematics}, 5(1), 93--109.
+    
+    \bibitem{kelley1995iterative}
+    Kelley, C. T. (1995). \textit{Iterative Methods for Linear and Nonlinear Equations}. Society for Industrial and Applied Mathematics (SIAM).
+    
     \bibitem{brent1973algorithms}
     Brent, R. P. (1973). \textit{Algorithms for Minimization Without Derivatives}. Prentice-Hall.
-    
+        
     \bibitem{ridders1979new}
     Ridders, C. (1979). A new algorithm for computing a single root of a real continuous function. \textit{IEEE Transactions on Circuits and Systems}, 26(11), 979--980.
-    
+        
     \bibitem{oliveira2021enhancement}
-    Oliveira, I. F. D., \& Takahashi, R. H. C. (2021). An Enhancement of the Bisection Method Average Performance Preserving the Minmax Optimality. \textit{ACM Transactions on Mathematical Software}, 47(1), 1--24.
-    
+    Oliveira, I. F. D., \& Takahashi, R. H. C. (2021). An Enhancement of the Bisection Method Average Performance Preserving the Minmax Optimality. \textit{ACM Transactions on Mathematical Software}, 47(1), Article 7.
+        
     \bibitem{thota2023new}
     Thota, S., Gemechu, T., \& Ayoade, A. A. (2023). On New Hybrid Root-Finding Algorithms for Solving Transcendental Equations using Exponential and Halley's Methods. \textit{Ural Mathematical Journal}, 9(2), 205--217.
+        
+    \bibitem{abbott2012quadratic}
+    Abbott, J. (2022). Quadratic Interval Refinement for Real Roots. \textit{arXiv preprint arXiv:1203.1227}.
     
-    \bibitem{jansson2024neural}
-    Jansson, A., \& Ryd Sternbeck, T. (2024). \textit{Neural network algorithm for solving (higher order) nonlinear equations}. Degree Project, KTH Royal Institute of Technology.
+    \bibitem{abbott2014quadratic}
+    Abbott, J. (2014). Quadratic interval refinement for real roots. \textit{ACM Communications in Computer Algebra}, 48(1/2), 3--12.
     
-    \bibitem{oueslati2024review}
-    Oueslati, O., et al. (2024). A Review of the Most Influential Metaheuristic Algorithms in the Last Six Years (2019-2024). \textit{arXiv preprint arXiv:2401.06918}.
-    
-    \bibitem{liu2021efficient}
-    Liu, J. P., et al. (2021). Efficient quantum algorithm for dissipative nonlinear differential equations. \textit{Proceedings of the National Academy of Sciences}, 118(35), e2026805118.
-
-\bibitem{abbott2012quadratic}
-    Abbott, J. (2012). Quadratic Interval Refinement for Real Roots. \textit{arXiv preprint arXiv:1203.1227}.
-
-\bibitem{abbott2014quadratic}
-    Abbott, J. (2014). Quadratic interval refinement for real roots. \textit{ACM communications in computer algebra}, 48(1/2), 3--12.
-
-\bibitem{kerber2015root}
+    \bibitem{kerber2015root}
     Kerber, M., and Sagraloff, M. (2015). Root refinement for real polynomials using quadratic interval refinement. \textit{Journal of Computational and Applied Mathematics}, 280, 377--395.
-
-\bibitem{berberich2011generic}
-    Berberich, E., Hemmer, M., and Kerber, M. (2011, June). A generic algebraic kernel for non-linear geometric applications. In \textit{Proceedings of the twenty-seventh annual symposium on Computational geometry} (pp. 179--186).
-
-\end{thebibliography}
+    
+    \end{thebibliography}
 
 \end{document} 
