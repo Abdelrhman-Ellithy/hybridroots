@@ -50,7 +50,7 @@ Finding roots of nonlinear equations requires balancing the guaranteed convergen
 
 \maketitle
 
-\noindent\textbf{Keywords:} hybrid root-finding algorithms, numerical analysis, convergence analysis, bisection method, false position method, trisection method, modified secant, SymPy, computational mathematics, scientific computing, numerical stability.
+\noindent\textbf{Keywords:} hybrid root-finding algorithms, Continuous optimization, convergence analysis, Derivative-free methods, Bracketing methods, modified secant method, Nonlinear equations, numerical stability.
 
 \section{Introduction}
 
@@ -954,6 +954,7 @@ Table~\ref{tab:iteration_count_results} presents the exact number of iterations 
 
 \noindent\textbf{Note on non-convergence:} An iteration count of \textbf{10000} indicates that the algorithm \textbf{did not converge to the specified tolerance} ($10^{-14}$) and instead reached the \textbf{maximum iteration cap} before approaching the tolerance.
 
+
 \begin{table}
 \centering
 \captionof{table}{Iteration count for each algorithm on all 42 benchmark problems. Each cell shows the number of iterations required to converge for the corresponding problem and algorithm. See Table~\ref{tab:algo_legend} for algorithm codes.  Brent (SciPy) is excluded due to unavailable iteration count data.}
@@ -1013,9 +1014,7 @@ The results highlight several key findings based on the comprehensive 42-problem
 
 \textbf{1. Superior Performance of Hybrid Algorithms:} The \textbf{Optimized BFMS} algorithm achieves the best overall performance with an average CPU time of \textbf{0.00109 seconds} and wins on \textbf{20 out of 42 problems (47.6\%)}. This represents a \textbf{5.3x speedup} over the best traditional method, Bisection (0.00577s), and a massive \textbf{101.4x speedup} over the slowest, False Position (0.11051s). The \textbf{Optimized TFMS} algorithm ranks second with a \textbf{0.00121s} average CPU time and 5 wins (11.9\%), followed by \textbf{Optimized BF} with a \textbf{0.00126s} average CPU time and 6 wins (14.3\%).
 
-\textbf{2. State-of-the-Art Comparison:} The proposed hybrid algorithms significantly outperform modern algorithms. The best hybrid, \textbf{Opt.BFMS}, is \textbf{1.7x faster} than the widely-used Brent's method (SciPy, 0.00180s) and \textbf{2.2x faster} than the Quadratic Interval Refinement (QIR) method (0.00243s). This demonstrates that the hybrid approach provides a substantial performance advantage over current state-of-the-art bracketing methods.
-
-\textbf{3. Traditional Methods Are Significantly Slower:} Classical methods such as Bisection (0.00577s), Trisection (0.04062s), and False Position (0.11051s) require substantially more computational time. False Position shows particularly poor performance with a very high variance (std dev = 0.42181s), indicating inconsistent and unreliable convergence behavior.
+\textbf{2. State-of-the-Art Comparison:} The proposed hybrid algorithms significantly outperform modern algorithms. The best hybrid, \textbf{Opt.BFMS}, is \textbf{1.7x faster} than the Brent's method (SciPy, 0.00180s) and \textbf{2.2x faster} than the Quadratic Interval Refinement (QIR) (0.00243s). demonstrating substantial performance advantage over current state-of-the-art bracketing methods
 
 \subsection{Statistical Analysis and Significance}
 
@@ -1074,7 +1073,7 @@ A key finding of this study is the consistent outperformance of our top hybrid, 
 
 \textbf{Superior Performance vs QIR:} The proposed hybrid algorithms significantly outperform the Quadratic Interval Refinement method, achieving 2.2x faster average CPU time (0.00109s vs 0.00243s) and dominating in terms of wins (20 vs 1). This demonstrates that our hybrid approach provides superior performance compared to this modern bracketing method.
 
-\textbf{Competitive Performance vs Brent:} While Brent's method (SciPy implementation) shows competitive performance with 0.00180s average CPU time, our best hybrid algorithm (Opt.BFMS) still achieves 1.7x faster performance. The hybrid algorithms also demonstrate better consistency with 20 wins compared to Brent's 3 wins.
+\textbf{Competitive Performance vs Brent:} While Brent's method (SciPy implementation) shows competitive performance with 0.00180s average CPU time, our best hybrid algorithm (Opt.BFMS) still achieves 1.7x faster performance. The hybrid algorithm also demonstrate better consistency with 20 wins compared to Brent's 3 wins.
 
 \subsection{Algorithm-Specific Performance Analysis}
 
@@ -1088,43 +1087,42 @@ Each hybrid algorithm demonstrates unique performance characteristics that contr
 
 \textbf{Optimized\_TF (Effective Baseline Hybrid):} While not achieving any wins in terms of speed, this two-phase algorithm provides solid performance with an average CPU time of 0.00150s. Its effectiveness validates the core concept of combining trisection with false position, showing a substantial improvement over traditional methods even without the additional secant step.
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     \includegraphics[width=0.8\linewidth]{avg_cpu_time_per_algorithm.png}
     \captionof{figure}{Average CPU time (in seconds) for each algorithm across all test problems. Lower values indicate higher computational efficiency.}
     \label{fig:avg_cpu_time}
 \end{figure} 
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     \includegraphics[width=0.8\linewidth]{cpu_time_lineplot_per_problem.png}
     \captionof{figure}{CPU time per test problem for each algorithm. This figure highlights the consistency and variability of computational performance across the benchmark suite.}
     \label{fig:cpu_time_per_problem}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}
     \centering
-    \begin{minipage}{\linewidth}
-        \centering
-        \includegraphics[width=0.8\linewidth]{fastest_algorithm_per_problem_lineplot.png}
-        \captionof{figure}{Fastest algorithm for each test problem, as determined by minimum CPU time. This plot demonstrates the problem-dependent strengths of the proposed methods.}
-        \label{fig:fastest_algorithm}
-    \end{minipage}
-    \vspace{-15pt} 
-    \begin{minipage}{\linewidth}
-        \centering
-        \includegraphics[width=0.8\linewidth]{avg_cpu_time_lineplot_overall.png}
-        \captionof{figure}{Overall average CPU time trend across all problems and algorithms. This figure provides a holistic view of computational efficiency.}
-        \label{fig:avg_cpu_time_overall}
-    \end{minipage}
+    \includegraphics[width=0.8\linewidth]{fastest_algorithm_per_problem_lineplot.png}
+    \captionof{figure}{Fastest algorithm for each test problem, as determined by minimum CPU time. This plot demonstrates the problem-dependent strengths of the proposed methods.}
+    \label{fig:fastest_algorithm}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{avg_cpu_time_lineplot_overall.png}
+    \captionof{figure}{Overall average CPU time trend across all problems and algorithms. This figure provides a holistic view of computational efficiency.}
+    \label{fig:avg_cpu_time_overall}
+\end{figure}
+
+\begin{figure}
     \centering
     \includegraphics[width=0.8\linewidth]{top3_fastest_algorithms_lineplot.png}
     \captionof{figure}{Top three fastest algorithms per problem, ranked by CPU time. This visualization facilitates direct comparison of the most efficient methods.}
     \label{fig:top3_fastest}
 \end{figure}
+
+\FloatBarrier
 
 \section{Discussion}\label{sec:discussion}
 
@@ -1172,27 +1170,14 @@ The SymPy implementations of all algorithms and experimental scripts are availab
     \bibitem{thota2019trigonometrical}
     Thota, S., and Kavitha, B. (2019). A New Trigonometrical Algorithm for Finding Roots of Non-Linear Equations. \textit{International Journal of Computer Applications}, 178(3), 1--5.
     
-    \bibitem{hasan2016numerical}
-    Hasan, A. (2016). Numerical Study of Some Iterative Methods for Solving Nonlinear Equations. \textit{International Journal of Engineering Science and Invention}, 5(9), 01--10.
-    
     \bibitem{burden1985numerical}
     Burden, R. L., and Faires, J. D. (1985). \textit{Numerical Analysis} (3rd ed.). Prindle, Weber \& Schmidt.
 
-    \bibitem{harder2019numerical}
-    Harder, D. W. (2019). \textit{Numerical Analysis for Engineering}. University of Waterloo.
-    
     \bibitem{mathews2004numerical}
     Mathews, J. H., and Fink, K. D. (2004). \textit{Numerical Methods Using MATLAB} (4th ed.). Prentice-Hall Inc.
     
     \bibitem{demir2008trisection}
     Demir, A. (2008). Trisection method by k-Lucas numbers. \textit{Applied Mathematics and Computation}, 198(1), 339--345.
-
-    \bibitem{hasan2015comparative}
-    Hasan, A., and Ahmad, N. (2015). Comparative study of a new iterative method with that Newton's Method for solving algebraic and transcendental equations. \textit{International Journal of Computer Mathematics}, 92(1), 32--37.
-    
-    \bibitem{moazzam2012robust}
-    Moazzam, G., Chakraborty, A., and Bhuiyan, A. (2012). A robust method for solving transcendental equations. \textit{International Journal of Computer Science Issues}, 9(5), 413--419.
-    
 
     \bibitem{heydari2011optimal}
     Heydari, M., Hosseini, S. M., and Loghmani, G. B. (2011). On two new families of iterative methods for solving nonlinear equations with optimal order. \textit{Applicable Analysis and Discrete Mathematics}, 5(1), 93--109.
@@ -1221,6 +1206,12 @@ The SymPy implementations of all algorithms and experimental scripts are availab
     \bibitem{kerber2015root}
     Kerber, M., and Sagraloff, M. (2015). Root refinement for real polynomials using quadratic interval refinement. \textit{Journal of Computational and Applied Mathematics}, 280, 377--395.
     
+    \bibitem{dowell1972modified}
+    Dowell, M., and Jarratt, P. (1972). A modified regula falsi method for computing the root of an equation. \textit{BIT Numerical Mathematics}, 12(4), 503--508.
+    
+    \bibitem{dekker1969finding}
+    Dekker, T. J. (1969). Finding a zero by means of successive linear interpolation. In B. Dejon \& P. Henrici (Eds.), \textit{Constructive Aspects of the Fundamental Theorem of Algebra} (pp. 37-48). Wiley-Interscience.
+
     \end{thebibliography}
 
 \end{document} 
