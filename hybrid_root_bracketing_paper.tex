@@ -39,7 +39,7 @@
 \title{Multi-Phase Hybrid Algorithms for Numerical Root Finding \\ \large Four New Hybrid Root Bracketing Algorithms}
 
 \author{Abdelrahman Ellithy$^{1}$}
-\affiliation{Department of Scientific Computing, Faculty of Computers and Artificial Intelligence, Benha University, Benha, Egypt}
+\affiliation{Department of Artificial Intelligence, Faculty of Computers and Artificial Intelligence, Benha University, Benha, Egypt}
 
 \date{\today}
 
@@ -67,7 +67,7 @@ The main contributions of this paper are:
     \item The empirical finding that our premier hybrid algorithm, \textbf{Optimized\_BFMS}, provides a superior balance of speed and reliability, demonstrably outperforming the established benchmarks on average.
 \end{enumerate}
 
-This paper is organized as follows. Section~\ref{sec:related_work} (page~\pageref{sec:related_work}) reviews \textbf{related work} and contextualizes our contribution. Section~\ref{sec:methodology} (page~\pageref{sec:methodology}) details the \textbf{methodology} and mathematical foundations of the proposed algorithms. Section~\ref{sec:theoretical_analysis} (page~\pageref{sec:theoretical_analysis}) provides a \textbf{Theoretical Analysis} of their convergence properties. Section~\ref{sec:experimental} (page~\pageref{sec:experimental}) describes the \textbf{experimental setup} and test functions. Section~\ref{sec:results} (page~\pageref{sec:results}) presents the \textbf{results and analysis}. Section~\ref{sec:discussion} (page~\pageref{sec:discussion}) discusses the implications and limitations. Section~\ref{sec:conclusion} (page~\pageref{sec:conclusion}) concludes the paper and outlines future research directions.
+This paper is organized as follows. Section~\ref{sec:related_work} (page~\pageref{sec:related_work}) reviews \textbf{related work} and contextualizes our contribution. Section~\ref{sec:methodology} (page~\pageref{sec:methodology}) details the \textbf{methodology} and mathematical foundations of the proposed algorithms. Section~\ref{sec:theoretical_analysis} (page~\pageref{sec:theoretical_analysis}) provides a \textbf{Theoretical Analysis} of their convergence properties. Section~\ref{sec:experimental} (page~\pageref{sec:experimental}) describes the \textbf{experimental setup} and test functions. Section~\ref{sec:results} (page~\pageref{sec:results}) presents the \textbf{results and analysis}. Section~\ref{sec:discussion} (page~\pageref{sec:discussion}) discusses the implications. Section~\ref{sec:conclusion} (page~\pageref{sec:conclusion}) concludes the paper and outlines future research directions. Section~\ref{sec:declaration} (page~\pageref{sec:declaration}) provides the \textbf{declarations}, including funding and competing interests statements.
 
 \section{Related Work and Context}\label{sec:related_work}
 
@@ -609,7 +609,7 @@ The experimental setup ensures that all algorithms are tested under identical co
         Trisection & Trisection \\
         HybridBlendTF & Badr-2021 - Hybrid Blend Trisection False Position \\
         HybridBlendBF & Sabharwal 2019 - Blended Root Finding Algorithm Outperforms Bisection and Regula Falsi \\
-        Brent (SciPy) & Brent (SciPy Modified Secant) \\
+        Brent (SciPy) & Brent (SciPy implementation) \\
         Brent (Impl.) & Brent (my implementation) \\
         Opt.BF & Optimized Hybrid Bisection False Position \\
         Opt.BFMS & Optimized Hybrid Bisection False Position Modified Secant \\
@@ -1144,8 +1144,22 @@ Theoretical contributions include the development of four new hybrid algorithms 
 
 While the proposed algorithms show strong performance on a diverse set of mathematical test problems, further validation on real-world engineering and physics applications is recommended to fully establish their generalizability. Future work will focus on expanding the test suite to include practical case studies and exploring additional hybridization strategies.
 
-\section*{Code Availability}
-The SymPy implementations of all algorithms and experimental scripts are available at: \url{https://github.com/Abdelrhman-Ellithy/NM-Algorithms/}
+\section{Declarations}\label{sec:declaration}
+
+\subsection{Funding}
+The author did not receive support from any organization for the submitted work. No funding was received to assist with the preparation of this manuscript. No funding was received for conducting this study. No funds, grants, or other support was received.
+
+\subsection{Competing interests}
+The author has no relevant financial or non-financial interests to disclose. The author has no competing interests to declare that are relevant to the content of this article. The author certifies that they have no affiliations with or involvement in any organization or entity with any financial interest or non-financial interest in the subject matter or materials discussed in this manuscript. The author has no financial or proprietary interests in any material discussed in this article.
+
+\subsection{Ethics approval}
+Not applicable. This study is purely computational and does not involve human participants or animals.
+
+\subsection{Data availability}
+The datasets generated and/or analyzed during the current study are available from the corresponding author on reasonable request. The SymPy implementations of all algorithms and experimental scripts are available at: \url{https://github.com/Abdelrhman-Ellithy/NM-Algorithms/}
+
+\subsection{Authors’ contributions}
+The author conceived the study, designed the algorithms, performed the experiments and analysis, and wrote the manuscript.
 
 \begin{thebibliography}{99}
 
