@@ -1,4 +1,13 @@
 method_name,display_name,avg_cpu,min_cpu,max_cpu,median_cpu,std_cpu,runs,wins
-06-Optimized-Bisection-FalsePosition,06-Optimized-Bisection-FalsePosition,16000.0,1700.0,57500.0,12750.0,12307.166264555566,42,35
-05-Sabharwal-2019-Hybrid-Blend-Bisection-Falseposition,05-Sabharwal-2019-Hybrid-Blend-Bisect...,29121.428571428572,2400.0,121900.0,24400.0,24705.351802099583,42,4
-04-Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms-Hybrid-Blend-Trisection-Falseposition,04-Badr-2021-A Comparative Study amon...,52238.09523809524,2600.0,484400.0,38050.0,73903.78039896877,42,3
+07-Optimized-Bisection-FalsePosition-Modified Secant,07-Optimized-Bisection-FalsePosition-...,10.746288352085042,0.5,142.716,6.653,11.175812873058721,480000,33
+09-Optimized_Trisection-FalsePosition-Modified Secant,09-Optimized-Trisection-FalsePosition...,12.50842057084057,0.501,165.129,6.843,13.298138163773531,480000,2
+06-Optimized-Bisection-FalsePosition,06-Optimized-Bisection-FalsePosition,13.288160324999785,0.491,134.933,9.498,13.022145580107903,480000,1
+08-Optimized-Trisection-FalsePosition,08-Optimized-Trisection-FalsePosition,15.6920115166667,0.5,589.011,7.765,16.373062199377244,480000,2
+"11-Scipy-Brent,R.P-1973","11-Scipy-Brent,R.P-1973",19.52875740624894,5.74,140.041,18.274,9.521770524938203,480000,1
+"10-implemented-Brent,R.P-1973","10-implemented-Brent,R.P-1973",19.820299937495992,0.641,461.402,15.218,16.254424164230297,480000,2
+05-Sabharwal-2019-Hybrid-Blend-Bisection-Falseposition,05-Sabharwal-2019-Hybrid-Blend-Bisect...,25.330179056253595,0.621,325.669,16.26,27.240198490500415,480000,0
+04-Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms-Hybrid-Blend-Trisection-Falseposition,04-Badr-2021-A Comparative Study amon...,25.797172656246186,0.831,315.821,15.74,27.012587871536414,480000,0
+12-Quadratic-Interval-Refinement,12-Quadratic-Interval-Refinement,27.32586143333169,0.822,664.972,16.341,32.410203044418175,480000,1
+01-Normal-Bisection,01-Normal-Bisection,63.72975992500135,0.411,1365.844,69.32,65.28667726718542,480000,2
+03-Trisection,03-Trisection,365.68519780000474,0.681,25470.0,70.301,2074.6487546158605,480000,3
+02-Normal-FalsePosition,02-Normal-FalsePosition,845.587177583476,0.471,38154.967,34.604,3295.1083222086754,480000,1

@@ -24,10 +24,9 @@ def brentq_adapter(f, a, b, tol, max_iter=10000):
             full_output=True, 
             disp=False # Prevent printing errors to console
         )
-        
         if res.converged:
             # Success! Return the tuple benchmarker expects
-            return res.iterations, root, f(root), a, b
+            return res.iterations+1, root, f(root), a, b
         else:
             return None, None, None, None, None
             
