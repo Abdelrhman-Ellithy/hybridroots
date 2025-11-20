@@ -1,94 +1,59 @@
 # -*- coding: utf-8 -*-
 """
-scipy Brent's Method 
-@author: Abdelrahman Ellithy (adapted for comparison)
+Benchmarking SciPy's Brent Method using the shared Benchmarker class.
 """
 from scipy import optimize
-import sympy as sp
-import time
-import sqlite3
-import json
-import math
-import os
+from benchmarker import ScientificBenchmark
 
-def _load_iters_from_config(cfg_file='config.json'):
+# --- Adapter Function ---
+# We need this wrapper to make SciPy's brentq look like the function signature 
+# that ScientificBenchmark expects: func(f, a, b, tol, **kwargs)
+
+def brentq_adapter(f, a, b, tol, max_iter=10000):
+    """
+    Wraps scipy.optimize.brentq to return the format:
+    (iterations, root, fx, a, b)
+    """
     try:
-        if os.path.exists(cfg_file):
-            with open(cfg_file, 'r', encoding='utf-8') as fh:
-                cfg = json.load(fh)
-            outer = int(cfg.get('outer_iterations', 100))
-            inner = int(cfg.get('inner_iterations', 100))
+        # full_output=True makes it return (root, result_object)
+        root, res = optimize.brentq(
+            f, a, b, 
+            xtol=tol, 
+            rtol=tol, 
+            maxiter=max_iter, 
+            full_output=True, 
+            disp=False # Prevent printing errors to console
+        )
+        
+        if res.converged:
+            # Success! Return the tuple benchmarker expects
+            return res.iterations, root, f(root), a, b
         else:
-            outer, inner = 100, 100
+            return None, None, None, None, None
+            
     except Exception:
-        outer, inner = 100, 100
-    return outer, inner
+        # Catches "f(a) and f(b) must have different signs" errors
+        return None, None, None, None, None
 
-OUTER_ITERS, INNER_ITERS = _load_iters_from_config()
-def rest_data():
-    con = sqlite3.connect('Results.db')
-    cursor = con.cursor()
-    cursor.execute(""" 
-            create table IF NOT EXISTS results(
-            id Integer PRIMARY KEY not null,
-            problemId Integer problemId not null,
-            method_name text,
-            CPU_Time REAL
-            )""")
-    con.commit()
-    con.close()
-def record_speeds(records):
-    try:
-        with sqlite3.connect('Results.db') as con:
-            cursor = con.cursor()
-            cursor.executemany("INSERT INTO results (problemId, method_name, CPU_Time) VALUES (?, ?, ?)", records)
-            con.commit()
-    except sqlite3.Error as e:
-        print(f"Database error: {e}")
-# Function to load dataset from JSON file
-def load_dataset(file_path='dataset.json'):
-    with open(file_path, 'r') as f:
-        data = json.load(f)
-    dataset = []
-    for item in data:
-        expr = sp.sympify(item['expression'])
-        a = item['a']
-        b = item['b']
-        dataset.append((expr, a, b))
-    return dataset
+# --- Execution ---
 
-# Safe evaluation helper to guard domain/overflow issues
-def safe_eval(f, x):
-    try:
-        y = f(x)
-        y = float(y)
-        if math.isfinite(y):
-            return y
-        return None
-    except Exception:
-        return None
+if __name__ == "__main__":
+    # 1. Setup Database (if needed)
+    ScientificBenchmark.rest_data()
 
-x = sp.Symbol('x')
-# Load the dataset from JSON
-dataset = load_dataset()
-tol = 1e-14
-method = '11-Scipy-Brent,R.P-1973'
-print(method)
-rest_data()
-print("\t\tIter\t\t Time")
-records = []
-for c in range(OUTER_ITERS):
-    for i, (func, a, b) in enumerate(dataset):
-        f = sp.lambdify('x', func)
-        t1 = time.perf_counter()
-        for j in range(INNER_ITERS):
-            try:
-                z = optimize.brentq(f=f, a=a, b=b,rtol= tol,xtol=tol, maxiter=10000, full_output=True)
-            except Exception:
-                z = None
-        t2 = time.perf_counter()
-        t = t2 - t1
-        records.append((i+1, method, t))
-        print(f"problem{i+1}| \t{t}")
-if records:
-    record_speeds(records)
+    # 2. Initialize Benchmark
+    # Auto-loads config.json
+    bench = ScientificBenchmark('config.json')
+    
+    # 3. Run Benchmark
+    # We pass our adapter function instead of QIR
+    results = bench.run(
+        algorithm_func=brentq_adapter, 
+        method_name='11-Scipy-Brent,R.P-1973',
+        tol=1e-14
+    )
+    
+    # 4. Save Results
+    if results:
+        ScientificBenchmark.record_speeds(results)
+        print("\nResults saved to database successfully.")

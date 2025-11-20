@@ -208,5 +208,41 @@
         "expression": "x**6 - 8*x**5 + 24*x**4 - 32*x**3 + 16*x**2",
         "a": 0,
         "b": 4
+    },
+    {
+        "expression": "-2 * log(0.000027027 + (2.51 / (10000000 * sqrt(x))), 10) - 1/sqrt(x)",
+        "a": 0.008,
+        "b": 0.03,
+        "note": "Colebrook-White: Friction factor for Re=1e7, e/D=0.0001"
+    },
+    {
+        "expression": "x - 0.99 * sin(x) - 2.0",
+        "a": 2.0,
+        "b": 3.0,
+        "note": "Kepler Equation: Eccentric anomaly for e=0.99, Mean Anomaly=2.0"
+    },
+    {
+        "expression": "(10.0 + 3.592/x**2) * (x - 0.04267) - 0.08206 * 300",
+        "a": 2.0,
+        "b": 3.0,
+        "note": "Van der Waals: Volume of CO2 at P=10atm, T=300K"
+    },
+    {
+        "expression": "x * exp(x/2) - 1.5",
+        "a": 0.0,
+        "b": 1.0,
+        "note": "Proxy for Financial Option Volatility (Transcendental growth)"
+    },
+    {
+        "expression": "cos(x) + 1.0 * (1 - cos(x))**2 - 0.05 * x**2",
+        "a": 3.0,
+        "b": 6.0,
+        "note": "Beam Deflection (Non-linear transcendental)"
+    },
+    {
+        "expression": "0.05 - x**3 / ((1 - x) * (0.8 - 2*x)**2)",
+        "a": 0.01,
+        "b": 0.3,
+        "note": "Chemical Equilibrium: Solving extent of reaction (Singularity at x=0.4)"
     }
 ]

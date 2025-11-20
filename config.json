@@ -1,4 +1,3 @@
 {
-  "outer_iterations": 1,
-  "inner_iterations": 1
+  "iterations": 10
 }

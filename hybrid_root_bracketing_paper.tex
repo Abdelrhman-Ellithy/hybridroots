@@ -36,7 +36,7 @@
 
 %\preprint{APS/123-QED}
 
-\title{Multi-Phase Hybrid Algorithms for Numerical Root Finding \\ \large Four New Hybrid Root Bracketing Algorithms}
+\title{Four New Multi-Phase Hybrid Bracketing Algorithms for Numerical Root Finding }
 
 \author{Abdelrahman Ellithy$^{1}$}
 \affiliation{Department of Artificial Intelligence, Faculty of Computers and Artificial Intelligence, Benha University, Benha, Egypt}
@@ -45,7 +45,7 @@
 
 
 \begin{abstract}
-Finding roots of nonlinear equations requires balancing the guaranteed convergence of traditional bracketing methods with the speed of accelerated techniques. This paper introduces four novel hybrid algorithms: \textbf{Optimized Bisection-False Position (Optimized\_BF)}, \textbf{Optimized Bisection-False Position-Modified Secant (Optimized\_BFMS)}, \textbf{Optimized Trisection-False Position (Optimized\_TF)}, and \textbf{Optimized Trisection-False Position-Modified Secant (Optimized\_TFMS)} that synergistically combine reliable interval reduction with accelerated interpolation steps. We provide a theoretical analysis of their convergence properties and validate their performance on a comprehensive benchmark of 42 diverse problems, including polynomial, transcendental, and ill-conditioned functions. A rigorous comparative analysis is conducted against traditional baselines (Bisection, False Position) and established state-of-the-art methods (Brent's method, Quadratic Interval Refinement). Our results show that the premier algorithm, \textbf{Optimized\_BFMS}, achieves the best overall performance, winning on \textbf{47.6\%} of problems and demonstrating significant speedups over both the fastest traditional baseline (Bisection, \textbf{5.3$\times$}) and state-of-the-art algorithms like Brent's method (\textbf{1.7$\times$}), and QIR method (\textbf{2.2$\times$}) on average across our benchmark suite. Our findings establish these hybrid approaches as robust, efficient, and theoretically-grounded alternatives for numerical root finding.
+Finding the roots of nonlinear equations requires balancing the efficiency of sophisticated techniques with the guaranteed convergence of traditional bracketing approaches. This manuscript presents four innovative hybrid algorithms: \textbf{Optimized Bisection-False Position (Optimized\_BF)}, \textbf{Optimized Bisection-False Position-Modified Secant (Optimized\_BFMS)}, \textbf{Optimized Trisection-False Position (Optimized\_TF)}, and \textbf{Optimized Trisection-False Position-Modified Secant (Optimized\_TFMS)}, which integratively amalgamate dependable interval contraction with expedited interpolation processes. I look at their convergence characteristics in a theoretical way and then test them on a large benchmark of 42 different problems, including polynomial, transcendental, and ill-conditioned functions.  A meticulous comparative analysis is performed against traditional benchmarks, Bisection, False Position, as well as established leading-edge techniques, Brent's method, and Quadratic Interval Refinement. The outcomes of our investigation indicate that the superior algorithm, \textbf{Optimized\_BFMS}, attains the most favorable overall performance, excelling in \textbf{47.6\%} of the problems and exhibiting considerable acceleration over both the quickest traditional baseline (Bisection, \textbf{5.3$\times$}) and leading-edge algorithms such as Brent's method (\textbf{1.7$\times$}) and the QIR method (\textbf{2.2$\times$}) on average throughout our benchmark suite. Our findings substantiate these hybrid methodologies as resilient, efficient, and theoretically sound alternatives for numerical root finding.
 \end{abstract}
 
 \maketitle
@@ -54,16 +54,16 @@ Finding roots of nonlinear equations requires balancing the guaranteed convergen
 
 \section{Introduction}
 
-Root finding is a fundamental problem in numerical analysis with applications spanning engineering, physics, economics, and computer science. Traditional root bracketing methods, such as Bisection and Regula Falsi (False Position), provide guaranteed convergence but often suffer from slow convergence rates. This reliability-versus-speed trade-off has motivated the development of hybrid approaches that aim to retain the robustness of bracketing while accelerating performance using multi-phase accelerated interpolation techniques, a strategy that has shown significant promise in prior work \cite{sabharwal2019blended, badr2022novel}.
+Finding roots is a basic problem in numerical analysis that is used in many fields, including physics, engineering, economics, and computer science. Convergence is guaranteed with traditional root bracketing methods like Bisection and Regula Falsi (False Position), but they often have slow convergence rates, and on the other hand, the open methods are faster but sometimes diverge. This trade-off between reliability and speed has led to the creation of hybrid methods that preserve the strength of bracketing methods while converging faster with multi-phase accelerated interpolation techniques. This strategy has shown considerable promise in earlier work \cite{sabharwal2019blended, badr2022novel}. 
 
-The landscape of root-finding algorithms has evolved beyond these classical methods. Modern, state-of-the-art algorithms like Quadratic Interval Refinement (QIR) \cite{abbott2014quadratic} and the widely-deployed Brent's method \cite{brent1973algorithms} are now standard benchmarks for high performance. While these methods are highly effective, there remains an opportunity to develop new algorithms that are either faster or exhibit more consistent performance across a wider range of challenging functions. This paper addresses that gap by introducing four new hybrid algorithms and evaluating them not only against traditional baselines but also against these established, high-performance algorithms.
+The field of root-finding algorithms has become more advanced beyond these traditional methods. Modern algorithms such as the widely used Brent's method \cite{brent1973algorithms} and Quadratic Interval Refinement (QIR) \cite{abbott2014quadratic} are now considered benchmarks for high performance. Even though these techniques are successful, there is still a chance to create new algorithms that are either quicker or perform better. This paper addresses that gap by introducing four new hybrid algorithms and evaluating them not only against traditional baselines but also against these established, high-performance algorithms.
 
 The main contributions of this paper are:
 \begin{enumerate}
-    \item The design and implementation of \textbf{four novel hybrid algorithms} that blend reliable interval reduction (Bisection and Trisection) with accelerated interpolation and quasi-Newton steps.
+    \item The design and implementation of \textbf{four novel hybrid algorithms} that blend reliable interval reduction utilize Bisection, Trisection and Regula Falsi with quasi-Newton steps.
     \item A \textbf{rigorous theoretical analysis} of the convergence order and error bounds for each proposed algorithm.
-    \item A \textbf{comprehensive performance evaluation} on a diverse benchmark of 42 test functions, augmented with notoriously difficult cases to test robustness and numerical stability.
-    \item A \textbf{comparative analysis} against both traditional baselines and modern state-of-the-art methods, using metrics that include function evaluations and performance in finite-precision arithmetic.
+    \item A \textbf{comprehensive public presentation evaluation} on a diverse benchmark of 42 test functions, augmented with notoriously difficult cases to trial robustness and numerical stability.
+    \item A \textbf{comparative analysis} against both traditional baselines and modern cutting-edge methods, using metrics that include function evaluations and performance in finite-precision arithmetic. Frankly.
     \item The empirical finding that our premier hybrid algorithm, \textbf{Optimized\_BFMS}, provides a superior balance of speed and reliability, demonstrably outperforming the established benchmarks on average.
 \end{enumerate}
 
@@ -71,13 +71,13 @@ This paper is organized as follows. Section~\ref{sec:related_work} (page~\pagere
 
 \section{Related Work and Context}\label{sec:related_work}
 
-The concept of hybridizing root-finding methods to achieve both reliability and speed is well-established, dating back to the influential algorithms of the 1970s. Dekker's algorithm (1969) was a seminal contribution, combining the safety of bisection with the speed of the secant method. It introduced the now-common strategy of falling back on a bisection step if the faster interpolation step fails to make sufficient progress. Brent's method \cite{brent1973algorithms} refined this idea by replacing the secant method with inverse quadratic interpolation, achieving a higher order of convergence while retaining the bisection safeguard, making it one of the most widely used and robust root-finders today.
+The concept of hybridizing root-finding methods to achieve both reliability and speed is well-established, dating back to the influential algorithm of the 1970s. Dekker's algorithm ( 1969 ) was a seminal contribution, combining the safety of bisection with the velocity of the secant method. It introduced the now-common strategy of falling back on a bisection step if the faster insertion measure fails to make sufficient progress. Brent's method acting \cite{brent1973algorithms} refined this idea by replacing the secant method with inverse quadratic interpolation, achieving a higher order of convergence while retaining the bisection safeguard, making it one of the most widely used and powerful root-finders today.
 
-Our work builds upon this tradition but explores a different structural approach. Whereas Dekker's and Brent's methods use bisection as a conditional fallback, our algorithms employ a deterministic, multi-phase sequence within each iteration. For example, the BFMS algorithm systematically applies a bisection, a false position, and a modified secant step, leveraging the output of each to inform the next. This structured approach avoids the complex acceptance criteria of classic hybrids and aims to maximize progress in every iteration.
+Our work builds upon this tradition but explores a different structural approach. As a conditional fallback, our algorithm applies a deterministic, multi-phase sequence inside each loop, whereas Dekker's and Brents' method uses bisection. Think about it this way: for example, the BFMS algorithmic rule systematically applies a bisection, a false position, and a modified secant step, leveraging the output of each to feed the next as input. Avoiding the complex acceptance criteria of classic hybrids that aim to maximize progress in every iteration.
 
-More recently, Quadratic Interval Refinement (QIR) \cite{abbott2012quadratic, abbott2014quadratic} has been proposed as a method that guarantees quadratic convergence for simple roots by fitting a quadratic model to three points to refine the root's location. While powerful, its performance can depend on the function's local behavior. The algorithms presented in this paper are differentiated by their reliance on simpler linear interpolation and finite-difference steps, which, as our experiments show, can be more efficient on average across a wider variety of function types.
+More recently, Quadratic Interval Refinement (QIR) \cite{abbott2012quadratic, abbott2014quadratic} has been proposed as a method that guarantees quadratic polynomial convergence for simple roots by fitting a quadratic model to three points to refine the root's location. While powerful, its performance can depend on the function's local behavior. The algorithms presented in this paper are differentiated by their reliance on simpler linear insertion and finite-difference steps, which, as our experiments show, can be more efficient on average across a wider variety of mapping types. 
 
-Furthermore, this work is distinct from other recent hybrid methods included in our benchmark, such as those by Sabharwal (2019) \cite{sabharwal2019blended} and Badr (2021) \cite{badr2021comparative}. Those methods typically employ a "blended" strategy, often involving a conditional choice between, for example, a bisection or a false position update within an iteration. Our proposed algorithms differ fundamentally in their deterministic, \textbf{sequential multi-phase architecture}. For instance, our Optimized\_BF algorithm does not choose between bisection and false position; it executes a bisection step and then a false position step within the newly narrowed interval in every single iteration. This fixed sequential process is a unique architectural choice designed to enforce progress while consistently applying interpolation-based acceleration.
+Furthermore, this work is distinct from other recent hybrid methods included in our benchmark, such as those by Sabharwal (2019) \cite{sabharwal2019blended} and Badr (2021) \cite{badr2021comparative}. Those methods typically employ a blended strategy, often involving a conditional selection between outputs, for example, a bisection or a false position update within an iteration. Certainly, our advice algorithm differs fundamentally in its deterministic, \textbf{sequential multi-phase architecture}. For instance, our Optimized\_BF algorithm doesn't choose between bisection and false position. It executes a bisection, feeds the new output intervals as input to regula falsi. This fixed sequential process is a unique architectural choice designed to enforce procession while consistently applying interpolation-based acceleration.
 
 \section{Algorithm Design and Methodology}\label{sec:methodology}
 
@@ -88,20 +88,17 @@ This section details the design and implementation of the four novel hybrid algo
 
 The Optimized Bisection-False Position (Optimized\_BF) algorithm represents a sophisticated hybrid root-finding approach that strategically combines the guaranteed convergence of the bisection method with the accelerated convergence potential of the false position (regula falsi) method. This algorithm addresses the fundamental trade-off between reliability and speed in numerical root finding by employing a two-phase strategy within each iteration.
 
-The mathematical foundation of this algorithm lies in the sequential application of two complementary techniques. The bisection phase provides a conservative but reliable interval reduction by computing the midpoint $mid = \frac{a + b}{2}$ and evaluating $f(mid)$. This step ensures that the root remains bracketed while providing a baseline estimate. The subsequent false position phase leverages linear interpolation between the interval endpoints to compute a potentially more accurate estimate using the formula:
+The mathematical foundation of this algorithm lies in the sequential application of two complementary techniques. The bisection phase provides a conservative interval reduction by computing the midpoint $mid = \frac{a + b}{2}$ and evaluating $f(mid)$. This step ensures that the root remains bracketed while providing a baseline estimate. The subsequent false position phase utilizes linear interpolation between the interval endpoints to compute a potentially more accurate estimate using the formula:
 
 \begin{equation}
 fp = \frac{a \cdot f(b) - b \cdot f(a)}{f(b) - f(a)}
 \end{equation}
 
-This interpolation-based estimate often provides a better approximation to the root than the simple midpoint, especially for functions with significant curvature. The algorithm maintains the bracketing property by ensuring that the root remains contained within the updated interval $[a, b]$ after each iteration.
+This interpolation-based estimate often provides a better approximation to the root than the midpoint, especially for functions with high curvature. The algorithm maintains the root bracketed by ensuring that the root remains contained within the updated interval $[a, b]$ after each iteration.
 
-The key advantage of this hybrid approach is its robustness: even if the false position step produces an estimate outside the current interval (which can occur for certain function behaviors), the bisection step ensures that the interval is always properly reduced. This combination provides faster convergence than pure bisection while maintaining the reliability guarantees that make bracketing methods attractive for critical applications.
+The algorithm method signature is Optimized\_BF$(f, a, b, tol, max\_iter)$, where $f$ is the function to be evaluated, $a$ and $b$ specify the initial interval $[a, b]$ containing a root (assumed to have opposite signs for $f(a)$ and $f(b)$), $tol$ is the tolerance for convergence, and $max\_iter$ limits the maximum number of iterations. It returns a tuple $(n, x, f_x, a_{final}, b_{final})$, where $n$ indicates the iteration count, $x$ is the approximated root value, $f_x$ is the function value at $x$, and $a_{final}$ and $b_{final}$ are the final interval bounds.
 
-The algorithm is defined with the method signature Optimized\_BF$(f, a, b, tol, max\_iter)$, where $f$ is the function to be evaluated, $a$ and $b$ specify the initial interval $[a, b]$ containing a root (assumed to have opposite signs for $f(a)$ and $f(b)$), $tol$ sets the tolerance for convergence, and $max\_iter$ limits the number of iterations. It returns a tuple $(n, x, f_x, a_{final}, b_{final})$, where $n$ indicates the iteration count, $x$ is the root approximation, $f_x$ is the function value at $x$, and $a_{final}$ and $b_{final}$ are the final interval bounds.
-
-The implementation uses SymPy for symbolic computation and high-precision arithmetic, with a tolerance of $10^{-14}$ for convergence testing. The algorithm incorporates robust error handling for potential division by zero in the false position step, ensuring stable operation across diverse function types.
-
+The implementation uses python SymPy library for symbolic computation and high-precision arithmetic, with a tolerance of $10^{-14}$ for convergence testing. The algorithm has reliable error handling for potential division by zero in the false position step.
 
 \captionof{algorithm}{Pseudocode for the Optimized Bisection-False Position (Optimized\_BF) algorithm. This hybrid method combines the reliability of bisection with the accelerated convergence of the false position method.}
     \begin{algorithmic}[1]
@@ -169,11 +166,11 @@ where $\delta = 10^{-4}$ is a carefully chosen perturbation parameter that balan
 x_S = x - \frac{f(x)}{f'(x)} \approx x - \frac{\delta \cdot f(x)}{f(x + \delta) - f(x)}
 \end{equation}
 
-The key innovation of this algorithm lies in its intelligent acceptance criterion for the secant estimate. The algorithm only accepts the secant estimate $x_S$ if it satisfies two conditions: (1) it lies within the current bracketing interval $[a, b]$, ensuring the bracketing property is maintained, and (2) it provides a better approximation than the false position estimate, i.e., $|f(x_S)| < |f(fp)|$. This conservative approach ensures that the algorithm never sacrifices reliability for speed.
+The key innovation of this algorithm lies in its acceptance criterion for the secant estimate. The algorithm only accepts the secant estimate $x_S$ if it satisfies two conditions: (1) it lies within the current bracketing interval $[a, b]$, ensuring the bracketing property is maintained, and (2) it provides a better approximation than the false position estimate, i.e., $|f(x_S)| < |f(fp)|$. This conservative approach ensures that the algorithm never sacrifices reliability for speed.
 
-The advantages of this three-phase approach are manifold. First, the bisection phase guarantees robust interval reduction. Second, the false position phase provides accelerated convergence through linear interpolation. Third, the modified secant phase offers additional acceleration when the function behavior is favorable, without compromising the bracketing guarantees. This combination results in superior convergence rates while maintaining the reliability that makes bracketing methods essential for critical applications.
+The advantages of this three-phase approach are manifold. The bisection phase guarantees robust interval reduction to half, passing new intervals to the false position phase that provides accelerated convergence through linear interpolation. Then, the modified secant phase offers additional acceleration when the function output is better, without losing the bracketing guarantees. This combination results in superior convergence rates while maintaining the reliability of the bracketing methods.
 
-The algorithm is defined with the method signature Optimized\_BFMS$(f, a, b, tol, max\_iter, \delta = 10^{-4})$, where $f$ is the target function, $a$ and $b$ define the initial interval $[a, b]$, $tol$ is the convergence tolerance, $max\_iter$ is the maximum iteration count, and $\delta$ is a small parameter defaulting to $10^{-4}$ for the secant approximation. It returns $(n, x, f_x, a_{final}, b_{final})$, with $n$ as the iteration count, $x$ as the root approximation, $f_x$ as the function value at $x$, and $a_{final}$ and $b_{final}$ as the final interval bounds.
+The algorithm method signature is Optimized\_BFMS$(f, a, b, tol, max\_iter, \delta = 10^{-4})$, where $f$ is the target function, $a$ and $b$ define the initial interval $[a, b]$, $tol$ is the convergence tolerance, $max\_iter$ is the maximum iteration count, and $\delta$ is a small parameter defaulting to $10^{-4}$ for the secant approximation. It returns $(n, x, f_x, a_{final}, b_{final})$, with $n$ as the iteration count, $x$ as the root approximation, $f_x$ as the function value at $x$, and $a_{final}$ and $b_{final}$ as the final interval bounds.
 
 The choice of $\delta = 10^{-4}$ is based on extensive numerical experimentation and represents an optimal balance between approximation accuracy and numerical stability. Smaller values of $\delta$ provide more accurate derivative approximations but may lead to numerical instability, while larger values ensure stability but may reduce the effectiveness of the secant acceleration.
 
@@ -249,22 +246,22 @@ The choice of $\delta = 10^{-4}$ is based on extensive numerical experimentation
 
 The Optimized Trisection-False Position (Optimized\_TF) algorithm represents an innovative hybrid approach that leverages the theoretical advantages of trisection over traditional bisection while incorporating the convergence acceleration of the false position method. This algorithm addresses the fundamental limitation of bisection methods, which reduce the interval size by a factor of only 2 in each iteration, by implementing a more aggressive three-way interval splitting strategy.
 
-The mathematical foundation of this algorithm is based on the trisection principle, which divides the interval $[a, b]$ into three equal subintervals by computing two interior points:
+The mathematical foundation of this algorithm is based on the trisection method, which divides the interval $[a, b]$ into three equal subintervals by computing two interior points:
 
 \begin{equation}
-x_1 = a + \frac{b - a}{3} \quad \text{and} \quad x_2 = b - \frac{b - a}{3}
+x_1 = a + \frac{(b - a)}{3} \quad \text{and} \quad x_2 = b - \frac{(b - a)}{3}
 \end{equation}
 
-This trisection approach provides a theoretical advantage over bisection by potentially reducing the interval size more rapidly. While bisection guarantees a reduction factor of $\frac{1}{2}$ per iteration, trisection can achieve a reduction factor of $\frac{1}{3}$ in the worst case, and potentially better in favorable scenarios where the root lies in the middle subinterval.
 
-The algorithm operates in two distinct phases within each iteration. The first phase employs trisection to identify the subinterval containing the root by evaluating $f(x_1)$ and $f(x_2)$ and determining the sign changes. This phase can result in three possible outcomes: (1) the root lies in $[a, x_1]$, (2) the root lies in $[x_1, x_2]$, or (3) the root lies in $[x_2, b]$. The second phase applies the false position method to the identified subinterval, providing accelerated convergence through linear interpolation.
+This trisection approach provides a theoretical advantage over bisection by potentially reducing the interval size more rapidly. While bisection has a reduction factor of $\frac{1}{2}$ per iteration, trisection can achieve a reduction factor of $\frac{1}{3}$ in the worst case, and potentially better in favorable scenarios where the root lies in the middle subinterval, as analyzed by \cite{demir2008trisection}.
 
-The key advantage of this hybrid approach is its potential for faster interval reduction compared to traditional bisection-based methods. The trisection phase can reduce the interval size by up to a factor of 3 in a single iteration, while the false position phase provides additional convergence acceleration within the reduced interval. This combination is particularly effective for functions with complex behavior or multiple roots, where rapid interval reduction is crucial for efficient convergence.
+The algorithm has two sequential phases at each iteration. The first one utilizes trisection to identify the subinterval containing the root by evaluating $f(x_1)$ and $f(x_2)$ and picking the subinterval that changes sign. The second applies the false position method to the identified subinterval, providing accelerated convergence through linear interpolation.
 
-The algorithm is defined with the method signature Optimized\_TF$(f, a, b, tol, max\_iter)$, where $f$ is the function to evaluate, $a$ and $b$ define the initial interval $[a, b]$ containing the root, $tol$ is the tolerance for convergence, and $max\_iter$ is the maximum number of iterations. It returns $(n, x, f_x, a_{final}, b_{final})$, with $n$ as the iteration count, $x$ as the root approximation, $f_x$ as the function value at $x$, and $a_{final}$ and $b_{final}$ as the final interval bounds.
+The key advantage of this combined hybrid approach is its potential for faster interval reduction compared to traditional bisection-based methods. The trisection phase can reduce the interval size by up to a factor of 3 in a single iteration, while the false position phase provides additional convergence acceleration within the reduced interval.
 
-The trisection approach provides a theoretical advantage over bisection by potentially reducing the interval size more rapidly, as analyzed by \cite{demir2008trisection}. The algorithm incorporates robust error handling for division by zero scenarios in the false position step, ensuring stable operation across diverse function types. The implementation maintains the bracketing property throughout the computation, guaranteeing convergence for continuous functions with sign changes at the interval endpoints.
+The Algorithm is defined with the method signature Optimized\_TF$(f, a, b, tol, max\_iter)$, where $f$ is the function to evaluate, $a$ and $b$ define the initial interval $[a, b]$ containing the root, $tol$ is the convergence tolerance, and $max\_iter$ is the maximum number of iterations. It returns $(n, x, f_x, a_{final}, b_{final})$, with $n$ as the iteration count, $x$ as the root approximation, $f_x$ as the function value at $x$, and $a_{final}$ and $b_{final}$ as the final interval bounds.
 
+The algorithm incorporates robust error handling for division by zero scenarios in the false position step. The implementation maintains the bracketing property throughout the computation, guaranteeing convergence.
 
 \captionof{algorithm}{Pseudocode for the Optimized Trisection-False Position (Optimized\_TF) algorithm. This method leverages trisection for rapid interval reduction and false position for convergence acceleration.}
     \begin{algorithmic}[1]
@@ -349,14 +346,13 @@ x_S = fp - \frac{\delta \cdot f(fp)}{f(fp + \delta) - f(fp)}
 
 where $\delta = 10^{-4}$ is the perturbation parameter for derivative approximation.
 
-The key innovation of this algorithm lies in its sophisticated acceptance criteria for the secant estimate. The algorithm only accepts the secant estimate $x_S$ if it satisfies three conditions: (1) it lies within the current bracketing interval $[a, b]$, ensuring the bracketing property is maintained, (2) it provides a better approximation than the false position estimate, i.e., $|f(x_S)| < |f(fp)|$, and (3) the function evaluation at the secant estimate is numerically stable. This multi-level validation ensures that the algorithm never sacrifices reliability for speed.
+The key innovation of this algorithm lies in its acceptance criteria for the modified secant estimate. The algorithm only accepts it's output $x_S$ if it satisfies three conditions: (1) it lies within the current bracketing interval $[a, b]$, ensuring root bracketing is maintained, (2) it provides a better approximation than the false position output, i.e., $|f(x_S)| < |f(fp)|$, and (3) the function evaluation at the secant estimate is numerically stable. This multi-level validation ensures that the algorithm never sacrifices reliability for speed.
 
 The advantages of this three-phase approach are substantial. The trisection phase provides the fastest possible interval reduction, the false position phase offers reliable convergence acceleration, and the modified secant phase provides additional acceleration when conditions are favorable. This combination results in the lowest average iteration count among all proposed algorithms while maintaining robust convergence guarantees.
 
 The algorithm is defined with the method signature Optimized\_TFMS$(f, a, b, tol, max\_iter, \delta = 10^{-4})$, where $f$ is the function, $a$ and $b$ define the initial interval $[a, b]$, $tol$ is the tolerance, $max\_iter$ is the maximum iteration count, and $\delta$ is a small perturbation value defaulting to $10^{-4}$ for the secant step. It returns $(n, x, f_x, a_{final}, b_{final})$, with $n$ as the iteration count, $x$ as the root approximation, $f_x$ as the function value at $x$, and $a_{final}$ and $b_{final}$ as the final interval bounds.
 
 This algorithm represents the pinnacle of the hybrid approach, demonstrating that sophisticated combinations of numerical techniques can achieve superior performance without compromising reliability. The experimental results confirm that this three-phase strategy provides the best overall performance in terms of both iteration count and computational efficiency across the diverse test suite.
-
 
 \captionof{algorithm}{Pseudocode for the Optimized Trisection-False Position with Modified Secant (Optimized\_TFMS) algorithm. This advanced hybrid combines trisection, false position, and a modified secant step for maximum efficiency.}
     \begin{algorithmic}[1]
@@ -466,11 +462,10 @@ This relation formally shows that the convergence is driven by a powerful quadra
 \textbf{Conclusion on Convergence:} The practical convergence of BFMS and TFMS is an adaptive process that opportunistically leverages near-quadratic steps, while the architecture provides a formal guarantee of graceful degradation to a robust superlinear lower bound. This property is a key feature of our multi-phase design.
 \subsection{Finite-Precision Considerations and Numerical Stability}
 
-The reviewer rightly noted that relying on SymPy's arbitrary-precision arithmetic sidesteps the critical issue of numerical stability in standard floating-point environments. This section analyzes the algorithms' behavior under finite precision.
+The primary source of instability in these methods is the denominator of the interpolation formulas. For both the false position and modified secant steps, these take the form $f(y) - f(z)$ for two points $y$ and $z$. In standard floating-point arithmetic (IEEE 754 double precision), when $y$ and $z$ are very close to each other, their function values $f(y)$ and $f(z)$ will also be very close, so when perform The subtraction of these two nearly equal numbers, it can lead to \textbf{catastrophic cancellation}, a phenomenon where a large portion of the significant digits are lost, resulting in a denominator dominated by relative error. Our pseudocode's inclusion of a small machine epsilon ($\epsilon=10^{-20}$) is a pragmatic heuristic to prevent division by zero but does not resolve the underlying issue of precision loss from cancellation.
 
-The primary source of instability in these methods is the denominator of the interpolation formulas. For both the false position and modified secant steps, these take the form $f(y) - f(z)$ for two points $y$ and $z$. In standard floating-point arithmetic (e.g., IEEE 754 double precision), when $y$ and $z$ are very close to each other, their function values $f(y)$ and $f(z)$ will also be very close. The subtraction of these two nearly equal numbers can lead to \textbf{catastrophic cancellation}, a phenomenon where a large portion of the significant digits are lost, resulting in a denominator dominated by relative error. Our pseudocode's inclusion of a small machine epsilon ($\epsilon=10^{-20}$) is a pragmatic heuristic to prevent division by zero but does not resolve the underlying issue of precision loss from cancellation.
+Furthermore, the choice of the perturbation parameter $\delta$ in the modified secant method is critical and represents a fundamental trade-off between both truncation and round-off errors.
 
-Furthermore, the choice of the perturbation parameter $\delta$ in the modified secant method is critical and represents a fundamental trade-off between truncation error and round-off error.
 \begin{itemize}
     \item \textbf{Truncation Error:} If $\delta$ is too large, the finite difference $\frac{f(x+\delta) - f(x)}{\delta}$ is a poor approximation of the derivative $f'(x)$, and the method's convergence slows. This is a truncation error, as we are truncating the Taylor series expansion.
     \item \textbf{Round-off Error:} If $\delta$ is too small, it becomes comparable to the machine precision. The term $f(x+\delta)$ will be very close to $f(x)$, and their subtraction will suffer from the catastrophic cancellation described above. This is a round-off error.
@@ -479,11 +474,10 @@ An optimal choice for $\delta$ balances these two error sources, and a common he
 
 \section{Experimental Setup}\label{sec:experimental}
 
-The experimental framework was designed to provide a comprehensive evaluation of the proposed hybrid algorithms across a diverse range of mathematical functions. The study employed a rigorous methodology that ensures fair comparison, statistical significance, and practical relevance. The experimental setup encompasses four key components: a comprehensive test suite of mathematical functions, a robust implementation framework using SymPy, precise performance measurement protocols, and a systematic data collection and analysis system.
-
+An exhaustive design is laid out for the experimental framework so that a thorough evaluation of all hybrid algorithms is done across a wide range of mathematical functions. In this study, there is a methodologically sound way such that it is fair for comparison, subject to statistical significance, and relevant for real-world practical applicability. The experimental setup consists of four components: an exhaustive test suite of mathematical functions, a robust SymPy framework implementation, a strict performance measurement protocol, and a careful system of data collection and analysis.
 \subsection{Mathematical Equations Dataset with Many Categories}
 
-The algorithms were evaluated on a comprehensive set of 42 diverse functions that represent the major categories encountered in practical numerical analysis applications, including challenging problems with ill-conditioned roots and high-degree polynomials. This extensive test suite was designed to thoroughly challenge the algorithms across different mathematical behaviors and convergence characteristics.
+The algorithms were tested on a diverse set including 42 functions that cover the most important classes of practical numerical analysis applications, including difficult problems with ill-conditioned roots and high-degree polynomials. This suite of tests is very extensive to thoroughly stress the algorithms on very different mathematical behaviors and convergence characteristics.
 
 The test functions are categorized as follows:
 
@@ -557,43 +551,43 @@ Each function was evaluated over carefully selected intervals that bracket the r
 
 \subsection{SymPy Implementation Details}
 
-All algorithms were implemented using the SymPy library for symbolic computation, which provides several critical advantages for numerical analysis research. The implementation leverages several key features of the library:
+All algorithms developed are implemented using the SymPy library for symbolic computations, providing a number of important advantages for the numerical analysis research. Some major functions of the library were exercised in the implementation:
 
-\textbf{Symbolic Function Definition:} Functions are defined using SymPy symbols, enabling precise mathematical representation and automatic differentiation capabilities. This approach ensures that the mathematical formulations are implemented exactly as specified, without the numerical errors that can arise from finite difference approximations.
+\textbf{Symbolic Function Definition:} The functions are defined using SymPy symbols, thereby allowing an exact mathematical characterization with automatic differential capabilities. This procedure assures that the mathematical formulations are used solely in the form defined, unhampered by any numerical errors that may have crept in due to finite difference approximations.
 
-\textbf{High-Precision Arithmetic:} SymPy provides arbitrary-precision arithmetic, which is essential for maintaining accuracy in iterative numerical methods. This capability is particularly important for the high-precision tolerance of $10^{-14}$ used in this study.
+\textbf{High-Precision Arithmetic:} SymPy provides arbitrary-precision arithmetic, making it an accurate requirement for measuring error in iterative numerical methods. In this respect, this property is quite relevant for the high-precision tolerance of $10^{-14}$ adopted in the present study.
 
-\textbf{Automatic Differentiation:} For methods requiring derivative information, SymPy's automatic differentiation capabilities provide exact derivatives without the need for finite difference approximations, ensuring maximum accuracy.
+\textbf{Automatic Differentiation:} The methods requiring derivative information can avail themselves of SymPy's automatic differentiation, which returns exact derivatives without succumbing to finite difference approximations, thus guaranteeing maximum accuracy.
 
-\textbf{Comprehensive Error Handling:} The implementation includes robust error handling mechanisms for exceptional cases such as division by zero, overflow conditions, and convergence failures.
+\textbf{Comprehensive Error Handling:} The implementation features extensive error surveillances for rare cases like division by zero, overflow conditions, and convergence failures.
 
-\textbf{The experimental framework} includes a sophisticated database system for storing and analyzing results, with SQLite used for efficient data management. Each algorithm execution is performed 100 times in an inner loop, with this process repeated 100 times in an outer loop to obtain statistically significant performance measurements. This nested loop structure ensures that the results are robust against system noise and provides sufficient statistical power for meaningful comparisons.
+\textbf{Experimental Framework} Such a heavy experimental framework is in place for storing and analyzing results, that SQLite is assuredly a good choice for efficient data management. The inner loop contains 100 runs of each algorithm, which are executed then 100 times in the outer loop to provide statistically valid measurements of their performance. The drawback of going loudly nested is that it would provide results most probably free of system noise and strong enough statistically for possibly useful comparisons. 
 
-\subsection{Performance Metrics}
+\subsection{Performance metrics}
 
-Algorithm performance was evaluated using four key metrics that provide comprehensive insight into both efficiency and accuracy:
+The algorithms' performance was discriminated using four measuring parameters that relate efficiency and accuracy to give a deep conviction:
 
-\textbf{Number of Iterations:} This metric measures the convergence speed of each algorithm, indicating how quickly the method approaches the root. Lower iteration counts generally indicate more efficient algorithms, though this must be balanced against the computational cost per iteration.
+\textbf{Number of Iterations}: This defines the rate of convergence of all algorithms to the root; with fewer iterations generally preferring an algorithm, but this has to be traded for the computation cost per iteration.
 
-\textbf{CPU Time:} This metric measures the actual computational efficiency, accounting for both the number of iterations and the computational cost per iteration. CPU time is the most practical measure for real-world applications where computational resources are limited.
+\textbf{CPU Times}: On the basis of the number of iterations and their computational costs, these measure the actual computational efficiency. CPU time remains the most viable measure when referring to applications in the real world where resource consumption matters.
 
-\textbf{Function Value at Computed Root:} This metric measures the accuracy of the root approximation, indicating how close the computed value is to a true root of the function. Values close to zero indicate high accuracy.
+\textbf{Function Value at Computed Root:} The accuracy of the root approximation is basically measured by this metric - how much close the computed value is to a true root of the function. A number very close to zero confirms maximum accuracy. 
 
-\textbf{Final Interval Size:} This metric measures the precision of the root approximation, indicating the size of the interval containing the computed root. Smaller intervals indicate higher precision.
+\textbf{Final Interval Size:} This metric measures how precise the root approximation is, with respect to the actual size of the interval where the computed root lies in. Smaller intervals indicate higher precision.
 
-The convergence tolerance was set to $10^{-14}$ to ensure high-precision results, and a maximum of 100 iterations was allowed for each algorithm to prevent infinite loops. These parameters were chosen based on the requirements of high-precision numerical analysis and the capabilities of the SymPy library.
+Convergence tolerance was kept at $10^{-14}$ to ensure very precise results, and each algorithm was terminated after reaching the limit of 10,000 iterations to avoid loop problems within the algorithm. These parameters were chosen according to the features and needs of high-precision numerical analysis as well as the capabilities of the SymPy library.
 
 \subsection{CPU Time Measurement}
 
-CPU time for each algorithm was measured using Python's \texttt{time.perf\_counter()} function, which provides high-resolution timing with nanosecond precision. This timing function is specifically designed for performance measurement and is not affected by system clock adjustments or other system-level timing issues.
+The CPU time for each one of the algorithms was measured using Python's \texttt{time.perf\_counter()} function, which gives high-resolution timing with nanosecond precision. This timing function is designed specifically for performance measurement and is unaffected by other system-level timing problems or adjustments in the system clock.
 
-For each test problem, the algorithm was executed 100 times in an inner loop, and this process was repeated 100 times in an outer loop. The total elapsed time was recorded and averaged to obtain a robust estimate of computational efficiency. This methodology minimizes the impact of system noise, including garbage collection, context switching, and other operating system activities that could affect timing measurements.
+The procedure for a given test problem is to run the algorithm 100 times in a nested loop and to repeat it outside the loop for another 100 times. Once completed, that total elapsed time will be recorded as well as averaged to get a robust measure of computational efficiency. This method reduces system noise including garbage collection, context switching, and more operating system activities that could happen to timing measurements.
 
-The statistical approach ensures that the results are representative of the true algorithmic performance rather than being influenced by transient system conditions. The 100-fold repetition provides sufficient statistical power to detect meaningful differences between algorithms, while the 100-fold inner loop ensures that the timing measurements are stable and reproducible.
+For it guarantees that the results are not consequences of transient conditions of the system, but rather representative of true performance of the algorithm; the 100 times internally will make it possible to distinguish meaningful differences by providing enough statistical power. The measurement repetition is sufficient to guarantee stable and reproducible results.
 
-This methodology is consistent with best practices in recent hybrid algorithm literature \cite{sabharwal2019blended, badr2022novel} and provides a robust foundation for comparative performance analysis.
+This is the method that is followed by best practices for recent usages in hybrid algorithms literature \cite{sabharwal2019blended, badr2022novel}, laying a strong foundation for comparative performance evaluation.
 
-The experimental setup ensures that all algorithms are tested under identical conditions, with the same computational environment, precision settings, and measurement methodology. This rigorous approach provides reliable comparative performance data for the proposed hybrid algorithms and enables meaningful conclusions about their relative effectiveness.
+The experimental setting therefore has the same computational environment and the same settings for precision and measurement methods across all algorithms. Such stringency provides very good comparative performance data for the hybrid algorithms proposed and affords valid conclusions to be made regarding their relative performance.
 
 \subsection{Algorithm Code Legend}
 \begin{table}[H]
@@ -1010,21 +1004,21 @@ Problem 42  & 1 & 1 & 10000 & 1 & 1 & 1 & 10000 & 1 & 1 & 1 & 1 \\
 \end{tabular}}
 \end{table}
 
-The results highlight several key findings based on the comprehensive 42-problem evaluation:
+The results of the comprehensive 42-problem evaluation yield several important findings :
 
-\textbf{1. Superior Performance of Hybrid Algorithms:} The \textbf{Optimized BFMS} algorithm achieves the best overall performance with an average CPU time of \textbf{0.00109 seconds} and wins on \textbf{20 out of 42 problems (47.6\%)}. This represents a \textbf{5.3x speedup} over the best traditional method, Bisection (0.00577s), and a massive \textbf{101.4x speedup} over the slowest, False Position (0.11051s). The \textbf{Optimized TFMS} algorithm ranks second with a \textbf{0.00121s} average CPU time and 5 wins (11.9\%), followed by \textbf{Optimized BF} with a \textbf{0.00126s} average CPU time and 6 wins (14.3\%).
+1. Hybrid algorithms perform all better. The best among all is \textbf{Optimized BFMS} which got an average CPU time of \textbf{0.00109 seconds} and wins on \textbf{20 out of 42 problems} (47.6\%). It achieves a big \textbf{5.3x speedup} over Bisection (0.00577) as well as an enormous \textbf{101.4x speedup} over the slowest, False Position (0.11051). The \textbf{Optimized TFMS} algorithm came second with a \textbf{0.00121s} average CPU time and 5 wins (11.9\%) followed by \textbf{Optimized BF} with a \textbf{0.00126s} average CPU time and 6 wins (14.3\%).
 
-\textbf{2. State-of-the-Art Comparison:} The proposed hybrid algorithms significantly outperform modern algorithms. The best hybrid, \textbf{Opt.BFMS}, is \textbf{1.7x faster} than the Brent's method (SciPy, 0.00180s) and \textbf{2.2x faster} than the Quadratic Interval Refinement (QIR) (0.00243s). demonstrating substantial performance advantage over current state-of-the-art bracketing methods
+2. Modern Comparison: Proposed hybrid methods outperformed all modern methods with regard to the best hybrid, \textbf{Opt.BFMS}, which proved to be \textbf{1.7 times faster} than Brent method (SciPy, 0.00180s) and \textbf{2.2 times faster} than Quadratic Interval Refinement (QIR) (0.00243s). This highlights the extent of performance advantage of present state-of-the-art bracketing.
 
-\subsection{Statistical Analysis and Significance}
+Statistical and Significance Analysis
 
-The experimental design with 100-fold repetition provides robust statistical data for performance analysis. The coefficient of variation (CV) for CPU time measurements is consistently low (e.g., for Opt.BFMS: $\text{CV} = \frac{\text{std dev}}{\text{mean}} = \frac{0.00100}{0.00109} \approx 0.92$), while for more stable methods it is even lower, indicating high measurement precision.
+The design for the experiment carried out here was a highly repeated 100 times repeat. This will yield robust statistics for performance analysis. As expected, the coefficient of variation (CV) of CPU time measurements tends to be low (e.g., for Opt.BFMS: $\text{CV} = \frac{\text{std dev}}{\text{mean}} = \frac{0.00100}{0.00109} \approx 0.92$), while for more stable methods, it is actually much lower, indicating really good measurements.
 
-The performance improvements achieved by the hybrid algorithms are statistically significant. A paired t-test comparing the CPU times of the best hybrid algorithm (\textbf{Optimized BFMS}, mean $=0.00109$) against the best traditional method (\textbf{Bisection}, mean $=0.00577$) yields a p-value of less than 0.001 (computed using $n=42$ pairs, $t = \frac{\bar{d}}{s_d/\sqrt{n}}$), confirming the statistical significance of the performance improvement.
+The performance gains offered by the hybrid algorithms are statistically significant. A paired t-test against the CPU times of best hybrid algorithm, \textbf{Optimized BFMS} (mean $=0.00109$), versus a traditional algorithm, \textbf{Bisection} (mean $=0.00577$), yields a computed p-value of less than 0.001 ($n=42$, pairs, $t = \frac{\bar{d}}{s_d/\sqrt{n}}$), thus confirming the significance of the performance improvement statistically.
 
-\subsection{Comparison with Traditional Methods}
+Comparison with traditional methods:
 
-The hybrid algorithms demonstrate overwhelming superiority over traditional methods across all performance metrics. Table~\ref{tab:traditional_comparison} provides a focused comparison against the \textit{fastest} traditional method.
+Unmatched superiority of hybrid algorithms over traditional methods according to all performance criteria. Table~\ref{tab:traditional_comparison} gives a more focused comparison with the \textit{fastest} traditional method.
 
 \begin{table}[H]
 \centering
@@ -1040,15 +1034,15 @@ Success Rate & 100\% & 100\% & Equal reliability \\
 \end{tabular}
 \end{table}
 
-The comparison reveals that the hybrid algorithms achieve:
+In terms of performance, the hybrid methodologies are superior to the following:
 
-\textbf{Computational Efficiency:} The best hybrid algorithm is \textbf{5.3 times faster} than the best traditional method (Bisection) in terms of average CPU time, making it significantly more practical for real-world applications where computational resources are limited.
+\textbf{Operational Performance:} With increasing speed, the best hybrid algorithm is reported to be \textbf{5.3 times faster} than that of the best traditional method (bisection), according to average CPU time. Hence, this would prove more useful in real applications, especially considering the growing need for computational resources.
 
-\textbf{Maintained Reliability:} Despite the significant performance improvements, the hybrid algorithms maintain 100\% success rates across all test functions, preserving the reliability guarantees of traditional bracketing methods.
+\textbf{Performance Consistency:} These hybrid algorithms are much better performing methods yet able to offer for all test functions a success rate of only 100\%-while in the process fully preserving that guarantee of reliability offered by traditional bracketing methods.
 
-\subsection{Comparison with State-of-the-Art Methods}
+\subsection{In Comparison with State-of-the-Art Methods} 
 
-The proposed hybrid algorithms also demonstrate superior performance compared to modern state-of-the-art methods, including the Quadratic Interval Refinement (QIR) method and Brent's method implementations. Table~\ref{tab:state_of_art_comparison}.
+These hybrid algorithms can also surpass the state-of-the-art modern techniques such as the QIR methods and the implementations of the Brent method. See Table~\ref{tab:state_of_art_comparison}.
 
 \begin{table}[H]
 \centering
@@ -1069,23 +1063,23 @@ Speedup vs Brent & 1.7x faster & 1.3x slower & - \\
 
 \subsection{Analysis of Performance vs. State-of-the-Art Methods}
 
-A key finding of this study is the consistent outperformance of our top hybrid, Opt.BFMS, against established methods like Brent's and QIR. This warrants a deeper analysis.
+A key finding of this study is the consistent outperformance of our top hybrid, Opt.BFMS, against established methods like Brent's and QIR. This necessitates a much deeper analysis.
 
-\textbf{Superior Performance vs QIR:} The proposed hybrid algorithms significantly outperform the Quadratic Interval Refinement method, achieving 2.2x faster average CPU time (0.00109s vs 0.00243s) and dominating in terms of wins (20 vs 1). This demonstrates that our hybrid approach provides superior performance compared to this modern bracketing method.
+\textbf{Superior Performance versus QIR:} The hybrid algorithms proposed have done outstanding performance over the Quadratic Interval Refinement method. Firstly, it is almost 2.2 x times less average CPU time (0.00109s vs. 0.00243s) and wins significantly (20 vs. 1).
 
 \textbf{Competitive Performance vs Brent:} While Brent's method (SciPy implementation) shows competitive performance with 0.00180s average CPU time, our best hybrid algorithm (Opt.BFMS) still achieves 1.7x faster performance. The hybrid algorithm also demonstrate better consistency with 20 wins compared to Brent's 3 wins.
 
 \subsection{Algorithm-Specific Performance Analysis}
 
-Each hybrid algorithm demonstrates unique performance characteristics that contribute to the overall effectiveness of the approach:
+Each of the hybrid algorithms underpinned by the following distinctions in performance characteristics has contributed to the general description of the effectiveness of the approach:
+ 
+\textbf{Optimized\_BFMS (Best Overall):} The best algorithm satisfying the requirements of speed and reliability with respect to average CPU time that is least (0.00109s, see Table~\ref{tab:performance_comparison_main}) is a very strong performer with respect to the convergence criterion. The strengthened three-phase processes (bisection + false position + modified secant) are able to extract optimal performance over a variety of function classes. 
 
-\textbf{Optimized\_BFMS (Best Overall):} This algorithm achieves the best balance of speed and reliability, with the lowest average CPU time (0.00109s, see Table~\ref{tab:performance_comparison_main}) while maintaining robust convergence. The three-phase approach (bisection + false position + modified secant) provides optimal performance across diverse function types.
+\textbf{Optimized\_TFMS (Second Best):} This method earns second ranking among the proposed algorithms with an average CPU time of 0.00121s-and displays the effectiveness of combining trisection with advanced techniques, scoring 5 wins (11.9\%).  
 
-\textbf{Optimized\_TFMS (Second Best):} This algorithm ranks second among the proposed methods with an average CPU time of 0.00121s and 5 wins (11.9\%), showing the effectiveness of combining trisection with advanced acceleration techniques.
+\textbf{Optimized\_BF (Strong Performance):} This method shows strong performance too, winning 6 times (14.3\%) with an average CPU time of 0.00126s, demonstrating the strength of the two-phase bisection-false position approach. 
 
-\textbf{Optimized\_BF (Strong Performance):} This algorithm also demonstrates strong performance with an average CPU time of 0.00126s and 6 wins (14.3\%), highlighting the strength of the two-phase bisection-false position approach.
-
-\textbf{Optimized\_TF (Effective Baseline Hybrid):} While not achieving any wins in terms of speed, this two-phase algorithm provides solid performance with an average CPU time of 0.00150s. Its effectiveness validates the core concept of combining trisection with false position, showing a substantial improvement over traditional methods even without the additional secant step.
+\textbf{Optimized\_TF (Effective Baseline Hybrid):} Though it has not had even one win in the speed category, with a CPU average of 0.00150s this two-phase method performs well. Its effectiveness corroborates the main idea of combining trisection with false position, showing that even without the extra secant step, it is vastly superior to the comparatively-not-so-traditional methods.
 
 \begin{figure}
     \centering
@@ -1126,23 +1120,23 @@ Each hybrid algorithm demonstrates unique performance characteristics that contr
 
 \section{Discussion}\label{sec:discussion}
 
-The experimental and theoretical results presented in this work confirm that our sequential, multi-phase hybrid algorithms offer a compelling balance of speed, efficiency, and robustness. The premier algorithm, \textbf{Optimized\_BFMS}, not only demonstrated the lowest average CPU time but also the lowest average Number of Function Evaluations (NFE), confirming that its performance gains are rooted in true algorithmic efficiency. This section interprets these findings, contextualizes them against state-of-the-art methods, and discusses the broader implications.
+It was by experimentation as well as theory that the work proved that these multi-phase jointly hybrid algorithms that work one after the other or sequentially have a winning combination in speed, efficiency, and robustness. The first-ranked algorithm, namely \textbf{Optimized\_BFMS}, proved to have the least average CPU time along with the very minimum average NFE values, confirming the effectiveness of the algorithm in terms of improvement of performance being grounded on algorithm efficiency. Interpretation of these findings with respect to current methods, as well as a look at other broader impacting issues, traditionally follows.
 
-The superior performance of Optimized\_BFMS can be attributed to its three-phase design. The initial bisection step provides a guaranteed interval reduction, creating a stable foundation for the subsequent acceleration steps. The false position and modified secant steps then provide powerful, superlinear convergence that rapidly refines the root's location. The empirical data suggests that the overhead of performing these three distinct steps per iteration is more than compensated for by the dramatic reduction in the total number of iterations required for convergence.
+Three phases structure maximized the success of Optimized\_BFMS. The first measure is a bisection that guarantees interval reduction: thus, a solid foundation for the subsequent better speedup steps. Then, a false position and modified secant steps permit powerful superlinear convergence to quickly sharpen the location of the root. Empirical data indicate that the overheads of doing these three different steps each iteration more than compensate for the striking reduction in the total number of iterations required for convergence.
 
-The trisection-based algorithms (Optimized\_TF and Optimized\_TFMS) also showed competitive performance, particularly in terms of NFE. For example, Optimized\_TFMS was the second most efficient algorithm overall. However, their slightly higher CPU times compared to their bisection-based counterparts suggest that the computational cost of evaluating two interior points for the trisection step can sometimes outweigh the benefits of more aggressive interval reduction.
+The trisection-based algorithms (Optimized\_TF and Optimized\_TFMS) were relatively efficient in terms of NFE. For instance, among all algorithms, Optimized\_TFMS turned out to be the second-most efficient algorithm. However, their somewhat longer CPU times compared to the bisection-based counterparts iowy suggest that, while the time taken by evaluating two interior points for trisection can outweigh the gain from more aggressive interval reductions at times.
 
-The experimental framework, utilizing SymPy for symbolic computation and SQLite for data management, provided robust and reproducible results. The 100-fold repetition of each algorithm execution ensured statistical significance, while the high-precision tolerance of $10^{-14}$ guaranteed accurate root approximations. The comprehensive test suite covering transcendental, polynomial, trigonometric, logarithmic, and exponential functions demonstrated the algorithms' versatility across different mathematical categories.
+The experimental framework presented reliable and reproducible results thanks to the combination of SymPy for symbolic computation and SQLite for data management. It was found that for every algorithm, 100 repetitions of the experiment made the results statistically valid, whereas tolerance of very high precision equal to $10^{-14}$ ensured root approximations to be quite accurate. The all-embracing test suite has transcendental, polynomial, trigonometric, logarithmic, and exponential functions included, thereby demonstrating the versatility of the algorithms across mathematics.
 
-The theoretical foundations of these hybrid approaches align with recent developments in numerical analysis. The work builds upon the framework established by \cite{sabharwal2019blended} and \cite{badr2022novel}, who demonstrated that hybrid algorithms can achieve superlinear convergence while maintaining bracketing method reliability. The incorporation of modified secant techniques follows the approach outlined by \cite{mathews2004numerical}, while the trisection methodology draws from the theoretical analysis of \cite{demir2008trisection}.
+Theoretical support for such hybrid methods is now provided by the latest advances of numerical analysis. The study develops the framework built by \cite{sabharwal2019blended} and \cite{badr2022novel} proofs of superlinear convergence without compromising the reliability of bracketing ways accomplished in their hybrid algorithms. The modified secant technique is followed along the lines set forth by \cite{mathews2004numerical}. The modeling of the trisection method is drawn from the theoretical analysis done by \cite{demir2008trisection}.
 
 \section{Conclusion}\label{sec:conclusion}
 
-This paper presented four novel hybrid root bracketing algorithms that combine traditional bracketing methods with accelerated interpolation techniques. All four hybrid algorithms achieved much faster convergence than traditional methods, with Optimized\_BFMS showing the best overall performance. The algorithms maintained a 100\% success rate across all test functions, achieving substantial CPU time improvements compared to classical approaches. These results highlight the effectiveness of multi-phase  hybrid methods in numerical root finding and suggest their immediate applicability to a wide range of scientific and engineering problems.
+This document presents four new hybrid algorithms bracketing roots. In these concepts, the bracketing algorithms are then combined with traditional bracketing methods with exceleration in interpolation techniques. All the hybrid algorithms enter upon more accelerated convergence over traditional methods, out of which Optimized\_BFMS stands first out of all four. The algorithms were achieved equally in all test functions. It also shows a significant improvement of CPU time over classical algorithms. Clearly, these results point out the efficiency of multi-phase hybrid methods in root finding numerically and provide an encouragement for immediate use in many disciplines-science and engineering-related problems.
 
-Theoretical contributions include the development of four new hybrid algorithms that blend bracketing and open methods techniques, maintaining guaranteed convergence while improving speed. The experimental analysis, using a diverse set of 42 test functions and a rigorous, high-precision framework, confirmed the statistical significance and robustness of the results.
+Their contributions to theory involve the development of four novel, distinct hybrid algorithms that integrate bracketing techniques and open ones, while ensuring their convergence, just that it is faster. The experimental analysis, with its large diversity of 42 test functions and a very rigid high-precisions framework, attested the statistical significance of the results and their robustness. 
 
-While the proposed algorithms show strong performance on a diverse set of mathematical test problems, further validation on real-world engineering and physics applications is recommended to fully establish their generalizability. Future work will focus on expanding the test suite to include practical case studies and exploring additional hybridization strategies.
+The algorithms are competitive against a wide spectrum of mathematical test problems, but there is still a recommendation to test them even in a real-world engineering and physics application case for establishing generality. Future works will include expanding the testing suite by adding real-life case studies and going beyond in hybridization strategies.
 
 \section{Declarations}\label{sec:declaration}
 

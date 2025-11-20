@@ -4,65 +4,10 @@ Quadratic Interval Refinement (QIR) implementation (derivation-free interval ref
 Implements a robust variant that falls back to bisection when needed.
 Author: Added to repository for reviewer-requested comparison
 """
-
+from benchmarker import ScientificBenchmark
 import re
-import sympy as sp
-import time
 import math
-import sqlite3
-import json
-import os
 
-
-def _load_iters_from_config(cfg_file='config.json'):
-    # config keys: outer_iterations, inner_iterations (fallback to 100)
-    try:
-        if os.path.exists(cfg_file):
-            with open(cfg_file, 'r', encoding='utf-8') as fh:
-                cfg = json.load(fh)
-            outer = int(cfg.get('outer_iterations', cfg.get('outer', cfg.get('c_iterations', 100))))
-            inner = int(cfg.get('inner_iterations', cfg.get('inner', cfg.get('j_iterations', 100))))
-        else:
-            outer, inner = 100, 100
-    except Exception:
-        outer, inner = 100, 100
-    return outer, inner
-
-
-OUTER_ITERS, INNER_ITERS = _load_iters_from_config()
-
-def rest_data():
-    con = sqlite3.connect('Results.db')
-    cursor = con.cursor()
-    cursor.execute(""" 
-            create table IF NOT EXISTS results(
-            id Integer PRIMARY KEY not null,
-            problemId Integer problemId not null,
-            method_name text,
-            CPU_Time REAL
-            )""")
-    con.commit()
-    con.close()
-
-def record_speeds(records):
-    try:
-        with sqlite3.connect('Results.db') as con:
-            cursor = con.cursor()
-            cursor.executemany("INSERT INTO results (problemId, method_name, CPU_Time) VALUES (?, ?, ?)", records)
-            con.commit()
-    except sqlite3.Error as e:
-        print(f"Database error: {e}")
-
-def load_dataset(file_path='dataset.json'):
-    with open(file_path, 'r') as f:
-        data = json.load(f)
-    dataset = []
-    for item in data:
-        expr = sp.sympify(item['expression'])
-        a = float(item['a'])
-        b = float(item['b'])
-        dataset.append((expr, a, b))
-    return dataset
 
 def safe_eval(f, x):
     try:
@@ -148,31 +93,21 @@ def QIR(f, a, b, tol, max_iter=10000):
     return max_iter, b, fb, a, b
 
 
-x = sp.Symbol('x')
-tol = 1e-14
-method = '12-Quadratic-Interval-Refinement'
-print(method)
-dataset = load_dataset()
-tol = 1e-14
-print("\t\tIter\t\t Root\t\tFunction Value\t\t Lower Bound\t\t Upper Bound\t\t Time")
-records = []
-rest_data()
-for c in range(OUTER_ITERS):
-    for i, (func, a, b) in enumerate(dataset):
-        f = sp.lambdify('x', func, 'numpy')
-        t1 = time.perf_counter()
-        # Create copies of a and b for each inner loop to reset the interval
-        a_start, b_start = a, b
-        for j in range(INNER_ITERS):
-            n, x_val, fx, a_val, b_val = QIR(f, a_start, b_start, tol)
-        t2 = time.perf_counter()
-        t = t2 - t1
-        records.append((i+1, method, t))
-        if None in (n, x_val, fx, a_val, b_val):
-            print(f"problem{i+1}| \tFailed: No root found in interval")
-        else:
-            print(f"problem{i+1}| \t{n} \t {x_val:.16f} \t {fx:.16f} \t {a_val:.16f} \t {b_val:.16f} \t {t:.20f}")
+if __name__ == "__main__":
+    # A. Setup Database (Optional if already exists)
+    ScientificBenchmark.rest_data()
 
-# Batch insert all records at once
-if records:
-    record_speeds(records)
+    # B. Initialize & Run
+    # The class now auto-loads 'dataset.json' because we didn't pass a dataset!
+    bench = ScientificBenchmark('config.json')
+    
+    results = bench.run(
+        algorithm_func=QIR, 
+        method_name='12-Quadratic-Interval-Refinement',
+        tol=1e-14
+    )
+    
+    # C. Save Results
+    if results:
+        ScientificBenchmark.record_speeds(results)
+        print("\nResults saved to database successfully.")
