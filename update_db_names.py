@@ -18,8 +18,8 @@ def update_method_names(db_path='Results.db'):
      #   "Brent(SciPy)": "Brent (SciPy)",
      #   "Bisection": "Bisection",
      #   "Trisection": "Trisection",
-     #   "FalsePosition": "False Position",
-        "Brent(Impl.)": "Brent (Impl.)"
+        "false_position ": "False Position",
+     #   "Brent(Impl.)": "Brent (Impl.)"
     }
 
     try:

@@ -1,0 +1,12 @@
+Algorithm,NFE_per_iter_low,NFE_per_iter_high,FLOPs_per_iter_low,FLOPs_per_iter_high
+Bisection,1,1,6,10
+False Position,1,1,12,18
+Trisection,3,3,25,35
+HybridBlendTF,5,5,45,55
+HybridBlendBF,4,4,35,45
+QIR,2,2,80,95
+Brent (SciPy),1,2,85,100
+Opt.BF,2,2,38,45
+Opt.BFMS,3,4,48,58
+Opt.TF,3,3,48,55
+Opt.TFMS,4,5,72,85

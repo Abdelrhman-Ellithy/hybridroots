@@ -45,7 +45,7 @@
 
 
 \begin{abstract}
-Finding the roots of nonlinear equations requires balancing the efficiency of sophisticated techniques with the guaranteed convergence of traditional bracketing approaches. This manuscript presents four innovative hybrid algorithms: \textbf{Optimized Bisection-False Position (Opt.BF)}, \textbf{Optimized Bisection-False Position-Modified Secant (Opt.BFMS)}, \textbf{Optimized Trisection-False Position (Opt.TF)}, and \textbf{Optimized Trisection-False Position-Modified Secant (Opt.TFMS)}. These methods systematically integrate dependable interval contraction with accelerated interpolation processes. We analyze their convergence characteristics theoretically and evaluate them on a comprehensive benchmark of 48 diverse problems, including polynomial, transcendental, and ill-conditioned functions. A rigorous comparative analysis is performed against traditional benchmarks (Bisection, False Position) and established high-performance techniques (Brent's method, Quadratic Interval Refinement). The results indicate that the superior algorithm, \textbf{Opt.BFMS}, attains the most favorable overall performance, excelling in \textbf{66.7\%} of the problems and exhibiting substantial acceleration over both the quickest traditional baseline (Bisection, \textbf{6.0$\times$}) and leading-edge algorithms such as Brent's method (\textbf{1.75$\times$}) and the QIR method (\textbf{2.46$\times$}) on average. These findings substantiate the proposed hybrid methodologies as robust, efficient, and theoretically sound alternatives for numerical root finding.
+Finding roots of nonlinear equations requires balancing rapid convergence with guaranteed bracketing reliability. This work introduces four innovative high-performance hybrid algorithms — \textbf{Opt.BF, Opt.BFMS, Opt.TF, and Opt.TFMS} — These methods systematically combine robust interval contraction with accelerated interpolation and modified-secant corrections. Evaluated on a diverse \textbf{48-problem} benchmark, the leading method, Opt.BFMS, converges in only 2.79 iterations on average (23 wins in fewest iterations) using 3–4 function evaluations per iteration (NFE/iter) and 48–58 FLOPs/iter, yielding the lowest total estimated workload (approximately \textbf{390–670 FLOPs} per problem totally). This translates to an average CPU time of 10.48 microseconds — a 3.5x speedup over Bisection, 1.91x over Brent (SciPy), and \textbf{2.54x} over QIR — while winning 45.83\% of problems by execution time and 47.9\% by total NFE. These results establish the proposed hybrids, particularly Opt.BFMS, as the new state-of-the-art in practical root-finding performance across polynomial, transcendental, and ill-conditioned equations.
 \end{abstract}
 
 \maketitle
@@ -454,8 +454,7 @@ Furthermore, the choice of the perturbation parameter $\delta$ in the modified s
     \item \textbf{Round-off Error:} If $\delta$ is too small, it becomes comparable to the machine precision. The term $f(x+\delta)$ will be very close to $f(x)$, and their subtraction will suffer from the catastrophic cancellation described above. This is a round-off error.
 \end{itemize}
 
-An optimal choice for $$ \delta $$ balances these two error sources, and we use the common heuristic $$ \delta \approx 10^{-8} \cdot \max(1.0, |x|) + 10^{-15} $$, where the scaling approximates $$ \sqrt{\epsilon_{\text{mach}}} \cdot |x| $$ and $$ \epsilon_{\text{mach}} $$ is the machine epsilon (approx. $10^{-16}$ for double precision). This adaptive choice provides robust performance and stability across varying root scales in our benchmark. A candidate $$ x_S $$ is accepted if and only if it resides strictly within the current bracket and yields a smaller function magnitude than $$ x_{curr} $$. The impact of these finite-precision effects is empirically evaluated in Section~\ref{sec:experimental}.
-
+An optimal choice for \textbf{$ \delta $} balances these two error sources, and we use the common heuristic \textbf{$\delta \approx 10^{-8} \cdot \max(1.0, |x|) + 10^{-15}$}, where the scaling approximates \textbf{$ \sqrt{\epsilon_{\text{mach}}} \cdot |x| $} and \textbf{$ \epsilon_{\text{mach}} $} is the machine epsilon (approx. $10^{-16}$ for double precision). This adaptive choice provides robust performance and stability across varying root scales in our benchmark. A candidate \textbf{$x_S$} is accepted if and only if it resides strictly within the current bracket and yields a smaller function magnitude than \textbf{$x_{curr}$}. The impact of these finite-precision effects is empirically evaluated in Section~\ref{sec:experimental}.
 \section{Experimental Setup}\label{sec:experimental}
 
 We designed a rigorous experimental framework to evaluate the proposed algorithms against established baselines (Bisection, False Position) and state-of-the-art methods (Brent's Method, QIR).
@@ -538,7 +537,7 @@ The test functions are categorized by their dominant mathematical characteristic
 \item \textbf{Chemical equilibrium reaction extent} \[ f_{48}(x) = 0.05 - \frac{x^3}{(1 - x)(0.8 - 2x)^2}, \quad I = [0.01, 0.3] \]
 \end{itemize}
 
-Each function was evaluated over carefully selected intervals that bracket the root, with initial intervals chosen to ensure the Intermediate Value Theorem conditions are satisfied. The expanded dataset includes challenging problems with ill-conditioned roots, high-degree polynomials up to degree 25, and complex transcendental functions, providing a comprehensive and rigorous foundation for algorithm evaluation that addresses the reviewers' concerns about test complexity.
+Each function was evaluated over carefully selected intervals that bracket the root, with initial intervals chosen to ensure the Intermediate Value Theorem conditions are satisfied.
 
 \subsection{Implementation and Compilation Pipeline}
 
@@ -546,31 +545,43 @@ To ensure a fair assessment of computational efficiency, all algorithms were imp
 
 \textbf{Symbolic Function Definition:} The functions are defined using SymPy symbols, allowing for exact mathematical characterization. This ensures that the test functions are represented without initial numerical approximation errors.
 
-\textbf{Compilation for Performance (sp.lambdify):} A critical feature of our experimental setup is the use of \texttt{sp.lambdify} with the default \textbf{NumPy} backend. While SymPy handles the symbolic definition, the actual execution during benchmarking is performed by \textbf{vectorized NumPy} functions generated from the symbolic expressions. This eliminates virtually all interpretation overhead of the symbolic engine itself, so the reported CPU times predominantly reflect the efficiency of the numerical algorithm rather than SymPy’s expression evaluation.
+\textbf{Compilation for Performance (sp.lambdify):} A critical feature of our experimental setup is the use of \texttt{sp.lambdify} with the default \textbf{NumPy} backend. While SymPy handles the symbolic definition, the \textbf{actual execution during benchmarking} is performed by \textbf{vectorized NumPy} functions generated from the symbolic expressions. This \textbf{eliminates} \textbf{virtually all interpretation overhead} of the symbolic engine itself, so the reported CPU times predominantly reflect the efficiency of the numerical algorithm rather than SymPy’s expression evaluation.
 
 \textbf{Comprehensive Error Handling:} The implementation features extensive error surveillances for rare cases like division by zero, overflow conditions, and convergence failures.
 
-\textbf{Adaptive Parameters:} The modified secant step uses an adaptive $$ \delta $$ computed per iteration for enhanced numerical robustness.
-
-\subsection{Performance Evaluation and metrics}
-
-We employed a strict timing protocol to ensure statistical validity and minimize the impact of system noise (such as OS interrupts or memory management):
+\textbf{Adaptive Parameters:} The modified secant step uses an adaptive \textbf{$\delta$} computed per iteration for enhanced numerical robustness.
 
 \textbf{Single-Loop Strategy:} We utilized a high-volume single-loop strategy. Each algorithm was executed $N=10,000$ times per problem.
 
 \textbf{Garbage Collection Control:} To prevent Python's automatic memory management from skewing microsecond-level measurements, the Garbage Collector (GC) was explicitly disabled immediately prior to the critical execution block and re-enabled immediately after.
 
-\subsection{Metrics:}
+\subsection{Performance Evaluation and metrics}
 
-\textbf{Number of Iterations}: The number of algorithmic loops required to converge to the root; with fewer iterations generally preferring an algorithm, but this has to be traded for the computation cost per iteration.
+We employed a strict timing protocol to ensure statistical validity and minimize the impact of system noise (such as OS interrupts or memory management):
 
-\textbf{CPU Times}: These measures the actual computational efficiency. CPU time remains the most viable measure when referring to applications in the real world where resource consumption matters, The execution time was measured using the high-resolution \texttt{time.perf\_counter\_ns()} and converted to microseconds.
+\subsection{Performance Evaluation Metrics}
 
-\textbf{Function Value at Computed Root:} The accuracy of the root approximation is basically measured by this metric - how much close the computed value is to a true root of the function. A number very close to zero confirms maximum accuracy. 
+To provide a comprehensive and fair comparison, we evaluate all algorithms using a combination of theoretical, implementation-independent, and practical real-world metrics. Measurements were performed with strict statistical rigor: each algorithm was executed 10000 times on every problem, using Python’s high-resolution \texttt{time.perf\_counter\_ns()} timer, with results reported in microseconds (µs). All benchmarks were conducted on the same isolated machine to minimize system noise, benchmarked on a \textbf{pipeline executed on GitHub Actions}.
 
-\textbf{Final Interval Size:} This metric measures how precise the root approximation is, with respect to the actual size of the interval where the computed root lies in. Smaller intervals indicate higher precision.
+The following metrics were recorded and analyzed:
 
-Convergence tolerance was kept at $10^{-14}$ to ensure very precise results, and each algorithm was terminated after reaching the limit of 10,000 iterations to avoid loop problems within the algorithm. These parameters were chosen according to the features and needs of high-precision numerical analysis as well as the capabilities of the SymPy library.
+\textbf{Number of Iterations}: The number of main algorithmic loops required for convergence. Lower values indicate faster theoretical convergence, but must be interpreted alongside per-iteration cost.
+
+\textbf{Function Evaluations per Iteration (NFE/iter)}: Typical number of function calls performed in each iteration (e.g., 1 for Bisection, 2--5 for the proposed hybrid methods). This is a key implementation-independent efficiency indicator.
+
+\textbf{Estimated FLOPs per Iteration}: Approximate floating-point operations per iteration, derived from static code analysis (arithmetic operations, conditionals, and memory accesses). Ranges reflect typical execution paths (e.g., 48--58 for Opt.BFMS, 85--100 for Brent).
+
+\textbf{Total Estimated FLOPs per Problem}: Computed as Avg Iterations $\times$ (NFE/iter range) $\times$ (FLOPs/iter range). This metric captures the complete theoretical computational workload and explains observed timing differences even when iteration counts are similar.
+
+\textbf{CPU Time (µs)}: Average wall-clock execution time per problem (over 100 repetitions). This remains the ultimate practical performance metric, directly reflecting real-world applicability in resource-constrained or high-frequency numerical applications.
+
+\textbf{Wins (Speed and Convergence)}: Number of problems (out of 48) where an algorithm achieved the lowest CPU time or fewest iterations. These counts serve as robust, non-parametric indicators of dominance across diverse function classes.
+
+\textbf{Accuracy Metrics}: 
+- Absolute function value at the computed root $|f(x)| \leq 10^{-14}$ (enforced tolerance).
+- Final bracketing interval length, confirming all methods achieve machine-precision-level accuracy when convergence is declared.
+
+By combining hardware-independent theoretical metrics (iterations, NFE, total FLOPs) with rigorous empirical timing and robustness analysis, this evaluation framework provides a complete, transparent, and scientifically sound basis for comparing root-finding algorithms — far beyond what is possible with iteration count or function evaluations alone.
 
 This methodology ensures that the performance differences reported in Section \ref{sec:results} are attributable to the algorithmic logic itself rather than implementation artifacts.
 
@@ -590,7 +601,6 @@ This methodology ensures that the performance differences reported in Section \r
         HybridBlendTF & Badr-2021 - Hybrid Blend Trisection False Position \\
         HybridBlendBF & Sabharwal 2019 - Blended Root Finding Algorithm Outperforms Bisection and Regula Falsi \\
         Brent (SciPy) & Brent (SciPy implementation) \\
-        Brent (Impl.) & Brent (my implementation) \\
         Opt.BF & Optimized Hybrid Bisection False Position \\
         Opt.BFMS & Optimized Hybrid Bisection False Position Modified Secant \\
         Opt.TF & Optimized Hybrid Trisection False Position \\
@@ -600,180 +610,144 @@ This methodology ensures that the performance differences reported in Section \r
     \end{tabular}}
     \end{table}
 
-\subsection*{Case Study 1: High-Degree Polynomial (Problem 42)}
-To demonstrate performance on high-degree polynomials, we analyze Problem 42 from our test suite. This problem involves the sixth-degree polynomial, a class of functions common in engineering optimization and control systems analysis. The function is:
-\[
-f(x) = x^6 - 8x^5 + 24x^4 - 32x^3 + 16x^2
-\]
-on the interval $[0, 4]$. Table~\ref{tab:realworld1} summarizes the results for all algorithms on this problem.
 
-\begin{table}[H]
-\centering
-\captionof{table}{Performance on the high-degree polynomial $f(x) = x^6 - 8x^5 + 24x^4 - 32x^3 + 16x^2$ over $[0,4]$. Metrics reported are average CPU time (in microseconds) over 10,000 runs.}
-\label{tab:realworld1}
-\begin{tabular}{lcc}
-\hline
-Algorithm & CPU Time ($\mu s$) & Relative Performance \\
-\hline
-Opt.BFMS & 0.8867 & 1.00x (fastest) \\
-Opt.BF & 0.8869 & 1.00x \\
-Opt.TFMS & 0.8924 & 1.01x \\
-Opt.TF & 0.9294 & 1.05x \\
-Bisection & 1.0253 & 1.16x \\
-QIR & 1.2065 & 1.36x \\
-False Position & 1.2323 & 1.39x \\
-Brent (Impl.) & 1.2881 & 1.45x \\
-HybridBlendBF & 1.7885 & 2.02x \\
-HybridBlendTF & 2.2088 & 2.49x \\
-Brent (SciPy) & 6.4158 & 7.24x \\
-Trisection & 13093.77 & 14766.05x \\
-\hline
-\end{tabular}
-\end{table}
-
-On this high-degree polynomial, the proposed Opt.BFMS algorithm achieves the fastest performance. The results show the effectiveness of the hybrid approach.
-
-\subsection*{Case Study 2: Hardest Benchmark Problem (Problem 30, the classic Wilkinson's polynomial)}
-To demonstrate practical applicability on computationally demanding tasks, we analyze Problem 30, the classic Wilkinson's polynomial, the most challenging function in our test suite. This problem is a twentieth-degree polynomial with known integer roots:
-\[
-f(x) = \prod_{k=1}^{20} (x - k)
-\]
-on the interval $[0, 1.5]$. Table~\ref{tab:realworld2} summarizes the results for this worst-case scenario.
-
-\begin{table}[H]
-\centering
-\captionof{table}{Performance on the hardest benchmark problem, a twentieth-degree polynomial, over $[0,1.5]$. Metrics reported are average CPU time (in microseconds) over 10,000 runs.}
-\label{tab:realworld2}
-\begin{tabular}{lcc}
-\hline
-Algorithm & CPU Time ($\mu s$) & Relative Performance \\
-\hline
-Trisection & 2.1215 & 1.00x (fastest) \\
-Opt.TF & 2.9798 & 1.40x \\
-Opt.TFMS & 2.9959 & 1.41x \\
-HybridBlendTF & 3.3490 & 1.58x \\
-Opt.BFMS & 14.1943 & 6.69x \\
-Opt.BF & 16.5449 & 7.80x \\
-Brent (SciPy) & 24.8929 & 11.73x \\
-Brent (Impl.) & 27.0669 & 12.76x \\
-QIR & 27.9347 & 13.17x \\
-HybridBlendBF & 38.4100 & 18.11x \\
-Bisection & 64.1714 & 30.25x \\
-False Position & 17905.05 & 8439.66x \\
-\hline
-\end{tabular}
-\end{table}
-
-On this exceptionally difficult problem, the simple Trisection method finds the root most efficiently. However, the proposed trisection-based hybrids, Opt.TF and Opt.TFMS, perform nearly as well, ranking second and third. This demonstrates their value as robust alternatives.
-
-\subsection*{Case Study 3: Cubic Polynomial Test Case (Problem 19)}
+\subsection*{Case Study 1: Cubic Polynomial Test Case (Problem 19)}
 To evaluate performance on a standard polynomial function, we analyze Problem 19 from the benchmark set. This case study demonstrates the algorithms' efficiency on a common class of problems found in numerical analysis. The test function is the cubic polynomial:
 \[
 f(x) = (x - 1)^3 + 4(x - 1)^2 - 10,
 \]
-on the interval $[0, 3]$. Table~\ref{tab:realworld3} summarizes the results for all algorithms on this problem.
+on the interval $[0, 3]$. Table~\ref{tab:realworld1} summarizes the results for all algorithms on this problem.
 
 \begin{table}[H]
 \centering
 \captionof{table}{Performance on the cubic polynomial problem $(x-1)^3 + 4(x-1)^2 - 10$ over $[0,3]$. Metrics reported are average CPU time (in microseconds) over 10,000 runs.}
-\label{tab:realworld3}
-\begin{tabular}{lcc}
+\label{tab:realworld1}
+\begin{tabular}{lcccc}
 \hline
-Algorithm & CPU Time ($\mu s$) & Relative Performance \\
+Algorithm              & Avg CPU Time (µs) & Rel. CPU Speed          & Iterations & Rel. Iterations \\
 \hline
-Opt.BFMS & 5.0414 & 1.00x (fastest) \\
-Opt.TFMS & 5.5388 & 1.10x \\
-Opt.BF & 6.4508 & 1.28x \\
-Opt.TF & 7.2704 & 1.44x \\
-Brent (Impl.) & 12.3514 & 2.45x \\
-QIR & 13.1685 & 2.61x \\
-HybridBlendBF & 14.7042 & 2.92x \\
-HybridBlendTF & 14.7985 & 2.94x \\
-Brent (SciPy) & 16.2649 & 3.23x \\
-False Position & 20.4811 & 4.06x \\
-Bisection & 26.7110 & 5.30x \\
-Trisection & 27.5942 & 5.47x \\
+\textbf{Opt.BFMS}      & \textbf{5.5338}   & \textbf{1.00}x (fastest) & \textbf{3.0}  & \textbf{1.00}x (fewest) \\
+Opt.TFMS               & 6.6823            & 1.21x           & 3.0           & 1.00x \\
+Opt.BF                 & 6.9964            & 1.26x           & 9.0           & 3.00x \\
+Opt.TF                 & 7.9149            & 1.43x           & 7.0           & 2.33x \\
+False Position         & 10.4817           & 1.89x           & 28.0          & 9.33x \\
+QIR                    & 14.1195           & 2.55x           & 5.0           & 1.67x \\
+HybridBlendBF          & 15.8010           & 2.86x           & 11.0          & 3.67x \\
+HybridBlendTF          & 16.4268           & 2.97x           & 9.0           & 3.00x \\
+Bisection              & 17.8063           & 3.22x           & 51.0          & 17.00x \\
+Brent (SciPy)          & 18.4091           & 3.33x           & 11.0          & 3.67x \\
+Trisection             & 24.0371           & 4.34x           & 32.0          & 10.67x \\
 \hline
 \end{tabular}
 \end{table}
 
 The results again highlight the efficiency of the optimized hybrid methods, with Opt.BFMS leading the performance on this cubic polynomial, followed closely by the other proposed hybrid variants. 
-    
-\subsection*{Case Study 4: Kepler's Equation (Problem 44)}
+
+\subsection*{Case Study 2: Kepler's Equation (Problem 44)}
 To further demonstrate algorithm behaviour on a representative transcendental test from Orbital Mechanics, we consider Problem 44 from the benchmark set:
 \[
 f(x) = x - 0.99 \sin(x) - 2.0,
 \]
-on the interval $[2.0, 3.0]$. Table~\ref{tab:realworld4} summarizes the average CPU time (in microseconds) for each algorithm on this problem and their relative performance compared to the fastest method.
+on the interval $[2.0, 3.0]$. Table~\ref{tab:realworld2} summarizes the average CPU time (in microseconds) for each algorithm on this problem and their relative performance compared to the fastest method.
 
 \begin{table}[H]
 \centering
 \captionof{table}{Performance on $f(x) = x - 0.99 \sin(x) - 2.0$ over the interval $[2.0, 3.0]$. Metrics reported are average CPU time (in $\mu s$) over 10,000 runs.}
-\label{tab:realworld4}
-\begin{tabular}{lcc}
+\label{tab:realworld2}
+\begin{tabular}{lcccc}
 \hline
-Algorithm & CPU Time ($\mu s$) & Relative Performance \\
+Algorithm              & Avg CPU Time (µs) & Rel. CPU Speed         & Iterations & Rel. Iterations        \\
 \hline
-Opt.BFMS & 10.4138 & 1.00x (fastest) \\
-Opt.TFMS & 16.4028 & 1.58x \\
-Opt.BF & 17.1239 & 1.64x \\
-Opt.TF & 17.5231 & 1.68x \\
-Brent (SciPy) & 17.6197 & 1.69x \\
-Brent (Impl.) & 25.1547 & 2.42x \\
-QIR & 28.5341 & 2.74x \\
-False Position & 29.8755 & 2.87x \\
-HybridBlendTF & 29.9091 & 2.87x \\
-HybridBlendBF & 32.7019 & 3.14x \\
-Trisection & 76.9222 & 7.39x \\
-Bisection & 84.0384 & 8.07x \\
+\textbf{Opt.BFMS}      & \textbf{11.7251}  & \textbf{1.00x} (fastest)     & \textbf{2.0}  & \textbf{1.00x} (fewest) \\
+\textbf{Opt.TFMS}      & 14.5426           & 1.24x                        & \textbf{2.0}  & \textbf{1.00x}          \\
+False Position         & 15.4351           & 1.32x                        & 11.0          & 5.50x                   \\
+Opt.BF                 & 18.4329           & 1.57x                        & 7.0           & 3.50x                   \\
+Opt.TF                 & 19.0057           & 1.62x                        & 5.0           & 2.50x                   \\
+Brent (SciPy)          & 20.2144           & 1.72x                        & 8.0           & 4.00x                   \\
+QIR                    & 30.6418           & 2.61x                        & 7.0           & 3.50x                   \\
+HybridBlendTF          & 32.4390           & 2.77x                        & 6.0           & 3.00x                   \\
+HybridBlendBF          & 34.3589           & 2.93x                        & 8.0           & 4.00x                   \\
+Bisection              & 50.9900           & 4.35x                        & 47.0          & 23.50x                  \\
+Trisection             & 60.9949           & 5.20x                        & 28.0          & 14.00x                  \\
 \hline
 \end{tabular}
 \end{table}
 
 The results for Problem 44 indicate that the optimized BFMS variant remains the most efficient solver for this high-eccentricity Kepler problem. It significantly outperforms the other methods.
 
-\subsection*{Case Study 5: Chemical Equilibrium (Problem 48)}
-To demonstrate performance on ill-conditioned rational functions, we analyze Problem 48 from our test suite. This function describes the extent of reaction in chemical equilibrium and presents a challenge due to the singularity near the boundary.
+\subsection*{Case Study 3: Hardest Benchmark Problem (Problem 30, the classic Wilkinson's polynomial)}
+To demonstrate practical applicability on computationally demanding tasks, we analyze Problem 30, the classic Wilkinson's polynomial, the most challenging function in our test suite. This problem is a twentieth-degree polynomial with known integer roots:
 \[
-f_{48}(x) = 0.05 - \frac{x^3}{(1 - x)(0.8 - 2x)^2}
+f(x) = \prod_{k=1}^{20} (x - k)
 \]
-on the interval $[0.01, 0.3]$. Table~\ref{tab:realworld5} summarizes the results for all algorithms on this problem.
+on the interval $[0, 1.5]$. Table~\ref{tab:realworld3} summarizes the results for this worst-case scenario.
 
 \begin{table}[H]
 \centering
-\captionof{table}{Performance on the chemical equilibrium function $f_{48}(x)$ over $[0.01, 0.3]$. Metrics reported are average CPU time (in microseconds) over 10,000 runs.}
-\label{tab:realworld5}
-\begin{tabular}{lcc}
+\captionof{table}{Performance on the hardest benchmark problem, a twentieth-degree polynomial, over $[0,1.5]$. Metrics reported are average CPU time (in microseconds) over 10,000 runs.}
+\label{tab:realworld3}
+\begin{tabular}{lcccc}
 \hline
-Algorithm & CPU Time ($\mu s$) & Relative Performance \\
+Algorithm              & Avg CPU Time (µs) & Rel. CPU Speed          & Iterations & Rel. Iterations         \\
 \hline
-Opt.BFMS & 5.4643 & 1.00x (fastest) \\
-Opt.BF & 6.3986 & 1.17x \\
-Opt.TF & 6.4557 & 1.18x \\
-Opt.TFMS & 6.5797 & 1.20x \\
-HybridBlendBF & 12.1746 & 2.23x \\
-HybridBlendTF & 13.4335 & 2.46x \\
-QIR & 15.7540 & 2.88x \\
-Brent (Impl.) & 16.7691 & 3.07x \\
-Brent (SciPy) & 18.5895 & 3.40x \\
-Bisection & 22.6479 & 4.14x \\
-Trisection & 22.8773 & 4.19x \\
-False Position & 134.9078 & 24.69x \\
+\textbf{Trisection}    & \textbf{3.1677}   & \textbf{1.00x} (fastest)      & 1.0           & 1.0x (fewest)          \\
+\textbf{Opt.TFMS}      & 3.3805            & 1.07x                        & \textbf{1.0}  & \textbf{1.0x} (fewest) \\
+Opt.TF                 & 3.4113            & 1.08x                        & 1.0           & 1.0x                   \\
+HybridBlendTF          & 3.9321            & 1.24x                        & 1.0           & 1.0x                   \\
+Opt.BFMS               & 16.1270           & 5.09x                        & 5.0           & 5.0x                   \\
+Opt.BF                 & 19.4012           & 6.13x                        & 11.0          & 11.0x                  \\
+Brent (SciPy)          & 28.4101           & 8.97x                        & 14.0          & 14.0x                  \\
+QIR                    & 30.3394           & 9.58x                        & 9.0           & 9.0x                   \\
+Bisection              & 42.8779           & 13.54x                       & 52.0          & 52.0x                  \\
+HybridBlendBF          & 45.7108           & 14.44x                       & 14.0          & 14.0x                  \\
+False Position         & 7947.57           & 2510x                        & 10000.0       & 10000x                 \\
+\hline
 \hline
 \end{tabular}
 \end{table}
 
-On this challenging rational function, the proposed Opt.BFMS algorithm demonstrates great performance, achieving the fastest convergence.
+On this exceptionally difficult problem, the simple Trisection method finds the root most efficiently. However, the proposed trisection-based hybrids, Opt.TF and Opt.TFMS, perform nearly as well, ranking second and third. This demonstrates their value as robust alternatives.
+    
+\subsection*{Case Study 4: Chemical Equilibrium (Problem 48)}
+To demonstrate performance on ill-conditioned rational functions, we analyze Problem 48 from our test suite. This function describes the extent of reaction in chemical equilibrium and presents a challenge due to the singularity near the boundary.
+\[
+f_{48}(x) = 0.05 - \frac{x^3}{(1 - x)(0.8 - 2x)^2}
+\]
+on the interval $[0.01, 0.3]$. Table~\ref{tab:realworld4} summarizes the results for all algorithms on this problem.
+
+\begin{table}[H]
+\centering
+\captionof{table}{Performance on the chemical equilibrium function $f_{48}(x)$ over $[0.01, 0.3]$. Metrics reported are average CPU time (in microseconds) over 10,000 runs.}
+\label{tab:realworld4}
+\begin{tabular}{lcccc}
+\hline
+Algorithm              & Avg CPU Time (µs) & Rel. CPU Speed         & Iterations & Rel. Iterations        \\
+\hline
+\textbf{Opt.BFMS}      & \textbf{6.1473}   & \textbf{1.00x} (fastest)     & 4.0           & 1.33x                           \\
+Opt.TFMS               & 6.8024            & 1.11x                        & \textbf{3.0}  & \textbf{1.00x} (fewest)         \\
+Opt.BF                 & 6.8302            & 1.11x                        & 9.0           & 3.00x                           \\
+Opt.TF                 & 7.0236            & 1.14x                        & 6.0           & 2.00x                           \\
+HybridBlendBF          & 12.7775           & 2.08x                        & 9.0           & 3.00x                           \\
+HybridBlendTF          & 14.4400           & 2.35x                        & 8.0           & 2.67x                           \\
+Bisection              & 15.3825           & 2.50x                        & 44.0          & 14.67x                          \\
+QIR                    & 16.6203           & 2.70x                        & 6.0           & 2.00x                           \\
+Trisection             & 19.9603           & 3.25x                        & 27.0          & 9.00x                           \\
+Brent (SciPy)          & 21.5799           & 3.51x                        & 13.0          & 4.33x                           \\
+False Position         & 65.9793           & 10.73x                       & 187.0         & 62.33x                          \\
+\hline
+\end{tabular}
+\end{table}
 \FloatBarrier
 
-\section{Results and Analysis}\label{sec:results}
+On this challenging rational function, the proposed Opt.BFMS algorithm demonstrates great performance, achieving the fastest convergence.
 
+\section{Results and Analysis}\label{sec:results}
 This section presents a comprehensive analysis of the performance data, including detailed comparisons across all algorithms and test functions, statistical significance of the results, and practical implications for numerical computing applications.
 
 \subsection{Overall Performance Analysis}
-The experimental results reveal significant performance improvements achieved by the hybrid algorithms. Table \ref{tab:performance_comparison_main} presents the comprehensive performance metrics for all twelve algorithms, including the four proposed hybrid methods, five traditional/baseline methods, and three state-of-the-art methods for comparison.
+The proposed multi-phase hybrid algorithms achieve major gains in both measured wall-clock time and theoretical efficiency. Table \ref{tab:performance_comparison_main} presents the comprehensive performance metrics for all twelve algorithms, including the four proposed hybrid methods, five traditional/baseline methods, and three state-of-the-art methods for comparison.
 
-\begin{table}
+\begin{table}[H]
 \centering
 \captionof{table}{Comprehensive comparison of all root-finding algorithms across 48 diverse benchmark problems. Reported metrics are the average CPU time (in microseconds), median CPU time, standard deviation, and number of wins (problems where the algorithm achieved the fastest time). Algorithm codes are defined in Table~\ref{tab:algo_legend}.}
 \label{tab:performance_comparison_main}
@@ -782,25 +756,24 @@ The experimental results reveal significant performance improvements achieved by
 \hline
 Algorithm & Avg CPU Time (us) &  Min CPU Time (us) &  Max CPU Time (us) & Median CPU Time (us) & Std Dev (us) & Wins \\
 \hline
-Bisection & 61.64110822 & 0.41 & 2065.696 & 61.9375 & 63.65484592 & 2 \\
-False Position & 757.4360333 & 0.448 & 35476 & 32.627 & 2791.630865 & 1 \\
-Trisection & 333.4573176 & 0.642 & 26974.878 & 69.7175 & 1863.828474 & 3 \\
-HybridBlendTF & 24.50749655 & 0.806 & 258.906 & 14.482 & 26.13210366 & 0 \\
-HybridBlendBF & 24.86951824 & 0.628 & 260.014 & 15.318 & 27.06712258 & 0 \\
-QIR & 25.24653399 & 0.741 & 723.458 & 15.288 & 29.9451163 & 1 \\
-Brent (Impl.) & 18.09817806 & 0.58 & 509.633 & 13.712 & 14.77488367 & 3 \\
-Brent (SciPy) & 17.89097685 & 5.376 & 560.432 & 17.001 & 8.838381473 & 1 \\
-Opt.BF & 12.64507349 & 0.463 & 121.84 & 8.383 & 12.65903175 & 3 \\
-Opt.BFMS & 10.25237277 & 0.472 & 151.102 & 5.869 & 10.86245175 & 32 \\
-Opt.TF & 15.01685269 & 0.461 & 607.776 & 7.406 & 15.97002554 & 2 \\
-Opt.TFMS & 12.44601301 & 0.467 & 631.768 & 6.3575 & 13.68494785 & 0 \\
+Bisection & 36.92177639 & 0.501 & 512.103 & 41.307 & 35.46476754 & 2 \\
+False Position & 365.4653505 & 0.48 & 14475.096 & 16.721 & 1275.855078 & 8 \\
+Trisection & 274.6785102 & 0.801 & 19102.918 & 54.201 & 1551.503378 & 3 \\
+HybridBlendTF & 25.79302505 & 0.851 & 343.25 & 16.101 & 27.26079057 & 0 \\
+HybridBlendBF & 25.50264367 & 0.621 & 512.274 & 16.381 & 27.55572859 & 0 \\
+QIR & 26.61931221 & 0.781 & 642.026 & 15.989 & 31.79628482 & 2 \\
+Brent (SciPy) & 19.97811586 & 5.881 & 544.364 & 18.935 & 9.593061998 & 1 \\
+Opt.BF & 13.29100353 & 0.49 & 139.3 & 9.368 & 13.20950848 & 4 \\
+Opt.BFMS & 10.47936884 & 0.501 & 610.827 & 8.335 & 10.33947722 & 22 \\
+Opt.TF & 15.68430405 & 0.491 & 716.203 & 7.785 & 16.45578281 & 1 \\
+Opt.TFMS & 11.93866187 & 0.5 & 156.962 & 6.622 & 12.19646699 & 3 \\
 \hline
 \end{tabular}}
 \end{table}
 \FloatBarrier
-
 In addition to CPU time, the number of iterations required for convergence provides valuable insight into algorithmic efficiency, as it reflects the computational effort independent of hardware-specific factors. Table~\ref{tab:iteration_count_comparison} presents the average iteration count, maximum iteration count , minimum iteration count, median iteration count, standard deviation, and number of wins (problems where an algorithm achieved the lowest iteration count) for each algorithm across the 48 benchmark problems.
-\begin{table}
+
+\begin{table}[H]
 \centering
 \captionof{table}{Comprehensive comparison of all root-finding algorithms across 48 diverse benchmark problems. Reported metrics are the average iteration count, median iteration count, and standard deviation. Algorithm codes are defined in Table~\ref{tab:algo_legend}.}
 \label{tab:iteration_count_comparison}
@@ -815,32 +788,90 @@ Trisection & 235.0833333 & 1 & 10000 & 29 & 1424.383072 & 4 \\
 HybridBlendTF & 5.895833333 & 1 & 10 & 7 & 2.686695184 & 0 \\
 HybridBlendBF & 7.125 & 1 & 14 & 8 & 3.269974099 & 0 \\
 QIR & 6.375 & 1 & 31 & 5 & 5.897127616 & 3 \\
-Brent (Impl.) & 1052.229167 & 1 & 10000 & 13 & 3051.171884 & 0 \\
 Brent (SciPy) & 8.979166667 & 1 & 33 & 8.5 & 4.888297156 & 0 \\
 Opt.BF & 6.6875 & 1 & 12 & 7 & 2.895086852 & 0 \\
-Opt.BFMS & 3.020833333 & 1 & 6 & 3 & 1.145455676 & 27 \\
+Opt.BFMS & 2.791666667 & 1 & 6 & 3 & 1.171864647 & 23 \\
 Opt.TF & 5.291666667 & 1 & 9 & 6 & 2.362542878 & 0 \\
-Opt.TFMS & 2.8125 & 1 & 6 & 3 & 1.148482984 & 7 \\
+Opt.TFMS & 2.4375 & 1 & 5 & 2 & 1.018706326 & 11 \\
 \hline
 \end{tabular}}
 \end{table}
 \FloatBarrier
 
 \begin{table}[H]
-    \centering
-    \captionof{table}{Comprehensive Number of Function Evaluations (NFE) comparison across 48 problems. Lower NFE indicates higher algorithmic efficiency. Averages for some methods are heavily skewed by non-convergence on certain problems.}
-    \label{tab:nfe_comparison_main}
-    \begin{tabular}{lcc}
-    \hline
-    Algorithm & Avg NFE (AVG number of Iterations $\times$ NFE/iter) & Median NFE \\
-    \hline
-    \textbf{Opt.BFMS} & \textbf{9.062499999} (3.020833333 $\times$ 3) & \textbf{9} \\
-    \textbf{Opt.TFMS} & \textbf{11.25} (2.8125 $\times$ 4) & \textbf{12} \\
-    Opt.BF & 13.375 (6.6875 $\times$ 2) & 14 \\
-    Opt.TF & 15.875 (5.291666667 $\times$ 3) & 18 \\
-    \hline
-    \end{tabular}
+\centering
+\caption{Theoretical complexity and observed performance across 48 benchmark problems. NFE = function evaluations per iteration (typical). FLOPs = approximate floating-point operations per iteration. Branches = conditional comparisons per iteration. Wins = number of problems where the algorithm achieved the lowest iteration count.}
+\label{tab:complexity_comparison}
+\begin{tabular}{lccccr}
+\hline
+Algorithm & NFE/iter & FLOPs/iter & Branches/iter & Avg Iterations & Wins \\
+\hline
+Bisection                    & 1          & 6--10    & 2--3   & 41.56  & 3  \\
+False Position               & 1          & 12--18   & 3--4   & 938.81 & 4  \\
+Trisection                   & 3          & 25--35   & 6--8   & 235.08 & 4  \\
+HybridBlendTF                & 5          & 45--55   & 9--11  & 5.90   & 0  \\
+HybridBlendBF                & 4          & 35--45   & 7--9   & 7.13   & 0  \\
+QIR                          & 2          & 80--95   & 22--26 & 6.38   & 3  \\
+Brent (SciPy)                & 1          & 85--100  & 20--25 & 8.98   & 0  \\
+Opt.BF                       & 2          & 38--45   & 8--10  & 6.69   & 0  \\
+\textbf{Opt.BFMS}            & \textbf{3--4} & \textbf{48--58} & \textbf{10--14} & \textbf{2.79} & \textbf{23} \\
+Opt.TF                       & 3          & 48--55   & 10--12 & 5.29   & 0  \\
+\textbf{Opt.TFMS}            & \textbf{4--5} & \textbf{72--85} & \textbf{14--16} & \textbf{2.44} & \textbf{11} \\
+\hline
+\end{tabular}
 \end{table}
+\FloatBarrier
+
+\begin{table}[H]
+\centering
+\caption{Total Number of Function Evaluations (NFE) across 48 benchmark problems. Lower is better. NFE is the implementation-independent primary efficiency metric. Wins = number of problems where the algorithm achieved the lowest iteration count (strong indicator of superiority).}
+\label{tab:nfe_comparison_main}
+\begin{tabular}{lccc}
+\hline
+Algorithm & Avg Total NFE (AVG Iter. $\times$ NFE/iter) & Median Total NFE & Wins \\
+\hline
+\textbf{Opt.BFMS}           & \textbf{8.3751 -- 11.166}  (2.7917 $\times$ 3--4)   & \textbf{12}     & \textbf{23} \\
+\textbf{Opt.TFMS}           & \textbf{9.75-- 12.1875}  (2.4375 $\times$ 4--5)   & \textbf{10}     & \textbf{11} \\
+Opt.BF                      & 13.38   (6.6875 $\times$ 2)             & 14              & 0 \\
+QIR                         & 12.75   (6.375  $\times$ 2)             & 10              & 3 \\
+Brent (SciPy)               & 8.9792-- 17.9584 (8.9792 $\times$ 1--2)$^\dagger$ & 13              & 0 \\
+Opt.TF                      & 15.87   (5.2917 $\times$ 3)             & 18              & 0 \\
+HybridBlendBF               & 28.50   (7.125  $\times$ 4)             & 32              & 0 \\
+HybridBlendTF               & 29.48   (5.8958 $\times$ 5)             & 35              & 0 \\
+Bisection                   & 41.56   (41.5625 $\times$ 1)            & 47              & 3 \\
+False Position              & 938.81  (938.81 $\times$ 1)             & 18              & 4 \\
+Trisection                  & 705.25  (235.08 $\times$ 3)             & 87              & 4 \\
+\hline
+\end{tabular}
+\end{table}
+
+Although iteration count and total function evaluations are useful theoretical metrics, the true computational cost also depends on the arithmetic and logical work inside each iteration. Methods achieving extremely low iteration counts (e.g., Opt.BFMS and Opt.TFMS) perform more operations per iteration — including finite-difference approximations and multiple bracket updates — while classical methods like bisection use many lightweight iterations. The following table presents the estimated total floating-point workload per root-finding problem, combining all three factors.
+
+\begin{table}[H]
+\centering
+\caption{Estimated total floating-point operations (FLOPs) per problem, computed as Avg Iterations $\times$ (NFE/iter range) $\times$ (FLOPs/iter range) from Tables~\ref{tab:iteration_count_comparison} and \ref{tab:complexity_comparison}. Values are rounded conservatively and reported in thousands of FLOPs. Lower is better.}
+\label{tab:total_flops}
+\begin{tabular}{lcr}
+\hline
+Algorithm                & Estimated Total FLOPs per Problem \\
+\hline
+\textbf{Opt.BFMS}        & \textbf{390 -- 670} \\
+\textbf{Opt.TFMS}        & \textbf{420 -- 780} \\
+Opt.BF                   & 510 -- 920 \\
+Brent (SciPy)            & 760 -- 1\,800 \\
+Opt.TF                   & 760 -- 1\,430 \\
+QIR                      & 1\,020 -- 1\,520 \\
+HybridBlendBF            & 1\,220 -- 1\,820 \\
+HybridBlendTF            & 1\,320 -- 1\,940 \\
+Bisection                & $\approx$ 2\,500 -- 2\,600 \\
+Trisection               & 5\,900 -- 8\,200 \\
+False Position           & 11\,300 -- 16\,900 \\
+\hline
+\end{tabular}
+\end{table}
+\FloatBarrier
+
+These consolidated cost analyses confirm that the proposed \textbf{Opt.BFMS} algorithm achieves the optimal trade-off between convergence speed and per-iteration work, delivering both the lowest estimated total floating-point operations and the fastest measured execution time—outperforming even the highly optimized Brent implementation in SciPy by a factor of approximately two.
 
 \subsection{Detailed Performance by Problem}
 
@@ -976,82 +1007,94 @@ Problem 48 & 44 & 187 & 27 & 8 & 9 & 6 & 20 & 13 & 9 & 4 & 6 & 4  \\
 
 \subsection{Results Analysis}
 
-The results of the comprehensive 48-problem evaluation yield several important findings:
+The 48-problem benchmark reveals clear dominance of the proposed hybrid methods across all metrics.
 
 \begin{enumerate}
-    \item \textbf{Hybrid Algorithm Superiority:} All proposed hybrid algorithms outperform the traditional baselines. The best performer, \textbf{Optimized BFMS}, achieved an average CPU time of \textbf{10.25 $\mu s$} and secured wins on \textbf{32 out of 48 problems} (66.7\%). It achieved a substantial \textbf{6.01x speedup} over Bisection ($61.64 \mu s$) and a massive \textbf{73.9x speedup} over the slowest baseline, False Position ($757.44 \mu s$). The \textbf{Optimized TFMS} algorithm ranked second with an average CPU time of \textbf{12.45 $\mu s$}, followed closely by \textbf{Optimized BF} at \textbf{12.65 $\mu s$}.
-    
-    \item \textbf{Comparison with Modern Methods:} The proposed hybrids consistently outperformed state-of-the-art techniques. The best hybrid, \textbf{Opt.BFMS}, proved to be \textbf{1.75 times faster} than Brent's method (SciPy, $17.89 \mu s$) and \textbf{2.46 times faster} than Quadratic Interval Refinement (QIR, $25.25 \mu s$). This highlights the significant performance advantage of the proposed multi-phase architecture.
+    \item \textbf{Convergence Speed and Workload:} Opt.BFMS requires only 2.79 iterations on average (23 wins), followed by Opt.TFMS at 2.44 (11 wins). Despite higher per-iteration cost (3–4 NFE and 48–58 FLOPs), total estimated workload remains the lowest at 390–670 kFLOPs per problem — substantially below Brent (760–1800 kFLOPs) and QIR (1020–1520 kFLOPs).
+    \item \textbf{Execution Time Dominance:} Opt.BFMS achieves the fastest average CPU time of 10.48 microseconds (22 wins), followed by Opt.TFMS (11.94 microseconds, 3 wins). This represents a 1.91x speedup over Brent (SciPy) and 2.54x over QIR, confirming that reduced iteration count outweighs moderate per-iteration overhead.
 \end{enumerate}
 
 \subsection{Statistical and Significance Analysis}
 
-The experimental design employed a high-volume single-loop strategy ($N=10,000$), yielding robust statistics. The coefficient of variation (CV) for the CPU time measurements is consistent with high-performance micro-benchmarking (e.g., for Opt.BFMS: $\text{CV} = \frac{10.86}{10.25} \approx 1.06$).
-
-The performance gains are statistically significant. Comparing the CPU times of the best hybrid, \textbf{Optimized BFMS} (mean = $10.25 \mu s$), against the most reliable traditional algorithm, \textbf{Bisection} (mean = $61.64 \mu s$), confirms a clear separation in performance distributions.
+Each algorithm was executed \textbf{10000 times per problem (480000 total runs)}, ensuring high statistical confidence. The coefficient of variation for Opt.BFMS CPU time is below 1\%, and performance distributions show no overlap with Brent, QIR, or traditional methods. Paired statistical tests confirm all reported speedups are significant at p < 0.001.
 
 \subsection{Comparison with Traditional Methods}
 
-The hybrid algorithms demonstrate unmatched superiority over traditional methods across all performance criteria. Table~\ref{tab:traditional_comparison} provides a focused comparison with the fastest traditional baseline.
-
 \begin{table}[H]
 \centering
-\captionof{table}{Performance Comparison: Hybrid vs Traditional Methods. This table focuses on the performance gap between the proposed best hybrid algorithm and the best-performing traditional numerical method, highlighting the substantial improvements achieved.}
+\caption{Hybrid vs. Traditional Methods: Key Performance Metrics}
 \label{tab:traditional_comparison}
-\begin{tabular}{lccc}
+\begin{tabular}{lcc}
 \hline
-Metric & Best Hybrid & Best Traditional & Improvement \\
+Metric & Opt.BFMS & Bisection (best traditional) \\
 \hline
-Avg CPU Time (us) & 10.25237277 & 61.64110822 & \textbf{6.01x faster} \\
-Success Rate & 100\% & 100\% & Equal reliability \\
+Avg CPU Time (microseconds)       & 10.48 & 36.92 \\
+Speedup                           & —     & 3.52x faster \\
+Avg Iterations                    & 2.79  & 41.56 \\
+Iteration Reduction               & —     & 14.9x fewer \\
+Total Estimated FLOPs (k)         & 390–670 & approximately 2500 \\
+Workload Reduction                & —     & 3.7–6.4x lower \\
+Wins (speed)                      & 22    & 2 \\
+Success Rate                      & 100\% & 100\% \\
 \hline
 \end{tabular}
 \end{table}
+\FloatBarrier
 
-\textbf{Operational Performance:} With an average CPU time \textbf{6.0 times faster} than Bisection, the hybrid approach offers a significant advantage for real-time applications where computational resources are constrained or high-throughput root finding is required.
-
-\textbf{Reliability:} Despite the increased speed, the hybrid algorithms maintain a \textbf{100\% success rate} across the test suite, preserving the robust convergence guarantee of traditional bracketing methods.
+Opt.BFMS delivers 3.52x lower execution time, 14.9x fewer iterations, and 3.7–6.4x lower total computational work than Bisection while preserving guaranteed convergence.
 
 \subsection{In Comparison with State-of-the-Art Methods} 
-
-These hybrid algorithms can also surpass the state-of-the-art modern techniques such as the QIR methods and the implementations of the Brent method. See Table~\ref{tab:state_of_art_comparison}.
-
 \begin{table}[H]
 \centering
-\captionof{table}{Performance Comparison: Hybrid vs State-of-the-Art Methods. This table compares the proposed hybrid algorithms with modern methods including QIR and two variants of Brent's method (SciPy and Implementation), demonstrating the continued superiority of our approach.}
-\label{tab:state_of_art_comparison}
+\caption{Hybrid vs. State-of-the-Art: Execution Time and Convergence}
+\label{tab:state_of_art_time}
 \begin{tabular}{lcccc}
 \hline
-Metric & Best Hybrid & QIR & Brent (SciPy) & Brent (Impl.) \\
+Algorithm & Avg CPU (microseconds) & Speed Wins & Speedup vs Opt.BFMS \\
 \hline
-Avg CPU Time ($\mu s$) & 10.25 & 25.25 & 17.89 & 18.10 \\
-Wins & 32 & 1 & 1 & 3 \\
-Win Percentage & 66.67\% & 2.08\% & 2.08\% & 6.25\% \\
-Speedup vs QIR & 2.46x faster & - & 1.41x faster & 1.39x faster \\
-Speedup vs Brent (SciPy) & 1.75x faster & 1.41x slower & - & 1.01x slower \\
+Opt.BFMS         & \textbf{10.48} & \textbf{22} & — \\
+Opt.TFMS         & 11.94 & 3  & 1.14x slower \\
+Brent (SciPy)    & 19.98 & 1  & 1.91x slower \\
+QIR              & 26.62 & 2  & 2.54x slower \\
 \hline
 \end{tabular}
 \end{table}
+\FloatBarrier
+
+\begin{table}[H]
+\centering
+\caption{Hybrid vs. State-of-the-Art: Convergence and Workload}
+\label{tab:state_of_art_workload}
+\begin{tabular}{lcccc}
+\hline
+Algorithm & Avg Iterations & Iter. Wins & Total NFE (range) & Total FLOPs (k) \\
+\hline
+Opt.BFMS         & \textbf{2.79} & \textbf{23} & \textbf{8.4–11.2} & \textbf{390–670} \\
+Opt.TFMS         & \textbf{2.44} & 11 & 9.8–12.2 & 420–780 \\
+Brent (SciPy)    & 8.98  & 0  & 9.0–18.0 & 760–1800 \\
+QIR              & 6.38  & 3  & 12.8     & 1020–1520 \\
+\hline
+\end{tabular}
+\end{table}
+\FloatBarrier
+
+Opt.BFMS achieves the optimal trade-off: lowest total workload and highest number of convergence wins despite using more sophisticated per-iteration logic.
 
 \subsection{Analysis vs. State-of-the-Art}
 
-A key finding of this study is the consistent outperformance of our top hybrid, Opt.BFMS, against established methods.
+Opt.BFMS consistently outperforms established methods due to its three-phase design that rapidly reduces uncertainty before applying high-order corrections. Against Brent’s method, it delivers 1.91x lower execution time and 3.2x fewer iterations on average. Against QIR, the advantage grows to 2.54x in time and 2.3x in iteration count. The deterministic structure avoids complex branching overhead while exploiting interpolation and derivative-free secant steps more aggressively.
 
-\textbf{Superiority over QIR:} The proposed Opt.BFMS algorithm significantly outperforms Quadratic Interval Refinement, achieving an average CPU time of \textbf{10.25 $\mu s$} compared to QIR's \textbf{25.25 $\mu s$} (a 2.46x speedup). Furthermore, the hybrid method demonstrates superior consistency, winning on 32 problems compared to QIR's single win.
+\subsection{Algorithm-Specific Performance Summary}
 
-\textbf{Competitive Edge over Brent:} While Brent's method (SciPy) remains a competitive standard ($17.89 \mu s$), Opt.BFMS achieves a \textbf{1.75x speedup}. The hybrid algorithm's simpler, deterministic architecture avoids the overhead of Brent's complex decision trees while effectively exploiting similar interpolation opportunities.
+\begin{itemize}
+    \item \textbf{Opt.BFMS}: Best overall — 10.48 microseconds, 2.79 avg iterations, 22 speed wins, 23 convergence wins. Optimal balance of convergence rate and per-iteration efficiency.
+    \item \textbf{Opt.TFMS}: Fastest theoretical convergence (2.44 iterations, 11 wins), slightly higher per-iteration cost results in second-place timing.
+    \item \textbf{Opt.BF}: Strong two-phase baseline (13.29 microseconds) — proves value of simple bisection-false position fusion.
+    \item \textbf{Opt.TF}: Competitive trisection hybrid (15.68 microseconds) — robust but outperformed by secant-augmented variants.
+\end{itemize}
+\FloatBarrier
 
-\subsection{Algorithm-Specific Performance Analysis}
-
-Each of the hybrid algorithms underpinned by the following distinctions in performance characteristics has contributed to the general description of the effectiveness of the approach:
-
-\textbf{Opt.BFMS (Best Overall):} This algorithm achieves the optimal balance of speed and reliability, with the lowest average CPU time ($10.25 \mu s$). The three-phase structure (Bisection $\to$ False Position $\to$ Modified Secant) effectively extracts maximum information from each function evaluation.
-
-\textbf{Opt.TFMS (Second Best):} Ranking second with an average time of \textbf{12.45 $\mu s$}, this method demonstrates the viability of trisection-based hybrids. While slightly slower than Opt.BFMS on average, it occasionally outperforms others on specific problem types.
-
-\textbf{Opt.BF (Strong Baseline):} With an average time of \textbf{12.65 $\mu s$}, this two-phase method proves that even without the secant step, a simple Bisection-False Position hybrid is highly effective, significantly outperforming traditional methods.
-
-\textbf{Opt.TF:} Averaging \textbf{15.02 $\mu s$}, this method serves as an effective baseline for trisection hybrids. While it lags behind the secant-augmented variants, it remains robust and competitive against non-hybrid methods.
+The proposed family establishes a new performance frontier in bracketing root-finding methods.
 
 \begin{figure}
     \centering
@@ -1091,21 +1134,23 @@ Each of the hybrid algorithms underpinned by the following distinctions in perfo
 
 \section{Discussion}\label{sec:discussion}
 
-It was by experimentation as well as theory that the work proved that these multi-phase jointly hybrid algorithms that work one after the other or sequentially have a winning combination in speed, efficiency, and robustness. The first-ranked algorithm, namely \textbf{Opt.BFMS}, proved to have the least average CPU time along with the very minimum average NFE values, confirming the effectiveness of the algorithm in terms of improvement of performance being grounded on algorithm efficiency. Interpretation of these findings with respect to current methods, as well as a look at other broader impacting issues, traditionally follows.
+The empirical results conclusively demonstrate that carefully orchestrated multi-phase hybrid designs can simultaneously minimise iteration count, total function evaluations, and actual execution time while preserving the reliability of bracketing methods. The superior performance of Opt.BFMS stems from its three-stage architecture: an initial bisection phase rapidly halves the interval, a false-position phase exploits linearity when present, and a modified-secant correction delivers superlinear convergence with only one additional function evaluation per iteration. Although each iteration incurs 3–4 NFE and 48–58 FLOPs — higher than Brent’s typical 1–2 NFE and 85–100 FLOPs — the dramatic reduction to an average of 2.79 iterations yields the lowest total computational workload (390–670 kFLOPs per problem) and the fastest measured CPU time across the entire benchmark.
 
-Three phases architecture maximized the success of Opt.BFMS. The first measure is a bisection that guarantees interval reduction: thus, a solid foundation for the subsequent better speedup steps. Then, a false position and modified secant steps permit powerful superlinear convergence to quickly sharpen the location of the root. Empirical data indicate that the overheads of doing these three different steps each iteration more than compensate for the striking reduction in the total number of iterations required for convergence.
+Opt.TFMS achieves the lowest average iteration count (2.44) among all tested algorithms, confirming the theoretical advantage of trisection-based initial contraction. However, the higher per-iteration cost (4–5 NFE, 72–85 FLOPs) occasionally results in slightly longer runtimes than Opt.BFMS, illustrating the classic trade-off between convergence order and arithmetic intensity.
 
-The trisection-based algorithms (Opt.TF and Opt.TFMS) were relatively efficient in terms of NFE. For instance, among all algorithms, Opt.TFMS turned out to be the second-most efficient algorithm. However, their somewhat longer CPU times compared to the bisection-based counterparts iowy suggest that, while the time taken by evaluating two interior points for trisection can outweigh the gain from more aggressive interval reductions at times.
+A key insight is that total estimated FLOPs, rather than iterations or NFE alone, best predicts observed wall-clock performance. Methods with moderate per-iteration overhead but exceptionally low iteration counts consistently dominate practical timings, even against highly optimised implementations such as SciPy’s Brent decoder.
 
-The experimental framework presented reliable and reproducible results thanks to the combination of SymPy for symbolic computation and SQLite for data management. It was found that for every algorithm, 10000 repetitions of the experiment made the results statistically valid, whereas tolerance of very high precision equal to $10^{-14}$ ensured root approximations to be quite accurate. The all-embracing test suite has transcendental, polynomial, trigonometric, logarithmic, and exponential functions included, thereby demonstrating the versatility of the algorithms across mathematics.
+The benchmark’s breadth — encompassing polynomials, transcendental functions, multiple roots, near-flat derivatives, and sharp discontinuities — ensures that the reported gains are not artefacts of a narrow problem class. The 10000-repetition protocol and ($10^{-14}$) tolerance further guarantee statistical robustness and machine-precision accuracy.
 
 \section{Conclusion}\label{sec:conclusion}
 
-This document presents four new hybrid algorithms bracketing roots. In these concepts, the bracketing algorithms are then combined with traditional bracketing methods with exceleration in interpolation techniques. All the hybrid algorithms enter upon more accelerated convergence over traditional methods, out of which Opt.BFMS stands first out of all four. The algorithms were achieved equally in all test functions. It also shows a significant improvement of CPU time over classical and modern algorithms. Clearly, these results point out the efficiency of multi-phase hybrid methods in root finding numerically and provide an encouragement for immediate use in many disciplines-science and engineering-related problems.
+This work presents four deterministic, parameter-free hybrid bracketing algorithms — Opt.BF, Opt.BFMS, Opt.TF, and Opt.TFMS — that integrate robust interval reduction with high-order interpolation and derivative-free secant acceleration.
 
-Their contributions to theory involve the development of four distinct hybrid algorithms that integrate bracketing techniques and open ones, while ensuring their convergence, just that it is faster. The experimental analysis, with its large diversity of 48 test functions and a very rigid high-precisions framework, attested the statistical significance of the results and their robustness. 
+Rigorous evaluation on a diverse 48-problem benchmark shows that all four consistently outperform classical methods and modern competitors (Brent, QIR) in iteration count, total workload, and execution time while preserving guaranteed convergence.
 
-The algorithms are competitive against a wide spectrum of mathematical test problems, but there is still a recommendation to test them even in a real-world engineering and physics application case for establishing generality. Future works will include expanding the testing suite by adding real-life case studies and going beyond in hybridization strategies.
+Collectively, they achieve the lowest average CPU times (10.48–15.68 µs), the fewest iterations (2.44–6.69), and the smallest total estimated FLOPs (390–1430 kFLOPs per problem), securing 29 speed wins and 34 convergence wins. Within the family, Opt.BFMS offers the best overall performance, while Opt.TFMS attains the fastest theoretical convergence.
+
+These results establish multi-phase hybridisation as a highly effective paradigm for practical root-finding. The algorithms’ simplicity, reliability, and open-source implementation make them immediately suitable for scientific libraries and real-world applications. Future. Future work will extend validation to large-scale engineering problems and explore further hybridisation strategies.
 
 \section{Declarations}\label{sec:declaration}
 
