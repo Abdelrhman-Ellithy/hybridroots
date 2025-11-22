@@ -42,7 +42,8 @@ def bisection(f, a, b, tol, max_iter=10000):
     
     # Initialize the iteration counter
     n = 0
-    
+    fa = f(a)
+    fb = f(b)
     # Iterate until maximum iterations reached, or |f(x)| <= tol
     while n < max_iter:
         # Increment the iteration counter by 1
@@ -53,16 +54,15 @@ def bisection(f, a, b, tol, max_iter=10000):
         
         # Calculate f(x) and f(a)
         fx = f(x)
-        fa = f(a)
         
         # Check if the absolute value of f(x) is smaller than the tolerance
         if abs(fx) <= tol:
             break
         # Determine the new interval [a, b]
         if fa * fx < 0:
-            b = x
+            b, fb = x, fx
         else:
-            a = x
+            a, fa = x, fx
     # Return the number of iterations, estimated root, function value, lower bound, and upper bound
     return n, x, fx, a, b
 
@@ -78,7 +78,7 @@ if __name__ == "__main__":
     
     results = bench.run(
         algorithm_func=bisection, 
-        method_name='01-Normal-Bisection',
+        method_name='Bisection',
         tol=1e-14
     )
     

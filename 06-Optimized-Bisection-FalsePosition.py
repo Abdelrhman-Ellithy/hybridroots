@@ -69,7 +69,7 @@ if __name__ == "__main__":
     
     results = bench.run(
         algorithm_func=HbisectionFalse, 
-        method_name='06-Optimized-Bisection-FalsePosition',
+        method_name='Opt.BF',
         tol=1e-14
     )
     

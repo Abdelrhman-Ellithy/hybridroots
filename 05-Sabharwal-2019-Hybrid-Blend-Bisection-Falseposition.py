@@ -113,7 +113,7 @@ if __name__ == "__main__":
     
     results = bench.run(
         algorithm_func=blendBF, 
-        method_name='05-Sabharwal-2019-Hybrid-Blend-Bisection-Falseposition',
+        method_name='HybridBlendBF',
         tol=1e-14
     )
     

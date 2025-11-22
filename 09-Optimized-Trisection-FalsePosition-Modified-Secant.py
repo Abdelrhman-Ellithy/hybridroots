@@ -60,7 +60,7 @@ def HtrisectionFalseMS(f, a, b, tol, max_iter=10000, delta=1e-4):
 
         if abs(ffp) <= tol:
             return n, fp, ffp, a, b
-
+        delta=1e-8* max(1, abs(fp)) + 1e-15
         try:
             xS = fp - delta * ffp / (f(fp + delta) - ffp)
 
@@ -91,7 +91,7 @@ if __name__ == "__main__":
     
     results = bench.run(
         algorithm_func=HtrisectionFalseMS, 
-        method_name='09-Optimized_Trisection-FalsePosition-Modified Secant',
+        method_name='Opt.TFMS',
         tol=1e-14
     )
     

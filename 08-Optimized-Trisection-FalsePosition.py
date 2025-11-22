@@ -92,7 +92,7 @@ if __name__ == "__main__":
     
     results = bench.run(
         algorithm_func=HtrisectionFalse, 
-        method_name='08-Optimized-Trisection-FalsePosition',
+        method_name='Opt.TF',
         tol=1e-14
     )
     

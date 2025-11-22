@@ -58,6 +58,7 @@ def HbisectionFalseMS(f, a, b, tol, max_iter=10000, delta=1e-4):
         if abs(ffp) <= tol:
             return n, fp, ffp, a, b
         
+        delta=1e-8* max(1, abs(fp)) + 1e-15
         try:
             xS = fp - delta * ffp / (f(fp + delta) - ffp)
         except (ValueError, OverflowError, ZeroDivisionError):
@@ -85,7 +86,7 @@ if __name__ == "__main__":
     
     results = bench.run(
         algorithm_func=HbisectionFalseMS, 
-        method_name='07-Optimized-Bisection-FalsePosition-Modified Secant',
+        method_name='Opt.BFMS',
         tol=1e-14
     )
     

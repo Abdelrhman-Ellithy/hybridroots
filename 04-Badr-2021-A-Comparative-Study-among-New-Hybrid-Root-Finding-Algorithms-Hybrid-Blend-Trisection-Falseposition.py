@@ -126,7 +126,7 @@ if __name__ == "__main__":
     
     results = bench.run(
         algorithm_func=blendTF, 
-        method_name='04-Badr-2021-A Comparative Study among New Hybrid Root Finding Algorithms-Hybrid-Blend-Trisection-Falseposition',
+        method_name='HybridBlendTF',
         tol=1e-14
     )
     

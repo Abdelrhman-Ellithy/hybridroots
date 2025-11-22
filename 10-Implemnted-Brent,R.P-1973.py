@@ -88,7 +88,7 @@ if __name__ == "__main__":
     
     results = bench.run(
         algorithm_func=BrentsMethod, 
-        method_name='10-implemented-Brent,R.P-1973',
+        method_name='Brent (Impl.)',
         tol=1e-14
     )
     

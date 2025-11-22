@@ -103,7 +103,7 @@ if __name__ == "__main__":
     
     results = bench.run(
         algorithm_func=QIR, 
-        method_name='12-Quadratic-Interval-Refinement',
+        method_name='QIR',
         tol=1e-14
     )
     

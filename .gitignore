@@ -184,7 +184,7 @@ cython_debug/
 *.bib
 *.pdf
 Sample Latex Paper Format file.tex
-
+Results.db
 # Do not ignore the main paper PDF
 !hybrid_root_bracketing_paper.pdf
 

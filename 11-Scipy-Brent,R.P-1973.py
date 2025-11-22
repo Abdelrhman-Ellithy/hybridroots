@@ -48,7 +48,7 @@ if __name__ == "__main__":
     # We pass our adapter function instead of QIR
     results = bench.run(
         algorithm_func=brentq_adapter, 
-        method_name='11-Scipy-Brent,R.P-1973',
+        method_name='Brent (SciPy)',
         tol=1e-14
     )
     

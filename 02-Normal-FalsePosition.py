@@ -37,10 +37,10 @@ def false_position(f, a, b, tol, max_iter=10000):
     i = 0
     fx=0
     eps = 1e-20
+    fa = f(a)
+    fb = f(b)
     while i < max_iter:
         i += 1
-        fa= f(a)
-        fb= f(b)
         try:
             x = (a*fb - b*fa) / (fb - fa)
         except Exception:
@@ -50,8 +50,10 @@ def false_position(f, a, b, tol, max_iter=10000):
             break
         elif fa * fx < 0:
             b = x
+            fb = fx
         else:
             a = x
+            fa = fx
     
     # Return the estimated root
     return i, x, fx, a, b
@@ -68,7 +70,7 @@ if __name__ == "__main__":
     
     results = bench.run(
         algorithm_func=false_position, 
-        method_name='02-Normal-FalsePosition',
+        method_name='HybridBlendTF ',
         tol=1e-14
     )
     

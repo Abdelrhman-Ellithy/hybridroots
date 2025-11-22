@@ -42,7 +42,8 @@ def trisection(f, a, b, tol, max_iter=10000):
     
     # Initialize the iteration counter
     n = 0
-    
+    fa = f(a)
+    fb = f(b)
     # Iterate until maximum iterations reached, or |f(x)| <= tol
     while n < max_iter:
         # Increment the iteration counter by 1
@@ -55,7 +56,6 @@ def trisection(f, a, b, tol, max_iter=10000):
         # Calculate f(x1), f(x2) and f(a)
         fx1 = f(x1)
         fx2 = f(x2)
-        fa = f(a)
         
         # Choose the root with the smaller error
         if abs(fx1) < abs(fx2):
@@ -71,11 +71,15 @@ def trisection(f, a, b, tol, max_iter=10000):
         # Determine the new interval [a, b]
         elif fa * fx1 < 0:
             b = x1
+            fb = fx1
         elif fx1 * fx2 < 0:
             a = x1
             b = x2
+            fa = fx1
+            fb = fx2
         else:
             a = x2
+            fa = fx2
             
     # Return the number of iterations, estimated root, function value, lower bound, and upper bound
     return n, x, fx, a, b
@@ -90,7 +94,7 @@ if __name__ == "__main__":
     
     results = bench.run(
         algorithm_func=trisection, 
-        method_name='03-Trisection',
+        method_name='Trisection',
         tol=1e-14
     )
     
