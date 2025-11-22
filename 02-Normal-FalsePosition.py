@@ -70,7 +70,7 @@ if __name__ == "__main__":
     
     results = bench.run(
         algorithm_func=false_position, 
-        method_name='HybridBlendTF ',
+        method_name='false_position ',
         tol=1e-14
     )
     
