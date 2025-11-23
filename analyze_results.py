@@ -183,85 +183,6 @@ final_cols = ['method_name', 'avg_cpu', 'min_cpu', 'max_cpu', 'median_cpu', 'std
 existing_cols = [c for c in final_cols if c in df_alg.columns]
 df_alg[existing_cols].to_csv(final_csv, index=False)
 print(f"Saved detailed CPU summary to {final_csv}")
-
-# --- 7. ESTIMATE TOTAL NFE AND FLOPS PER PROBLEM ---
-print("--- Estimating Total NFE and FLOPs ---")
-
-# Load iteration statistics (just created)
-iter_csv = 'Iterations_Per_Algorithm.csv'
-if not os.path.exists(iter_csv):
-    print(f"Warning: {iter_csv} not found. Skipping NFE/FLOPs estimation.")
-else:
-    df_iter = pd.read_csv(iter_csv)
-
-    # Load complexity data
-    complexity_csv = 'Complexity_Per_Algorithm.csv'
-    if not os.path.exists(complexity_csv):
-        print(f"Error: {complexity_csv} not found. Cannot compute total workload.")
-    else:
-        df_complex = pd.read_csv(complexity_csv)
-
-        # Merge on Algorithm
-        df_merged = df_iter.merge(df_complex, on='method_name', how='left')
-
-        # Compute Total NFE (avg_iter * NFE_per_iter)
-        df_merged['total_nfe_low']  = df_merged['avg_iter'] * df_merged['NFE_per_iter_low']
-        df_merged['total_nfe_high'] = df_merged['avg_iter'] * df_merged['NFE_per_iter_high']
-
-        # Compute Total FLOPs (avg_iter * NFE_per_iter * FLOPs_per_iter)
-        df_merged['total_flops_low']  = df_merged['avg_iter'] * df_merged['NFE_per_iter_low'] * df_merged['FLOPs_per_iter_low']
-        df_merged['total_flops_high'] = df_merged['avg_iter'] * df_merged['NFE_per_iter_high'] * df_merged['FLOPs_per_iter_high']
-
-        # Format nicely
-        def format_range(low, high, is_flops=False):
-            if pd.isna(low) or pd.isna(high):
-                return "N/A"
-            low = round(low, 1)
-            high = round(high, 1)
-            if is_flops:
-                if high >= 1000:
-                    return f"{int(low//1000)}--{int(high//1000)}k" if low < 1000 else f"{int(low//1000)}--{int(high//1000)}k"
-                else:
-                    return f"{int(low)}--{int(high)}"
-            else:
-                return f"{low:.2f}--{high:.2f}".rstrip('0').rstrip('.') if '.' in f"{low:.2f}" else f"{int(low)}--{int(high)}"
-
-        df_merged['Avg Total NFE'] = df_merged.apply(
-            lambda row: f"{format_range(row['total_nfe_low'], row['total_nfe_high'])} "
-                        f"(avg_iter × NFE/iter)" if pd.notna(row['total_nfe_low']) else "N/A", axis=1)
-
-        df_merged['Estimated Total FLOPs'] = df_merged.apply(
-            lambda row: format_range(row['total_flops_low'], row['total_flops_high'], is_flops=True), axis=1)
-
-        # Select and reorder columns for output
-        summary_cols = ['method_name', 'avg_iter', 'wins', 'Avg Total NFE', 'Estimated Total FLOPs']
-        df_summary = df_merged[summary_cols].copy()
-        df_summary.columns = ['Algorithm', 'Avg Iterations', 'Iter Wins', 'Avg Total NFE', 'Estimated Total FLOPs (per problem)']
-
-        # Sort by performance (same order as before)
-        df_summary['rank'] = df_summary['Algorithm'].apply(lambda x: target_order.index(x) if x in target_order else 999)
-        df_summary = df_summary.sort_values('rank').drop('rank', axis=1)
-
-        # Save LaTeX-ready CSV
-        nfe_flops_csv = 'Total_NFE_and_FLOPs_Summary.csv'
-        df_summary.to_csv(nfe_flops_csv, index=False)
-        print(f"Saved total NFE and FLOPs summary → {nfe_flops_csv}")
-
-        # Also save pure LaTeX table fragment (optional)
-        latex_table = "\\begin{tabular}{lcc}\n\\hline\nAlgorithm & Avg Total NFE & Estimated Total FLOPs \\\\\n\\hline\n"
-        for _, row in df_summary.iterrows():
-            alg = row['Algorithm'].replace('_', ' ')
-            nfe = row['Avg Total NFE'].replace('avg_iter × NFE/iter', '')
-            flops = row['Estimated Total FLOPs (per problem)']
-            if 'Opt.BFMS' in alg or 'Opt.TFMS' in alg:
-                latex_table += f"\\textbf{{{alg}}} & \\textbf{{{nfe}}} & \\textbf{{{flops}}} \\\\\n"
-            else:
-                latex_table += f"{alg} & {nfe} & {flops} \\\\\n"
-        latex_table += "\\hline\n\\end{tabular}"
-        with open('Total_NFE_FLOPs_Table.tex', 'w') as f:
-            f.write(latex_table)
-        print("Saved LaTeX table fragment → Total_NFE_FLOPs_Table.tex")
-
 # --- 6. VISUALIZATIONS ---
 print("--- Generating Plots ---")
 
@@ -370,125 +291,212 @@ plt.close()
 conn.close()
 print("--- Analysis Complete ---")
 
-# --- 8. ADVANCED VISUALIZATIONS: NFE & FLOPs ---
+# --- 7. ESTIMATE TOTAL NFE AND FLOPs (FULLY ROBUST) ---
+print("--- Estimating Total NFE and FLOPs ---")
+
+iter_csv      = 'Iterations_Per_Algorithm.csv'
+complexity_csv = 'Complexity_Per_Algorithm.csv'
+
+if not os.path.exists(iter_csv):
+    print(f"Warning: {iter_csv} not found → skipping NFE/FLOPs estimation")
+elif not os.path.exists(complexity_csv):
+    print(f"Error: {complexity_csv} not found → cannot compute workload")
+else:
+    # Load iteration file – column is called "method_name"
+    df_iter = pd.read_csv(iter_csv)
+    if 'method_name' in df_iter.columns:
+        df_iter = df_iter.rename(columns={'method_name': 'Algorithm'})
+    else:
+        print("No 'method_name' column found in Iterations CSV")
+        df_iter = df_iter.iloc[0:0]  # make empty to skip rest
+
+    # Load complexity file – column must be "Algorithm"
+    df_complex = pd.read_csv(complexity_csv)
+    if 'Algorithm' not in df_complex.columns:
+        print("Complexity CSV must contain an 'Algorithm' column")
+    else:
+        # Merge on the exact same algorithm name
+        df_merged = df_iter.merge(df_complex, on='Algorithm', how='left')
+
+        # If merge failed (empty), give a clear message and continue
+        if df_merged.empty:
+            print("Merge failed – check that algorithm names in both CSVs are identical")
+        else:
+            # Calculations
+            df_merged['nfe_low']  = df_merged['avg_iter'] * df_merged['NFE_per_iter_low']
+            df_merged['nfe_high'] = df_merged['avg_iter'] * df_merged['NFE_per_iter_high']
+            df_merged['flops_low']  = df_merged['nfe_low']  * df_merged['FLOPs_per_iter_low']
+            df_merged['flops_high'] = df_merged['nfe_high'] * df_merged['FLOPs_per_iter_high']
+
+            # Pretty formatting
+            def fmt_nfe(l, h):
+                return f"{l:.2f}--{h:.2f}".replace('.00', '')
+
+            def fmt_flops(l, h):
+                if h >= 1000:
+                    return f"{int(l//1000)}--{int(h//1000)}k"
+                return f"{int(l)}--{int(h)}"
+
+            df_merged['Avg_Total_NFE'] = df_merged.apply(
+                lambda r: fmt_nfe(r['nfe_low'], r['nfe_high']), axis=1)
+            df_merged['Est_Total_FLOPs'] = df_merged.apply(
+                lambda r: fmt_flops(r['flops_low'], r['flops_high']), axis=1)
+
+            # Final table
+            out = df_merged[['Algorithm', 'avg_iter', 'wins',
+                            'Avg_Total_NFE', 'Est_Total_FLOPs']].copy()
+            out.columns = ['Algorithm', 'Avg_Iterations', 'Iter_Wins',
+                          'Avg_Total_NFE', 'Est_Total_FLOPs_k']
+
+            # Sort exactly like the rest of your script
+            out['rank'] = out['Algorithm'].apply(
+                lambda x: target_order.index(x) if x in target_order else 999)
+            out = out.sort_values('rank').drop('rank', axis=1).reset_index(drop=True)
+
+            # Save CSV
+            out.to_csv('Total_NFE_and_FLOPs_Summary.csv', index=False)
+            print("Success: Total_NFE_and_FLOPs_Summary.csv created")
+
+            # Optional LaTeX fragment (ready to paste)
+            latex = "\\begin{tabular}{lcc}\n\\hline\nAlgorithm & Avg Total NFE & Est. Total FLOPs (k) \\\\\n\\hline\n"
+            for _, r in out.iterrows():
+                alg = r['Algorithm']
+                nfe = r['Avg_Total_NFE']
+                flops = r['Est_Total_FLOPs_k']
+                if alg in ['Opt.BFMS' or 'Opt.TFMS' ]:
+                    latex += f"\\textbf{{{alg}}} & \\textbf{{{nfe}}} & \\textbf{{{flops}}} \\\\\n"
+                else:
+                    latex += f"{alg} & {nfe} & {flops} \\\\\n"
+            latex += "\\hline\n\\end{tabular}"
+            with open('Total_NFE_FLOPs_Table.tex', 'w') as f:
+                f.write(latex)
+            print("Success: Total_NFE_FLOPs_Table.tex created")
+
+# --- 8. ADVANCED VISUALIZATIONS: NFE & FLOPs (100% WORKING) ---
 print("--- Generating NFE and FLOPs Visualizations ---")
 
-# Only proceed if the summary was created
 summary_csv = 'Total_NFE_and_FLOPs_Summary.csv'
 if not os.path.exists(summary_csv):
-    print(f"Warning: {summary_csv} not found. Skipping advanced plots.")
+    print(f"Warning: {summary_csv} not found. Skipping plots.")
 else:
     df_plot = pd.read_csv(summary_csv)
 
-    # Ensure correct order
-    df_plot['rank'] = df_plot['Algorithm'].apply(lambda x: target_order.index(x) if x in target_order else 999)
-    df_plot = df_plot.sort_values('rank').drop('rank', axis=1)
+    # Ensure correct column names (from the fixed script above)
+    if 'Avg_Total_NFE' in df_plot.columns:
+        nfe_col = 'Avg_Total_NFE'
+    elif 'Avg Total NFE' in df_plot.columns:
+        nfe_col = 'Avg Total NFE'
+    else:
+        print("NFE column not found!")
+        nfe_col = None
 
-    # Extract low/high for plotting
-    def extract_bounds(s, is_flops=False):
-        if pd.isna(s) or 'N/A' in str(s):
-            return [0, 0]
-        s = str(s).replace('k', '000').replace('approximately', '').replace(' ', '')
-        parts = s.replace('--', '-').split('-')
-        try:
-            low = float(parts[0])
-            high = float(parts[1]) if len(parts) > 1 else low
-            return [low, high]
-        except:
-            return [0, 0]
+    flops_col = 'Est_Total_FLOPs_k' if 'Est_Total_FLOPs_k' in df_plot.columns else None
 
-    # 1. Bar Chart: Average Total NFE (with range as error bars)
-    plt.figure(figsize=(12, 7))
-    low_nfe = [extract_bounds(x)[0] for x in df_plot['Avg Total NFE']]
-    high_nfe = [extract_bounds(x)[1] for x in df_plot['Avg Total NFE']]
-    mid_nfe = [(l + h) / 2 for l, h in zip(low_nfe, high_nfe)]
-    err_nfe = [(m - l, h - m) for l, m, h in zip(low_nfe, mid_nfe, high_nfe)]
+    if nfe_col is None or flops_col is None:
+        print("Required columns missing. Skipping plots.")
+    else:
+        # Sort by target order
+        df_plot['rank'] = df_plot['Algorithm'].apply(
+            lambda x: target_order.index(x) if x in target_order else 999)
+        df_plot = df_plot.sort_values('rank').reset_index(drop=True)
 
-    bars = plt.bar(df_plot['Algorithm'], mid_nfe, yerr=np.array(err_nfe).T,
-                   capsize=5, color='skyblue', edgecolor='navy', alpha=0.9, label='Total NFE Range')
+        # Helper: extract low/high from string like "8.38--11.17" or "390--670k"
+        def parse_range(s):
+            if pd.isna(s) or not isinstance(s, str):
+                return 0, 0
+            s = s.replace('k', '000').replace('approximately', '').replace(' ', '')
+            parts = s.split('--')
+            try:
+                low = float(parts[0])
+                high = float(parts[1]) if len(parts) > 1 else low
+                return low, high
+            except:
+                return 0, 0
 
-    # Annotate wins
-    for bar, wins in zip(bars, df_plot['Iter Wins']):
-        if wins > 0:
-            plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 2,
-                     f"{int(wins)} wins", ha='center', va='bottom', fontweight='bold', fontsize=9)
+        # Extract NFE bounds
+        nfe_low, nfe_high = zip(*df_plot[nfe_col].apply(parse_range))
+        nfe_mid = [(l + h) / 2 for l, h in zip(nfe_low, nfe_high)]
+        nfe_err = [(m - l, h - m) for l, m, h in zip(nfe_low, nfe_mid, nfe_high)]
 
-    plt.xticks(rotation=45, ha='right')
-    plt.ylabel('Average Total Function Evaluations (NFE)')
-    plt.title('Total Function Evaluations per Problem (Lower = Better)')
-    plt.tight_layout()
-    plt.savefig('total_nfe_per_algorithm.png', dpi=200)
-    plt.close()
+        # Extract FLOPs bounds (in actual numbers, not k)
+        flops_low, flops_high = zip(*df_plot[flops_col].apply(parse_range))
+        flops_mid = [(l + h) / 2 for l, h in zip(flops_low, flops_high)]
+        flops_err = [(m - l, h - m) for l, m, h in zip(flops_low, flops_mid, flops_high)]
 
-    # 2. Bar Chart: Estimated Total FLOPs (in thousands)
-    plt.figure(figsize=(12, 7))
-    low_flops = [extract_bounds(x, is_flops=True)[0] for x in df_plot['Estimated Total FLOPs (per problem)']]
-    high_flops = [extract_bounds(x, is_flops=True)[1] for x in df_plot['Estimated Total FLOPs (per problem)']]
-    mid_flops = [(l + h) / 2 for l, h in zip(low_flops, high_flops)]
-    err_flops = [(m - l, h - m) for l, m, h in zip(low_flops, mid_flops, high_flops)]
+        # 1. Total NFE Bar Chart
+        plt.figure(figsize=(12, 7))
+        bars = plt.bar(df_plot['Algorithm'], nfe_mid, yerr=np.array(nfe_err).T if any(nfe_err) else None,
+                       capsize=6, color='skyblue', edgecolor='navy', alpha=0.9)
+        for bar, wins in zip(bars, df_plot['Iter_Wins']):
+            if wins > 0:
+                plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + max(nfe_err, default=0)[1] + 1,
+                         f"{int(wins)} wins", ha='center', va='bottom', fontweight='bold', fontsize=10)
+        plt.xticks(rotation=45, ha='right')
+        plt.ylabel('Average Total Function Evaluations')
+        plt.title('Total NFE per Problem (Lower = Better)')
+        plt.tight_layout()
+        plt.savefig('total_nfe_per_algorithm.png', dpi=200)
+        plt.close()
 
-    colors = ['goldenrod' if 'Opt.BFMS' in alg else 'lightcoral' if 'Opt.TFMS' in alg else 'lightgray' 
-              for alg in df_plot['Algorithm']]
-    bars = plt.bar(df_plot['Algorithm'], mid_flops, yerr=np.array(err_flops).T if any(err_flops) else None,
-                   capsize=5, color=colors, edgecolor='black', alpha=0.9)
+        # 2. Total FLOPs Bar Chart (in thousands)
+        plt.figure(figsize=(12, 7))
+        colors = ['gold' if 'Opt.BFMS' in a else 'orange' if 'Opt.TFMS' in a else 'lightgray' for a in df_plot['Algorithm']]
+        bars = plt.bar(df_plot['Algorithm'], [f/1000 for f in flops_mid],
+                       yerr=np.array(flops_err).T/1000 if any(flops_err) else None,
+                       capsize=6, color=colors, edgecolor='black')
+        plt.xticks(rotation=45, ha='right')
+        plt.ylabel('Estimated Total FLOPs (thousands)')
+        plt.title('Total Computational Workload (Lower = Better)')
+        plt.tight_layout()
+        plt.savefig('total_flops_per_algorithm.png', dpi=200)
+        plt.close()
 
-    plt.xticks(rotation=45, ha='right')
-    plt.ylabel('Estimated Total FLOPs (thousands)')
-    plt.title('Total Computational Workload per Problem (Lower = Better)')
-    plt.tight_layout()
-    plt.savefig('total_flops_per_algorithm.png', dpi=200)
-    plt.close()
+        # 3. Dual-Axis Comparison
+        fig, ax1 = plt.subplots(figsize=(13, 7))
+        ax1.bar([i-0.2 for i in range(len(df_plot))], nfe_mid, width=0.4, color='steelblue', alpha=0.8, label='Total NFE')
+        ax1.set_ylabel('Total Function Evaluations', color='steelblue')
+        ax1.tick_params(axis='y', labelcolor='steelblue')
 
-    # 3. Combined Dual-Axis Plot: NFE vs FLOPs
-    fig, ax1 = plt.subplots(figsize=(13, 7))
+        ax2 = ax1.twinx()
+        ax2.bar([i+0.2 for i in range(len(df_plot))], [f/1000 for f in flops_mid], width=0.4,
+                color='darkorange', alpha=0.8, label='Total FLOPs (k)')
+        ax2.set_ylabel('Total FLOPs (thousands)', color='darkorange')
+        ax2.tick_params(axis='y', labelcolor='darkorange')
 
-    # NFE (left axis)
-    ax1.bar([i - 0.2 for i in range(len(df_plot))], mid_nfe, width=0.4,
-            yerr=np.array(err_nfe).T, label='Total NFE', color='steelblue', alpha=0.8, capsize=4)
-    ax1.set_ylabel('Total Function Evaluations (NFE)', color='steelblue')
-    ax1.tick_params(axis='y', labelcolor='steelblue')
+        plt.xticks(range(len(df_plot)), df_plot['Algorithm'], rotation=45, ha='right')
+        plt.title('NFE vs FLOPs per Algorithm (Lower = Better)')
+        fig.legend(loc="upper center", bbox_to_anchor=(0.5, 0.93), ncol=2)
+        plt.tight_layout()
+        plt.savefig('nfe_vs_flops_comparison.png', dpi=200)
+        plt.close()
 
-    # FLOPs (right axis)
-    ax2 = ax1.twinx()
-    ax2.bar([i + 0.2 for i in range(len(df_plot))], mid_flops, width=0.4,
-            yerr=np.array(err_flops).T if any(err_flops) else None,
-            label='Total FLOPs (k)', color='darkorange', alpha=0.8, capsize=4)
-    ax2.set_ylabel('Total FLOPs (thousands)', color='darkorange')
-    ax2.tick_params(axis='y', labelcolor='darkorange')
+        # 4. Horizontal Ranked FLOPs (Best for Paper)
+        plt.figure(figsize=(10, 8))
+        y_pos = np.arange(len(df_plot))
+        plt.errorbar([f/1000 for f in flops_mid], y_pos,
+                     xerr=np.array(flops_err).T/1000 if any(flops_err) else None,
+                     fmt='s', markersize=9, capsize=6, color='black', alpha=0.9)
 
-    plt.xticks(range(len(df_plot)), df_plot['Algorithm'], rotation=45, ha='right')
-    plt.title('Total NFE vs Total FLOPs per Algorithm\n(Lower = Better on Both Axes)')
-    fig.legend(loc="upper center", bbox_to_anchor=(0.5, 0.92), ncol=2)
-    plt.tight_layout()
-    plt.savefig('nfe_vs_flops_comparison.png', dpi=200)
-    plt.close()
+        # Highlight winners
+        for i, alg in enumerate(df_plot['Algorithm']):
+            if 'Opt.BFMS' in alg:
+                plt.scatter(flops_mid[i]/1000, y_pos[i], s=300, color='gold', marker='*', edgecolor='black', zorder=10)
+            elif 'Opt.TFMS' in alg:
+                plt.scatter(flops_mid[i]/1000, y_pos[i], s=200, color='orange', marker='D', zorder=10)
 
-    # 4. Horizontal Ranked Summary (Best for Paper Figure)
-    plt.figure(figsize=(10, 8))
-    y_pos = np.arange(len(df_plot))
+        plt.yticks(y_pos, df_plot['Algorithm'])
+        plt.xlabel('Estimated Total FLOPs (thousands)')
+        plt.title('Ranked Total Workload per Problem')
+        plt.gca().invert_yaxis()
+        plt.grid(True, axis='x', linestyle='--', alpha=0.7)
+        plt.tight_layout()
+        plt.savefig('ranked_total_flops_horizontal.png', dpi=200)
+        plt.close()
 
-    # Plot mid points with error bars
-    plt.errorbar(mid_flops, y_pos, xerr=np.array(err_flops).T if any(err_flops) else None,
-                 fmt='s', markersize=8, capsize=5, color='black', alpha=0.9)
+        print("All 4 NFE/FLOPs plots generated successfully:")
+        print("   • total_nfe_per_algorithm.png")
+        print("   • total_flops_per_algorithm.png")
+        print("   • nfe_vs_flops_comparison.png")
+        print("   • ranked_total_flops_horizontal.png (recommended for paper)")
 
-    # Highlight top performers
-    for i, alg in enumerate(df_plot['Algorithm']):
-        if 'Opt.BFMS' in alg:
-            plt.scatter(mid_flops[i], y_pos[i], s=200, color='gold', marker='*', edgecolors='black', zorder=5)
-        elif 'Opt.TFMS' in alg:
-            plt.scatter(mid_flops[i], y_pos[i], s=150, color='orange', marker='D', zorder=5)
-
-    plt.yticks(y_pos, df_plot['Algorithm'])
-    plt.xlabel('Estimated Total FLOPs (thousands) per Problem')
-    plt.title('Ranked Total Computational Workload\n(Opt.BFMS = Lowest Workload)')
-    plt.gca().invert_yaxis()
-    plt.grid(True, axis='x', linestyle='--', alpha=0.7)
-    plt.tight_layout()
-    plt.savefig('ranked_total_flops_horizontal.png', dpi=200)
-    plt.close()
-
-    print("Generated 4 advanced NFE/FLOPs plots:")
-    print("   • total_nfe_per_algorithm.png")
-    print("   • total_flops_per_algorithm.png")
-    print("   • nfe_vs_flops_comparison.png")
-    print("   • ranked_total_flops_horizontal.png (ideal for paper)")
+print("--- Full Analysis Complete ---")

@@ -45,7 +45,7 @@
 
 
 \begin{abstract}
-Finding roots of nonlinear equations requires balancing rapid convergence with guaranteed bracketing reliability. This work introduces four innovative high-performance hybrid algorithms — \textbf{Opt.BF, Opt.BFMS, Opt.TF, and Opt.TFMS} — These methods systematically combine robust interval contraction with accelerated interpolation and modified-secant corrections. Evaluated on a diverse \textbf{48-problem} benchmark, the leading method, Opt.BFMS, converges in only 2.79 iterations on average (23 wins in fewest iterations) using 3–4 function evaluations per iteration (NFE/iter) and 48–58 FLOPs/iter, yielding the lowest total estimated workload (approximately \textbf{390–670 FLOPs} per problem totally). This translates to an average CPU time of 10.48 microseconds — a 3.5x speedup over Bisection, 1.91x over Brent (SciPy), and \textbf{2.54x} over QIR — while winning 45.83\% of problems by execution time and 47.9\% by total NFE. These results establish the proposed hybrids, particularly Opt.BFMS, as the new state-of-the-art in practical root-finding performance across polynomial, transcendental, and ill-conditioned equations.
+Finding roots of nonlinear equations requires balancing rapid convergence with guaranteed bracketing reliability. This work introduces four innovative high-performance hybrid algorithms — \textbf{Opt.BF, Opt.BFMS, Opt.TF, and Opt.TFMS} — These methods systematically combine robust interval contraction with accelerated interpolation and modified-secant corrections. Evaluated on a diverse \textbf{48-problem} benchmark, the leading method, Opt.BFMS, converges in only 2.79 iterations on average (23 wins in fewest iterations) using 3–4 function evaluations per iteration (NFE/iter) and 48–58 FLOPs/iter, yielding the lowest total estimated workload (approximately \textbf{390–670 FLOPs} per problem totally). This translates to an average CPU time of 10.48 microseconds — a 3.5x speedup over Bisection, 1.91x over Brent (SciPy), and \textbf{2.54x} over QIR — while winning 45.83\% of problems by execution time and 47.9\% by total NFE. These results establish the proposed hybrids, particularly Opt.BFMS, and Opt.TFMS as the new state-of-the-art in practical root-finding performance across polynomial, transcendental, and ill-conditioned equations.
 \end{abstract}
 
 \maketitle
@@ -54,7 +54,7 @@ Finding roots of nonlinear equations requires balancing rapid convergence with g
 
 \section{Introduction}
 
-Finding roots is a basic problem in numerical analysis that is used in many fields, including physics, engineering, economics, and computer science. Convergence is guaranteed with traditional root bracketing methods like Bisection and Regula Falsi (False Position), but they often have slow convergence rates, and on the other hand, the open methods are faster but sometimes diverge. This trade-off between reliability and speed has led to the creation of hybrid methods that preserve the strength of bracketing methods while converging faster with multi-phase accelerated interpolation techniques. This strategy has shown considerable promise in earlier work \cite{sabharwal2019blended, badr2022novel}. 
+Finding roots is a basic problem in numerical analysis that is used in many fields, including physics, engineering, economics, and computer science. Convergence is guaranteed with traditional root bracketing methods like Bisection and Regula Falsi (False Position), but they often have slow convergence rates, and on the other hand, the open methods are faster but sometimes diverge. This trade-off between reliability and speed has led to the creation of hybrid methods that preserve the strength of bracketing methods while converging faster with multi-phase accelerated interpolation techniques. This strategy has shown considerable promise in earlier work \cite{sabharwal2019blended, badr2021comparative}. 
 
 The field of root-finding algorithms has become more advanced beyond these traditional methods. Modern algorithms such as the widely used Brent's method \cite{brent1973algorithms} and Quadratic Interval Refinement (QIR) \cite{abbott2014quadratic} are now considered benchmarks for high performance. Even though these techniques are successful, there is still a chance to create new algorithms that are either quicker or perform better. This paper addresses that gap by introducing four new hybrid algorithms and evaluating them not only against traditional baselines but also against these established, high-performance algorithms.
 
@@ -77,7 +77,7 @@ Our work builds upon this tradition but explores a different structural approach
 
 More recently, Quadratic Interval Refinement (QIR) \cite{abbott2014quadratic} has been proposed as a method that guarantees quadratic polynomial convergence for simple roots by fitting a quadratic model to three points to refine the root's location. While powerful, its performance can depend on the function's local behavior. The algorithms presented in this paper are differentiated by their reliance on simpler linear insertion and finite-difference steps, which, as our experiments show, can be more efficient on average across a wider variety of mapping types. 
 
-Furthermore, this work is distinct from other recent hybrid methods included in our benchmark, such as those by Sabharwal (2019) \cite{sabharwal2019blended} and Badr (2021) \cite{badr2021comparative}. Those methods typically employ a blended strategy, often involving a conditional selection between outputs, for example, a bisection or a false position update within an iteration. Certainly, our advice algorithm differs fundamentally in its deterministic, \textbf{sequential multi-phase architecture}. For instance, our Opt.BF algorithm doesn't choose between bisection and false position. It executes a bisection, feeds the new output intervals as input to regula falsi. This fixed sequential process is a unique architectural choice designed to enforce procession while consistently applying interpolation-based acceleration.
+Moreover, this approach is different from some recent hybrid techniques included in our comparison, such as those given in Sabharwal(2019) \cite{sabharwal2019blended} and Badr(2021) \cite{badr2021comparative}. Such approaches usually employ a mixed one, including the conditional choice between the outputs: say, a bi-section or false position update within an iteration. Our advising algorithm is not so in any form as it follows deterministic \textbf{sequential multi-phase architecture}. For example, our Opt.BF does not really choose between bisection and falsi position, but, it is executing bisection and feeding the new output intervals as input to regula falsi. This fixed sequence procedure turns out to be a unique architectural choice to enforce procession with continuous interpolation-based acceleration.
 
 \section{Algorithm Design and Methodology}\label{sec:methodology}
 
@@ -113,7 +113,7 @@ Approximates Newton's method using a finite difference step $\delta$. The candid
     x_S = x_{FP} - \frac{f(x_{FP}) \cdot \delta}{f(x_{FP} + \delta) - f(x_{FP})}
 \end{equation}
 
-In this study, we employ an adaptive perturbation $$ \delta = 10^{-8} \times \max(1.0, |x_{FP}|) + 10^{-15} $$ to balance truncation and round-off errors, as recommended for robust numerical stability in derivative-free methods. This adaptive approach enhances generality across different root scales while maintaining performance in our benchmark. A candidate $$ x_S $$ is accepted if and only if it resides strictly within the current bracket and yields a smaller function magnitude than $$ x_{curr} $$.
+In this study, we employ an adaptive perturbation $$ \delta = 10^{-8} \times \max(1.0, |x_{FP}|) + 10^{-15} $$ to balance truncation and round-off errors, as recommended for robust numerical stability in derivative-free methods. This adaptive approach enhances generality across different root scales while maintaining performance in our benchmark. A candidate $ x_S $ is accepted if and only if it resides strictly within the current bracket and yields a smaller function magnitude than $ x_{curr} $.
 
 \subsection{Algorithm Design, Hybrid Techniques and Pseudocode for Proposed Algorithms}
 
@@ -203,8 +203,7 @@ The most aggressive variant:
 
 \subsubsection{Algorithm 2: Optimized Bisection-False Position with Modified Secant (Opt.BFMS)}
 
-The key step of this algorithm lies in its acceptance criterion for the modified secant estimate. The algorithm only accepts the secant output $x_S$ if it satisfies two conditions: (1) it lies within the current bracketing interval $[a, b]$, ensuring the bracketing property is maintained, and (2) it provides a better approximation than the false position estimate, i.e., $|f(x_S)| < |f(fp)|$. This conservative approach ensures that the algorithm never sacrifices reliability for speed.
-
+The modified secant estimate's acceptance criterion is what actually matters in the algorithm. First, it must lie within the current bracketing interval $[a,b]$, thereby satisfying the bracketing property. Second, it must provide a better approximation than the false position estimate, i.e., $|f(x_S)| < |f(fp)|$. Only if both the conditions are satisfied, then $x_S$ is accepted as a valid secant approximation. Such a cautious approach assures that the algorithm never fails reliability just for the sake of speed.
 \captionof{algorithm}{Pseudocode for the Hybrid Bisection-False Position-Modified Secant (HbisectionFalseMS) algorithm. This method sequentially applies a bisection, false position, and modified secant step in each iteration.}
     \begin{algorithmic}[1]
     \State \textbf{Input:} Function $f$, interval $[a, b]$, tolerance $tol$, max iterations $max\_iter$
@@ -557,23 +556,23 @@ To ensure a fair assessment of computational efficiency, all algorithms were imp
 
 \subsection{Performance Evaluation and metrics}
 
-We employed a strict timing protocol to ensure statistical validity and minimize the impact of system noise (such as OS interrupts or memory management):
+We used a strict timing protocol to obtain appropriate statistics while minimizing the effect of noise from the system (such as OS interrupts or memory management):
 
 \subsection{Performance Evaluation Metrics}
 
-To provide a comprehensive and fair comparison, we evaluate all algorithms using a combination of theoretical, implementation-independent, and practical real-world metrics. Measurements were performed with strict statistical rigor: each algorithm was executed 10000 times on every problem, using Python’s high-resolution \texttt{time.perf\_counter\_ns()} timer, with results reported in microseconds (µs). All benchmarks were conducted on the same isolated machine to minimize system noise, benchmarked on a \textbf{pipeline executed on GitHub Actions}.
+To assure a comprehensive and fair comparison, all algorithms were evaluated on a set of theoretical, implementation-independent, and practical-real-world metrics, measurements were performed with strict statistical rigor: each algorithm was executed 10000 times on every problem, using Python’s high-resolution \texttt{time.perf\_counter\_ns()} timer, with results reported in microseconds (µs). All benchmarks were conducted on the same isolated machine to minimize system noise, benchmarked on a \textbf{pipeline executed on GitHub Actions}.
 
 The following metrics were recorded and analyzed:
 
 \textbf{Number of Iterations}: The number of main algorithmic loops required for convergence. Lower values indicate faster theoretical convergence, but must be interpreted alongside per-iteration cost.
 
-\textbf{Function Evaluations per Iteration (NFE/iter)}: Typical number of function calls performed in each iteration (e.g., 1 for Bisection, 2--5 for the proposed hybrid methods). This is a key implementation-independent efficiency indicator.
+\textbf{Function Evaluations per Iteration (NFE/iter)}: Typical number of function calls performed in each iteration, this is a crucial measure of having efficiency unrelated to implementation
 
-\textbf{Estimated FLOPs per Iteration}: Approximate floating-point operations per iteration, derived from static code analysis (arithmetic operations, conditionals, and memory accesses). Ranges reflect typical execution paths (e.g., 48--58 for Opt.BFMS, 85--100 for Brent).
+\textbf{Estimated FLOPs per Iteration}: FLOP estimation per iteration through static code analysis (arithmetic operations, conditionals, and accesses to memory). The ranges reflect typical execution paths (e.g., 48-58 for Opt.BFMS, 85-100 for Brent).
 
 \textbf{Total Estimated FLOPs per Problem}: Computed as Avg Iterations $\times$ (NFE/iter range) $\times$ (FLOPs/iter range). This metric captures the complete theoretical computational workload and explains observed timing differences even when iteration counts are similar.
 
-\textbf{CPU Time (µs)}: Average wall-clock execution time per problem (over 100 repetitions). This remains the ultimate practical performance metric, directly reflecting real-world applicability in resource-constrained or high-frequency numerical applications.
+\textbf{CPU Time ($\mu$s)}: Average wall-clock execution time per problem (across 10000 repetitions). This is the resource counting last practical performance measure reflecting extents of real-world importance in resource-constrained or high-frequency numerical applications.
 
 \textbf{Wins (Speed and Convergence)}: Number of problems (out of 48) where an algorithm achieved the lowest CPU time or fewest iterations. These counts serve as robust, non-parametric indicators of dominance across diverse function classes.
 
@@ -1134,11 +1133,11 @@ The proposed family establishes a new performance frontier in bracketing root-fi
 
 \section{Discussion}\label{sec:discussion}
 
-The empirical results conclusively demonstrate that carefully orchestrated multi-phase hybrid designs can simultaneously minimise iteration count, total function evaluations, and actual execution time while preserving the reliability of bracketing methods. The superior performance of Opt.BFMS stems from its three-stage architecture: an initial bisection phase rapidly halves the interval, a false-position phase exploits linearity when present, and a modified-secant correction delivers superlinear convergence with only one additional function evaluation per iteration. Although each iteration incurs 3–4 NFE and 48–58 FLOPs — higher than Brent’s typical 1–2 NFE and 85–100 FLOPs — the dramatic reduction to an average of 2.79 iterations yields the lowest total computational workload (390–670 kFLOPs per problem) and the fastest measured CPU time across the entire benchmark.
+The empirical results conclusively demonstrate that carefully orchestrated multi-phase hybrid designs can simultaneously minimize iteration count, total function evaluations, and actual execution time while preserving the reliability of bracketing methods. The superior performance of Opt.BFMS stems from its three-stage architecture: an initial bisection phase rapidly halves the interval, a false-position phase exploits linearity when present, and a modified-secant correction delivers superlinear convergence with only one additional function evaluation per iteration. Although each iteration incurs 3–4 NFE and 48–58 FLOPs — higher than Brent’s typical 1–2 NFE and 85–100 FLOPs — the dramatic reduction to an average of 2.79 iterations yields the lowest total computational workload (390–670 kFLOPs per problem) and the fastest measured CPU time across the entire benchmark.
 
 Opt.TFMS achieves the lowest average iteration count (2.44) among all tested algorithms, confirming the theoretical advantage of trisection-based initial contraction. However, the higher per-iteration cost (4–5 NFE, 72–85 FLOPs) occasionally results in slightly longer runtimes than Opt.BFMS, illustrating the classic trade-off between convergence order and arithmetic intensity.
 
-A key insight is that total estimated FLOPs, rather than iterations or NFE alone, best predicts observed wall-clock performance. Methods with moderate per-iteration overhead but exceptionally low iteration counts consistently dominate practical timings, even against highly optimised implementations such as SciPy’s Brent decoder.
+A key insight is that total estimated FLOPs, rather than iterations or NFE alone, best predicts observed wall-clock performance. Methods with moderate per-iteration overhead but exceptionally low iteration counts consistently dominate practical timings, even against highly optimized implementations such as SciPy’s Brent decoder.
 
 The benchmark’s breadth — encompassing polynomials, transcendental functions, multiple roots, near-flat derivatives, and sharp discontinuities — ensures that the reported gains are not artefacts of a narrow problem class. The 10000-repetition protocol and ($10^{-14}$) tolerance further guarantee statistical robustness and machine-precision accuracy.
 
@@ -1176,12 +1175,6 @@ Sabharwal, C.L. Blended Root Finding Algorithm Outperforms Bisection and Regula 
     
 \bibitem{sabharwal2019hybrid}
 Sabharwal, C. L., and Aggarwal, S. (2019). Hybrid Algorithm Improving Bisection, Regula Falsi, Dekker, Brent Algorithms. \textit{International Journal of Latest Research in Engineering and Technology (IJLRET)}, \url{http://www.ijlret.com/Papers/Vol-05-issue-12/1.B2019072.pdf}.
-
-\bibitem{badr2022novel}
-Badr, E., Attiya, H., and El Ghamry, A. (2022). Novel hybrid algorithms for root determining using advantages of open methods and bracketing methods. \textit{Alexandria Engineering Journal}, 61(12), 11579--11588.
-  
-\bibitem{sabharwal2021iterative}
-Sabharwal, C. L., and Aggarwal, S. (2021). An Iterative Hybrid Algorithm for Roots of Non-Linear Equations. \textit{Engineering Proceedings}, 2(1), 7.
 
 \bibitem{badr2021comparative}
 Badr, E., Almotairi, S., and El Ghamry, A. (2021). A Comparative Study among New Hybrid Root Finding Algorithms and Traditional Methods. \textit{Mathematics}, 9(11), 1306.
