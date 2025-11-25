@@ -34,8 +34,6 @@
 
 \pagestyle{plain}
 
-%\preprint{APS/123-QED}
-
 \title{Four New Multi-Phase Hybrid Bracketing Algorithms for Numerical Root Finding }
 
 \author{Abdelrahman Ellithy$^{1}$}
@@ -453,7 +451,7 @@ Furthermore, the choice of the perturbation parameter $\delta$ in the modified s
     \item \textbf{Round-off Error:} If $\delta$ is too small, it becomes comparable to the machine precision. The term $f(x+\delta)$ will be very close to $f(x)$, and their subtraction will suffer from the catastrophic cancellation described above. This is a round-off error.
 \end{itemize}
 
-An optimal choice for \textbf{$ \delta $} balances these two error sources, and we use the common heuristic \textbf{$\delta \approx 10^{-8} \cdot \max(1.0, |x|) + 10^{-15}$}, where the scaling approximates \textbf{$ \sqrt{\epsilon_{\text{mach}}} \cdot |x| $} and \textbf{$ \epsilon_{\text{mach}} $} is the machine epsilon (approx. $10^{-16}$ for double precision). This adaptive choice provides robust performance and stability across varying root scales in our benchmark. A candidate \textbf{$x_S$} is accepted if and only if it resides strictly within the current bracket and yields a smaller function magnitude than \textbf{$x_{curr}$}. The impact of these finite-precision effects is empirically evaluated in Section~\ref{sec:experimental}.
+An optimal choice for \textbf{$ \delta $} balances these two error sources, and we use the common heuristic \textbf{$\delta \approx 10^{-8} \cdot \max(1.0, |x|) + 10^{-15}$}, where the scaling approximates \textbf{$ \sqrt{\epsilon_{\text{mach}}} \cdot |x| $} and \textbf{$ \epsilon_{\text{mach}} $} is the machine epsilon (approx. $10^{-16}$ for double precision). This \textbf{adaptive choice} provides robust performance and stability across varying root scales in our benchmark. A candidate \textbf{$x_S$} is accepted if and only if it resides strictly within the current bracket and yields a smaller function magnitude than \textbf{$x_{curr}$}. The impact of these finite-precision effects is empirically evaluated in Section~\ref{sec:experimental}.
 \section{Experimental Setup}\label{sec:experimental}
 
 We designed a rigorous experimental framework to evaluate the proposed algorithms against established baselines (Bisection, False Position) and state-of-the-art methods (Brent's Method, QIR).
@@ -554,13 +552,11 @@ To ensure a fair assessment of computational efficiency, all algorithms were imp
 
 \textbf{Garbage Collection Control:} To prevent Python's automatic memory management from skewing microsecond-level measurements, the Garbage Collector (GC) was explicitly disabled immediately prior to the critical execution block and re-enabled immediately after.
 
+We used a strict timing protocol to obtain appropriate statistics while minimizing the effect of noise from the system (such as OS interrupts or memory management).
+
 \subsection{Performance Evaluation and metrics}
 
-We used a strict timing protocol to obtain appropriate statistics while minimizing the effect of noise from the system (such as OS interrupts or memory management):
-
-\subsection{Performance Evaluation Metrics}
-
-To assure a comprehensive and fair comparison, all algorithms were evaluated on a set of theoretical, implementation-independent, and practical-real-world metrics, measurements were performed with strict statistical rigor: each algorithm was executed 10000 times on every problem, using Python’s high-resolution \texttt{time.perf\_counter\_ns()} timer, with results reported in microseconds (µs). All benchmarks were conducted on the same isolated machine to minimize system noise, benchmarked on a \textbf{pipeline executed on GitHub Actions}.
+To assure a comprehensive and fair comparison, all algorithms were evaluated on a set of theoretical, implementation-independent, and practical-real-world metrics, measurements were performed with strict statistical rigor: each algorithm was executed \textbf{10000 times on every problem}, using Python’s high-resolution \textbf{\texttt{time.perf\_counter\_ns()}} timer, with results reported in \textbf{microseconds (µs)}. All benchmarks were conducted on the same isolated machine to minimize system noise, benchmarked on a \textbf{pipeline executed on GitHub Actions}.
 
 The following metrics were recorded and analyzed:
 
@@ -1173,9 +1169,6 @@ The author conceived the study, designed the algorithms, performed the experimen
 \bibitem{sabharwal2019blended}
 Sabharwal, C.L. Blended Root Finding Algorithm Outperforms Bisection and Regula Falsi Algorithms. \textit{ Mathematics 2019, 7, 1118}.
     
-\bibitem{sabharwal2019hybrid}
-Sabharwal, C. L., and Aggarwal, S. (2019). Hybrid Algorithm Improving Bisection, Regula Falsi, Dekker, Brent Algorithms. \textit{International Journal of Latest Research in Engineering and Technology (IJLRET)}, \url{http://www.ijlret.com/Papers/Vol-05-issue-12/1.B2019072.pdf}.
-
 \bibitem{badr2021comparative}
 Badr, E., Almotairi, S., and El Ghamry, A. (2021). A Comparative Study among New Hybrid Root Finding Algorithms and Traditional Methods. \textit{Mathematics}, 9(11), 1306.
 
@@ -1190,9 +1183,6 @@ Brent, R. P. (1973). \textit{Algorithms for Minimization Without Derivatives}. P
                     
 \bibitem{abbott2014quadratic}
 Abbott, J. (2014). Quadratic interval refinement for real roots. \textit{ACM Communications in Computer Algebra}, 48(1/2), 3--12.
-    
-\bibitem{kerber2015root}
-Kerber, M., and Sagraloff, M. (2015). Root refinement for real polynomials using quadratic interval refinement. \textit{Journal of Computational and Applied Mathematics}, 280, 377--395.
     
 \bibitem{dowell1972modified}
 Dowell, M., and Jarratt, P. (1972). A modified regula falsi method for computing the root of an equation. \textit{BIT Numerical Mathematics}, 12(4), 503--508.
