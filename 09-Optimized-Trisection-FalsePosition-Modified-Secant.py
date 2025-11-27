@@ -22,7 +22,7 @@ def safe_eval(f, x):
     
 def HtrisectionFalseMS(f, a, b, tol, max_iter=10000, delta=1e-4):
     fa, fb = f(a), f(b)
-    eps = 1e-20
+    eps = 1e-15
     
     # Check if either bound is a root
     if abs(fa) <= tol:

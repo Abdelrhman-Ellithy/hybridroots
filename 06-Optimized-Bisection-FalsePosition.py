@@ -22,7 +22,7 @@ def safe_eval(f, x):
 # Define the bisection function
 def HbisectionFalse(f, a, b, tol, max_iter=10000):
     fa, fb = f(a), f(b)
-    eps = 1e-20
+    eps = 1e-15
     
     # Check if either bound is a root
     if abs(fa) <= tol:

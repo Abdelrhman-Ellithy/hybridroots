@@ -66,7 +66,7 @@ def blendBF(f, a, b, tol, max_iter=10000):
         try:
             xF = (a*fb - b*fa) / (fb - fa)
         except (ValueError, OverflowError, ZeroDivisionError):
-            eps = 1e-20
+            eps = 1e-15
             xF = (a*fb - b*fa) / ((fb - fa) + eps)
         fxF = f(xF)
         

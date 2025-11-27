@@ -47,7 +47,7 @@ def HtrisectionFalse(f, a, b, tol, max_iter=10000):
         return 1, a, fa, a, b
     if abs(fb) <= tol:
         return 1, b, fb, a, b
-    eps = 1e-20
+    eps = 1e-15
     for n in range(1, max_iter + 1):
         # less +-/
         diff = b - a

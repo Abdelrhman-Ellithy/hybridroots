@@ -36,7 +36,7 @@ def false_position(f, a, b, tol, max_iter=10000):
     """
     i = 0
     fx=0
-    eps = 1e-20
+    eps = 1e-15
     fa = f(a)
     fb = f(b)
     while i < max_iter:

@@ -43,7 +43,7 @@
 
 
 \begin{abstract}
-Finding roots of nonlinear equations requires balancing rapid convergence with guaranteed bracketing reliability. This work introduces four innovative high-performance hybrid algorithms — \textbf{Opt.BF, Opt.BFMS, Opt.TF, and Opt.TFMS} — These methods systematically combine robust interval contraction with accelerated interpolation and modified-secant corrections. Evaluated on a diverse \textbf{48-problem} benchmark, the leading method, Opt.BFMS, converges in only 2.79 iterations on average (23 wins in fewest iterations) using 3–4 function evaluations per iteration (NFE/iter) and 48–58 FLOPs/iter, yielding the lowest total estimated workload (approximately \textbf{390–670 FLOPs} per problem totally). This translates to an average CPU time of 10.48 microseconds — a 3.5x speedup over Bisection, 1.91x over Brent (SciPy), and \textbf{2.54x} over QIR — while winning 45.83\% of problems by execution time and 47.9\% by total NFE. These results establish the proposed hybrids, particularly Opt.BFMS, and Opt.TFMS as the new state-of-the-art in practical root-finding performance across polynomial, transcendental, and ill-conditioned equations.
+Finding roots of nonlinear equations requires balancing rapid convergence with guaranteed bracketing reliability. This work introduces four innovative high-performance hybrid algorithms — \textbf{Opt.BF, Opt.BFMS, Opt.TF, and Opt.TFMS} — These methods systematically combine robust interval contraction with accelerated interpolation and modified-secant corrections. Evaluated on a diverse \textbf{48-problem} benchmark, the leading method, Opt.BFMS, converges in only 2.79 iterations on average (23 wins in fewest iterations) using 3–4 function evaluations per iteration (NFE/iter) and 48–58 FLOPs/iter excluding function evaluations, yielding the lowest total estimated workload (approximately \textbf{401–650 FLOPs} per problem). This translates to an average CPU time of 10.48 microseconds — a 3.5x speedup over Bisection, 1.91x over Brent (SciPy), and \textbf{2.54x} over QIR — while winning 45.83\% of problems by execution time and 47.9\% by total NFE. These results establish the proposed hybrids, particularly Opt.BFMS, and Opt.TFMS as the new state-of-the-art in practical root-finding performance across polynomial, transcendental, and ill-conditioned equations.
 \end{abstract}
 
 \maketitle
@@ -59,7 +59,7 @@ The field of root-finding algorithms has become more advanced beyond these tradi
 The main contributions of this paper are:
 \begin{enumerate}
     \item The design and implementation of \textbf{four novel hybrid algorithms} that blend reliable interval reduction utilize Bisection, Trisection and Regula Falsi with quasi-Newton steps.
-    \item A \textbf{rigorous theoretical analysis} of the convergence order and error bounds for each proposed algorithm.
+    \item A \textbf{detailed theoretical analysis} of the convergence order and error bounds for each proposed algorithm.
     \item A \textbf{comprehensive public presentation evaluation} on a diverse benchmark of 48 test functions, augmented with notoriously difficult cases to trial robustness and numerical stability.
     \item A \textbf{comparative analysis} against both traditional baselines and modern cutting-edge methods, using metrics that include function evaluations and performance in finite-precision arithmetic.
     \item The empirical finding that our premier hybrid algorithm, \textbf{Opt.BFMS}, provides a superior balance of speed and reliability, demonstrably outperforming the established benchmarks on average.
@@ -93,7 +93,7 @@ Each iteration $k$ of the proposed algorithms transforms the current bracketing 
 The algorithms are constructed from the following fundamental operators:
 
 \textbf{Operator 1: Interval Halving (Bisection).}
-Given $[a, b]$, computes $m = (a+b)/2$. The sub-interval containing the root is retained.
+Given $[a, b]$, computes $x_{b} = (a+b)/2$. The sub-interval containing the root is retained.
 
 \textbf{Operator 2: Interval Trisection.}
 Divides $[a, b]$ into three equal segments using $x_1 = a + (b-a)/3$ and $x_2 = b - (b-a)/3$. The algorithm evaluates $f(x_1)$ and $f(x_2)$ to identify the specific third containing the root, offering a theoretical reduction factor of $3$ per phase at the cost of two function evaluations.
@@ -103,7 +103,7 @@ Computes the linear interpolation root $x_{FP}$:
 \begin{equation}
     x_{FP} = \frac{a \cdot f(b) - b \cdot f(a)}{f(b) - f(a)}
 \end{equation}
-To prevent division by zero, a machine-epsilon guard ($\epsilon = 10^{-20}$) is applied to the denominator.
+To prevent division by zero, a machine-epsilon guard ($\epsilon = 10^{-15}$) is applied to the denominator.
 
 \textbf{Operator 4: Modified Secant.}
 Approximates Newton's method using a finite difference step $\delta$. The candidate $x_S$ is computed from the current estimate $x_{FP}$:
@@ -153,7 +153,7 @@ The most aggressive variant:
     \begin{algorithmic}[1]
     \State \textbf{Input:} Function $f$, interval $[a, b]$, tolerance $tol$, max iterations $max\_iter$
     \State \textbf{Output:} Iteration count $n$, root approximation $x$, function value $f(x)$, final interval $[a, b]$
-    \State $f_a \gets f(a)$, $f_b \gets f(b)$, $\epsilon \gets 10^{-20}$
+    \State $f_a \gets f(a)$, $f_b \gets f(b)$, $\epsilon \gets 10^{-15}$
     \State \textit{// Check if either bound is a root}
     \If{$|f_a| \leq tol$}
         \State \Return $1, a, f_a, a, b$
@@ -166,32 +166,36 @@ The most aggressive variant:
     \EndIf
     \For{$n \gets 1$ \textbf{to} $max\_iter$}
         \State \textit{// Bisection Step}
-        \State $mid \gets 0.5 \times (a + b)$
-        \State $f_{mid} \gets f(mid)$
-        \If{$|f_{mid}| \leq tol$}
-            \State \Return $n, mid, f_{mid}, a, b$
+        \State $x_{b} \gets 0.5 \times (a + b)$
+        \State $f_{x_b} \gets f(x_{b})$
+        \If{$|f_{x_b}| \leq tol$}
+            \State \Return $n, x_{b}, f_{x_b}, a, b$
         \EndIf
-        \If{$f_a \times f_{mid} < 0$}
-            \State $b, f_b \gets mid, f_{mid}$
+        \If{$f_a \times f_{x_b} < 0$}
+            \State $b, f_b \gets x_{b}, f_{x_b}$
         \Else
-            \State $a, f_a \gets mid, f_{mid}$
+            \State $a, f_a \gets x_{b}, f_{x_b}$
         \EndIf
     
-        \State \textit{// False Position Step with exception handling}
+        \State \textit{// 2. False Position Step with exception handling}
         \State $dx \gets (a \times f_b) - (b \times f_a)$
+        \State $dd \gets f_b - f_a$
         \State \textbf{try:}
-        \State \quad $fp \gets dx / (f_b - f_a)$
+        \State \quad $x_{FP} \gets dx / dd$
         \State \textbf{catch} (division by zero, overflow, value error):
-        \State \quad $fp \gets dx / ((f_b - f_a) + \epsilon)$
-        \State $f_{fp} \gets f(fp)$
-        \If{$|f_{fp}| \leq tol$}
-            \State \Return $n, fp, f_{fp}, a, b$
+        \State \quad $x_{FP} \gets dx / (dd + \epsilon)$
+        \State $f_{x_{FP}} \gets f(x_{FP})$
+        \If{$|f_{x_{FP}}| \leq tol$}
+            \State \Return $n, x_{FP}, f_{x_{FP}}, a, b$
         \EndIf
-        \If{$f_a \times f_{fp} < 0$}
-            \State $b, f_b \gets fp, f_{fp}$
+    
+        \State \textit{// Update interval based on false position}
+        \If{$f_a \times f_{x_{FP}} < 0$}
+            \State $b, f_b \gets x_{FP}, f_{x_{FP}}$
         \Else
-            \State $a, f_a \gets fp, f_{fp}$
+            \State $a, f_a \gets x_{FP}, f_{x_{FP}}$
         \EndIf
+
     \EndFor
     \State \textit{// Max iterations reached}
     \State $final\_x \gets 0.5 \times (a + b)$
@@ -201,12 +205,12 @@ The most aggressive variant:
 
 \subsubsection{Algorithm 2: Optimized Bisection-False Position with Modified Secant (Opt.BFMS)}
 
-The modified secant estimate's acceptance criterion is what actually matters in the algorithm. First, it must lie within the current bracketing interval $[a,b]$, thereby satisfying the bracketing property. Second, it must provide a better approximation than the false position estimate, i.e., $|f(x_S)| < |f(fp)|$. Only if both the conditions are satisfied, then $x_S$ is accepted as a valid secant approximation. Such a cautious approach assures that the algorithm never fails reliability just for the sake of speed.
+The modified secant estimate's acceptance criterion is what actually matters in the algorithm. First, it must lie within the current bracketing interval $[a,b]$, thereby satisfying the bracketing property. Second, it must provide a better approximation than the false position estimate, i.e., $|f(x_S)| < |f(x_{FP})|$. Only if both the conditions are satisfied, then $x_S$ is accepted as a valid secant approximation. Such a cautious approach assures that the algorithm never fails reliability just for the sake of speed.
 \captionof{algorithm}{Pseudocode for the Hybrid Bisection-False Position-Modified Secant (Opt.BFMS) algorithm. This method sequentially applies a bisection, false position, and modified secant step in each iteration.}
     \begin{algorithmic}[1]
     \State \textbf{Input:} Function $f$, interval $[a, b]$, tolerance $tol$, max iterations $max\_iter$
     \State \textbf{Output:} Iteration count $n$, root approximation $x$, function value $f(x)$, final interval $[a, b]$
-    \State $f_a \gets f(a)$, $f_b \gets f(b)$, $n \gets 0$, $\epsilon \gets 10^{-20}$
+    \State $f_a \gets f(a)$, $f_b \gets f(b)$, $n \gets 0$, $\epsilon \gets 10^{-15}$
     \State \textit{// Check if either bound is a root}
     \If{$|f_a| \leq tol$}
         \State \Return $1, a, f_a, a, b$
@@ -231,29 +235,32 @@ The modified secant estimate's acceptance criterion is what actually matters in 
     
         \State \textit{// 2. False Position Step with exception handling}
         \State $dx \gets (a \times f_b) - (b \times f_a)$
+        \State $dd \gets f_b - f_a$
         \State \textbf{try:}
-        \State \quad $x_F \gets dx / (f_b - f_a)$
+        \State \quad $x_{FP} \gets dx / dd$
         \State \textbf{catch} (division by zero, overflow, value error):
-        \State \quad $x_F \gets dx / ((f_b - f_a) + \epsilon)$
-        \State $f_{x_F} \gets f(x_F)$
-        \If{$f_a \times f_{x_F} < 0$}
-            \State $b \gets x_F$, $f_b \gets f_{x_F}$
-        \Else
-            \State $a \gets x_F$, $f_a \gets f_{x_F}$
-        \EndIf
-        \If{$|f_{x_F}| \leq tol$}
-            \State \Return $n, x_F, f_{x_F}, a, b$
+        \State \quad $x_{FP} \gets dx / (dd + \epsilon)$
+        \State $f_{x_{FP}} \gets f(x_{FP})$
+        \If{$|f_{x_{FP}}| \leq tol$}
+            \State \Return $n, x_{FP}, f_{x_{FP}}, a, b$
         \EndIf
     
+        \State \textit{// Update interval based on false position}
+        \If{$f_a \times f_{x_{FP}} < 0$}
+            \State $b, f_b \gets x_{FP}, f_{x_{FP}}$
+        \Else
+            \State $a, f_a \gets x_{FP}, f_{x_{FP}}$
+        \EndIf
+        
         \State \textit{// 3. Modified Secant Step with exception handling}
-        \State $\delta \gets 10^{-8} \max(1, |x_F|) + 10^{-15}$
+        \State $\delta \gets 10^{-8} \max(1, |x_{FP}|) + 10^{-15}$
         \State \textbf{try:}
-        \State \quad $x_S \gets x_F - \delta \times f_{x_F} / (f(x_F + \delta) - f_{x_F})$
+        \State \quad $x_S \gets x_{FP} - ( (\delta \times f_{x_{FP}}) / (f(x_{FP} + \delta) - f_{x_{FP}})$ )
         \State \textbf{catch} (division by zero, overflow, value error):
-        \State \quad $x_S \gets x_F - \delta \times f_{x_F} / ((f(x_F + \delta) - f_{x_F}) + \epsilon)$
+        \State \quad $x_S \gets x_{FP} - ( ( \delta \times f_{x_{FP}}) / ((f(x_{FP} + \delta) - f_{x_{FP}}) + \epsilon)$ )
         \If{$a < x_S < b$}
             \State $f_{x_S} \gets f(x_S)$
-            \If{$|f_{x_S}| < |f_{x_F}|$}
+            \If{$|f_{x_S}| < |f_{x_{FP}}|$}
                 \If{$f_a \times f_{x_S} < 0$}
                     \State $b \gets x_S$, $f_b \gets f_{x_S}$
                 \Else
@@ -266,9 +273,9 @@ The modified secant estimate's acceptance criterion is what actually matters in 
         \EndIf
     \EndWhile
     \State \textit{// Max iterations reached, return the midpoint of the final interval}
-    \State $x \gets (a + b) \times 0.5$
-    \State $f_x \gets f(x)$
-    \State \Return $n, x, f_x, a, b$
+    \State $final\_x \gets 0.5 \times (a + b)$
+    \State $f_{final\_x} \gets f(final\_x)$
+    \State \Return $max\_iter, final\_x, f_{final\_x}, a, b$
     \end{algorithmic}
 
 \subsubsection{Algorithm 3: Optimized Trisection-False Position (Opt.TF)}
@@ -277,7 +284,7 @@ The modified secant estimate's acceptance criterion is what actually matters in 
     \begin{algorithmic}[1]
     \State \textbf{Input:} Function $f$, interval $[a, b]$, tolerance $tol$, max iterations $max\_iter$
     \State \textbf{Output:} Root approximation $x$, function value $f(x)$, final interval $[a, b]$
-    \State $f_a \gets f(a)$, $f_b \gets f(b)$, $\epsilon \gets 10^{-20}$
+    \State $f_a \gets f(a)$, $f_b \gets f(b)$, $\epsilon \gets 10^{-15}$
     \State \textit{// Check if either bound is a root}
     \If{$|f_a| \leq tol$}
         \State \Return $1, a, f_a, a, b$
@@ -300,7 +307,7 @@ The modified secant estimate's acceptance criterion is what actually matters in 
         
         \State \textit{// Update interval based on trisection}
         \If{$f_a \times f_{x_1} < 0$}
-            \State $a, b, f_b \gets a, x_1, f_{x_1}$
+            \State $b, f_b \gets x_1, f_{x_1}$
         \ElsIf{$f_{x_1} \times f_{x_2} < 0$}
             \State $a, b, f_a, f_b \gets x_1, x_2, f_{x_1}, f_{x_2}$
         \Else
@@ -311,25 +318,25 @@ The modified secant estimate's acceptance criterion is what actually matters in 
         \State $dx \gets (a \times f_b) - (b \times f_a)$
         \State $dd \gets f_b - f_a$
         \State \textbf{try:}
-        \State \quad $x_F \gets dx / dd$
+        \State \quad $x_{FP} \gets dx / dd$
         \State \textbf{catch} (division by zero, overflow, value error):
-        \State \quad $x_F \gets dx / (dd + \epsilon)$
-        \State $f_{x_F} \gets f(x_F)$
-        \If{$|f_{x_F}| \leq tol$}
-            \State \Return $n, x_F, f_{x_F}, a, b$
+        \State \quad $x_{FP} \gets dx / (dd + \epsilon)$
+        \State $f_{x_{FP}} \gets f(x_{FP})$
+        \If{$|f_{x_{FP}}| \leq tol$}
+            \State \Return $n, x_{FP}, f_{x_{FP}}, a, b$
         \EndIf
     
         \State \textit{// Update interval based on false position}
-        \If{$f_a \times f_{x_F} < 0$}
-            \State $b, f_b \gets x_F, f_{x_F}$
+        \If{$f_a \times f_{x_{FP}} < 0$}
+            \State $b, f_b \gets x_{FP}, f_{x_{FP}}$
         \Else
-            \State $a, f_a \gets x_F, f_{x_F}$
+            \State $a, f_a \gets x_{FP}, f_{x_{FP}}$
         \EndIf
     \EndFor
     \State \textit{// Max iterations reached}
-    \State $x \gets (a+b)/2$
-    \State $f_x \gets f(x)$
-    \State \Return $max\_iter, x, f_x, a, b$
+    \State $final\_x \gets 0.5 \times (a + b)$
+    \State $f_{final\_x} \gets f(final\_x)$
+    \State \Return $max\_iter, final\_x, f_{final\_x}, a, b$
     \end{algorithmic}
 
 \subsubsection{Algorithm 4: Optimized Trisection-False Position with Modified Secant (Opt.TFMS)}
@@ -338,7 +345,7 @@ The modified secant estimate's acceptance criterion is what actually matters in 
     \begin{algorithmic}[1]
     \State \textbf{Input:} Function $f$, interval $[a, b]$, tolerance $tol$, max iterations $max\_iter$
     \State \textbf{Output:} Root approximation $x$, function value $f(x)$, final interval $[a, b]$
-    \State $f_a \gets f(a)$, $f_b \gets f(b)$, $\epsilon \gets 10^{-20}$
+    \State $f_a \gets f(a)$, $f_b \gets f(b)$, $\epsilon \gets 10^{-15}$
     \State \textit{// Check if either bound is a root}
     \If{$|f_a| \leq tol$}
         \State \Return $1, a, f_a, a, b$
@@ -352,7 +359,8 @@ The modified secant estimate's acceptance criterion is what actually matters in 
     \For{$n \gets 1$ \textbf{to} $max\_iter$}
         \State \textit{// 1. Trisection Step}
         \State $diff \gets b - a$
-        \State $x_1 \gets a + diff/3$, $x_2 \gets b - diff/3$
+        \State $third \gets (diff/3)$
+        \State $x_1 \gets a + third$, $x_2 \gets b - third$
         \State $f_{x_1} \gets f(x_1)$, $f_{x_2} \gets f(x_2)$
         \If{$|f_{x_1}| \leq tol$} \State \Return $n, x_1, f_{x_1}, a, b$ \EndIf
         \If{$|f_{x_2}| \leq tol$} \State \Return $n, x_2, f_{x_2}, a, b$ \EndIf
@@ -368,29 +376,32 @@ The modified secant estimate's acceptance criterion is what actually matters in 
     
         \State \textit{// 2. False Position Step with exception handling}
         \State $dx \gets (a \times f_b) - (b \times f_a)$
+        \State $dd \gets f_b - f_a$
         \State \textbf{try:}
-        \State \quad $x_F \gets dx / (f_b - f_a)$
+        \State \quad $x_{FP} \gets dx / dd$
         \State \textbf{catch} (division by zero, overflow, value error):
-        \State \quad $x_F \gets dx / ((f_b - f_a) + \epsilon)$
-        \State $f_{x_F} \gets f(x_F)$
-        \If{$f_a \times f_{x_F} < 0$}
-            \State $b, f_b \gets x_F, f_{x_F}$
-        \Else
-            \State $a, f_a \gets x_F, f_{x_F}$
+        \State \quad $x_{FP} \gets dx / (dd + \epsilon)$
+        \State $f_{x_{FP}} \gets f(x_{FP})$
+        \If{$|f_{x_{FP}}| \leq tol$}
+            \State \Return $n, x_{FP}, f_{x_{FP}}, a, b$
         \EndIf
-        \If{$|f_{x_F}| \leq tol$}
-            \State \Return $n, x_F, f_{x_F}, a, b$
+    
+        \State \textit{// Update interval based on false position}
+        \If{$f_a \times f_{x_{FP}} < 0$}
+            \State $b, f_b \gets x_{FP}, f_{x_{FP}}$
+        \Else
+            \State $a, f_a \gets x_{FP}, f_{x_{FP}}$
         \EndIf
     
         \State \textit{// 3. Modified Secant Step with exception handling}
-        \State $\delta \gets 10^{-8} \max(1, |x_F|) + 10^{-15}$
+        \State $\delta \gets 10^{-8} \max(1, |x_{FP}|) + 10^{-15}$
         \State \textbf{try:}
-        \State \quad $x_S \gets x_F - \delta \times f_{x_F} / (f(x_F + \delta) - f_{x_F})$
+        \State \quad $x_S \gets x_{FP} - \delta \times f_{x_{FP}} / (f(x_{FP} + \delta) - f_{x_{FP}})$
         \State \textbf{catch} (division by zero, overflow, value error):
-        \State \quad $x_S \gets x_F - \delta \times f_{x_F} / ((f(x_F + \delta) - f_{x_F}) + \epsilon)$
+        \State \quad $x_S \gets x_{FP} - \delta \times f_{x_{FP}} / ((f(x_{FP} + \delta) - f_{x_{FP}}) + \epsilon)$
         \If{$a < x_S < b$}
             \State $f_{x_S} \gets f(x_S)$
-            \If{$|f_{x_S}| < |f_{x_F}|$}
+            \If{$|f_{x_S}| < |f_{x_{FP}}|$}
                 \If{$f_a \times f_{x_S} < 0$}
                     \State $b, f_b \gets x_S, f_{x_S}$
                 \Else
@@ -403,9 +414,9 @@ The modified secant estimate's acceptance criterion is what actually matters in 
         \EndIf
     \EndFor
     \State \textit{// Max iterations reached}
-    \State $x \gets (a+b) \times 0.5$
-    \State $f_x \gets f(x)$
-    \State \Return $max\_iter, x, f_x, a, b$
+    \State $final\_x \gets 0.5 \times (a + b)$
+    \State $f_{final\_x} \gets f(final\_x)$
+    \State \Return $max\_iter, final\_x, f_{final\_x}, a, b$
     \end{algorithmic}
 
 \setlength{\parskip}{1.5ex plus 0.5ex minus 0.2ex}
@@ -423,27 +434,27 @@ These algorithms apply classical Regula Falsi (False Position) as the accelerati
 
 \subsubsection{Three-Phase Variants (Opt.BFMS and Opt.TFMS)}
 
-When the modified-secant step is accepted, the update approximates Newton’s method with a forward-difference derivative:
+When the modified-secant step is accepted, the update approximates Newton’s method with a forward-difference derivative. The error relation for Newton's method is given by $e_{n+1} = C e_n^2 + O(e_n^3)$. Our finite difference approximation of the derivative introduces a perturbation, as shown by its Taylor expansion:
+$$  
+    \frac{f(x_n+\delta) - f(x_n)}{\delta} = f'(x_n) + \frac{\delta}{2}f''(x_n) + O(\delta^2)
+$$
+
+Using the adaptive choice $\delta = 10^{-8} \max(1, |x_n|) + 10^{-15} \approx \sqrt{\epsilon_{\text{mach}}} \cdot |x_n|$, the dominant error term is quadratic, but a linear perturbation proportional to $\delta$ persists. Thus, local convergence is \textbf{faster than linear but slower than full quadratic} — consistent with perturbed Newton methods \cite{kelley1995iterative}.
+
+\subsubsection{Theorem (Local convergence order).}
+Let \(\alpha\) be a simple root of \(f \in C^2\) near \(\alpha\) with \(f'(\alpha) \neq 0\). If the modified-secant candidate remains inside the current bracket and satisfies \(|f(x_S)| < |f(x_n)|\) in at least a fixed positive fraction \(\gamma > 0\) of the iterations sufficiently close to the root, then the observed asymptotic convergence order \(p\) of Opt.BFMS and Opt.TFMS satisfies
 \[
-\frac{f(x_n + \delta) - f(x_n)}{\delta} = f'(x_n) + \frac{\delta}{2} f''(x_n) + O(\delta^2).
+1 < p < 2.
 \]
-Using the adaptive choice $\delta = 10^{-8} \max(1, |x_n|) + 10^{-15} \approx \sqrt{\epsilon_{\text{mach}}} \cdot |x_n|$, the dominant error term is quadratic, but a linear perturbation proportional to $\delta$ persists. Thus, local convergence is **faster than linear but slower than full quadratic** — consistent with perturbed Newton methods \cite{kelley1995iterative}.
+Empirical acceptance rates \(\gamma \gtrsim 0.70\) on well-conditioned problems (Section~\ref{sec:results}) typically produce effective orders in the range \(1.6 \leq p \leq 1.9\).
 
-\textbf{Lower Bound (Graceful Degradation):} When the modified-secant step is rejected, the algorithm falls back to the two-phase variant with refreshed brackets. This avoids endpoint stagnation and converges at least as fast as False Position on a continuously updated interval — strictly superior to classical Regula Falsi in practice, though still asymptotically linear.
+\textbf{Lower Bound (Graceful Degradation):} When the modified-secant step is rejected, the algorithm falls back to the two-phase variant with refreshed brackets. This avoids endpoint stagnation and converges at least as fast as False Position on a continuously updated interval — strictly to classical Regula Falsi in practice, though still asymptotically linear.
 
-Thus, the three-phase algorithms guarantee convergence no slower than improved linear, while opportunistically achieving near-quadratic acceleration when conditions permit.
+Thus, the three-phase algorithms guarantee convergence no slower than improved linear, while opportunistically achieving superlinear acceleration typically 1.6 <= p <= 1.9 when conditions permit.
 
 \subsection{Finite-Precision Safeguards}
 
-Catastrophic cancellation in interpolation denominators $f(b) - f(a)$ or $f(x_n + \delta) - f(x_n)$ is the primary source of instability. Adding a fixed $\epsilon = 10^{-20}$ prevents division by zero but does not eliminate bias from loss of significance.
-
-Instead, we reject interpolation when cancellation is detected:
-\[
-|f(b) - f(a)| \leq 10^{-14} \bigl( |f(a)| + |f(b)| \bigr).
-\]
-In such cases, the algorithm falls back to the midpoint of the current interval. This threshold reliably detects severe cancellation across all tested functions and scales, preserving bracketing without introducing systematic error.
-
-The adaptive $\delta$ further mitigates round-off in the modified-secant step, balancing truncation and cancellation errors. Empirical validation on ill-conditioned functions (e.g., near-multiple roots, flat derivatives) confirms that these safeguards maintain machine-precision accuracy while rarely triggering fallback.
+The primary source of instability in these methods is the denominator of the interpolation formulas. For both the false position and modified secant steps, these take the form $f(y) - f(z)$ for two points $y$ and $z$. In standard floating-point arithmetic (IEEE 754 double precision), when $y$ and $z$ are very close to each other, their function values $f(y)$ and $f(z)$ will also be very close, so when perform The subtraction of these two nearly equal numbers, it can lead to \textbf{catastrophic cancellation}, a phenomenon where a large portion of the significant digits are lost, resulting in a denominator dominated by relative error. Our pseudocode's inclusion of a small machine epsilon ($\epsilon=10^{-15}$) is a pragmatic heuristic to prevent division by zero.
 
 Furthermore, the choice of the perturbation parameter $\delta$ in the modified secant method is critical and represents a fundamental trade-off between both truncation and round-off errors.
 \begin{itemize}
@@ -456,6 +467,56 @@ An optimal choice for \textbf{$ \delta $} balances these two error sources, and 
 \section{Experimental Setup}\label{sec:experimental}
 
 We designed a rigorous experimental framework to evaluate the proposed algorithms against established baselines (Bisection, False Position) and state-of-the-art methods (Brent's Method, QIR).
+
+\subsection{Implementation and Compilation Pipeline}
+
+To ensure a fair assessment of computational efficiency, all algorithms were implemented using the SymPy library for symbolic definition but were \textbf{pre-compiled} for execution. 
+
+\textbf{Symbolic Function Definition:} The functions are defined using SymPy symbols, allowing for exact mathematical characterization. This ensures that the test functions are represented without initial numerical approximation errors.
+
+\textbf{Compilation for Performance (sp.lambdify):} A critical feature of our experimental setup is the use of \texttt{sp.lambdify} with the default \textbf{NumPy} backend. While SymPy handles the symbolic definition, the \textbf{actual execution during benchmarking} is performed by \textbf{vectorized NumPy} functions generated from the symbolic expressions. This \textbf{eliminates} \textbf{virtually all interpretation overhead} of the symbolic engine itself, so the reported CPU times predominantly reflect the efficiency of the numerical algorithm rather than SymPy’s expression evaluation.
+
+\textbf{Comprehensive Error Handling:} The implementation features extensive error surveillances for rare cases like division by zero, overflow conditions, and convergence failures.
+
+\textbf{Adaptive Parameters:} The modified secant step uses an adaptive \textbf{$\delta$} computed per iteration for enhanced numerical robustness.
+
+\textbf{Single-Loop Strategy:} We utilized a high-volume single-loop strategy. Each algorithm was executed $N=10,000$ times per problem.
+
+\textbf{Garbage Collection Control:} To prevent Python's automatic memory management from skewing microsecond-level measurements, the Garbage Collector (GC) was explicitly disabled immediately prior to the critical execution block and re-enabled immediately after.
+
+We used a strict timing protocol to obtain appropriate statistics while minimizing the effect of noise from the system (such as OS interrupts or memory management).
+
+\subsection{Hardware and Software Environment Details}
+
+All experiments were conducted on GitHub Actions standard hosted runners (Linux Ubuntu 24.04.3 LTS, Kernel 6.11.0-1018-azure). It is noted that the underlying hardware for these runners is dynamically allocated and may vary between sessions; however, the results reported here were obtained on a virtualized instance backed by an AMD EPYC 7763 Processor (2 vCPUs allocated) and 7 GB RAM. The software environment included Python 3.11.7, NumPy 2.3.5, SciPy 1.16.3, and SymPy 1.14.0. Timing used \textbf{time.perf\_counter\_ns()} with 100-iteration warm-up and 10,000 timed repetitions per problem. Convergence was declared when both
+\[ |b - a| < 10^{-14} \quad \text{and} \quad |f(x)| < 10^{-14} \]
+were satisfied, or after 10,000 iterations. All solvers used identical stopping criteria and function objects. Complete source code, benchmark suite, and raw results are available as detailed in Section~\ref{sec:dataavailability}.
+
+\subsection{Performance Evaluation and metrics}
+
+To assure a comprehensive and fair comparison, all algorithms were evaluated on a set of theoretical, implementation-independent, and practical-real-world metrics, measurements were performed with strict statistical rigor: each algorithm was executed \textbf{10000 times on every problem}, using Python’s high-resolution \textbf{\texttt{time.perf\_counter\_ns()}} timer, with results reported in \textbf{microseconds (µs)}. All benchmarks were conducted on the same isolated machine to minimize system noise.
+
+The following metrics were recorded and analyzed:
+
+\textbf{Number of Iterations}: The number of main algorithmic loops required for convergence. Lower values indicate faster theoretical convergence, but must be interpreted alongside per-iteration cost.
+
+\textbf{Function Evaluations per Iteration (NFE/iter)}: Typical number of function calls performed in each iteration, this is a crucial measure of having efficiency unrelated to implementation
+
+\textbf{Estimated FLOPs per Iteration}: FLOP estimation per iteration through static code analysis (arithmetic operations, conditionals, and accesses to memory). The ranges reflect typical execution paths (e.g., 48-58 for Opt.BFMS, 85-100 for Brent).
+
+\textbf{Total Estimated FLOPs per Problem}: Computed as Avg Iterations $\times$ (NFE/iter range) $\times$ (FLOPs/iter range). This metric captures the complete theoretical computational workload and explains observed timing differences even when iteration counts are similar.
+
+\textbf{CPU Time ($\mu$s)}: Average wall-clock execution time per problem (across 10000 repetitions). This is the resource counting last practical performance measure reflecting extents of real-world importance in resource-constrained or high-frequency numerical applications.
+
+\textbf{Wins (Speed and Convergence)}: Number of problems (out of 48) where an algorithm achieved the lowest CPU time or fewest iterations. These counts serve as robust, non-parametric indicators of dominance across diverse function classes.
+
+\textbf{Accuracy Metrics}: 
+- Absolute function value at the computed root $|f(x)| \leq 10^{-14}$ (enforced tolerance).
+- Final bracketing interval length, confirming all methods achieve machine-precision-level accuracy when convergence is declared.
+
+By combining hardware-independent theoretical metrics (iterations, NFE, total FLOPs) with rigorous empirical timing and robustness analysis, this evaluation framework provides a complete, transparent, and scientifically sound basis for comparing root-finding algorithms — far beyond what is possible with iteration count or function evaluations alone.
+
+This methodology ensures that the performance differences reported in Section \ref{sec:results} are attributable to the algorithmic logic itself rather than implementation artifacts.
 
 \subsection{Benchmark Test Suite}
 
@@ -472,7 +533,7 @@ The test functions are categorized by their dominant mathematical characteristic
 \item $f_{20}(x) = e^{x^2} - e^{\sqrt{2}x}$: Complex exponential function, interval $[0.5, 1.5]$
 \item $f_{29}(x) = e^{-x} - \cos(3x) - 0.5$: Mixed exponential-trigonometric function, interval $[0, 1]$
 \item $f_{39}(x) = e^{x^2} - e^{1.2x}$: Exponential function with different exponents, interval $[0, 2]$
-\item \textbf{Transcendental growth model (Financial Volatility Proxy)}\[ f_46(x) = x e^{x/2} - 1.5, \quad I = [0.0, 1.0] \]
+\item \textbf{Transcendental growth model (Financial Volatility Proxy)}\[ f_{46}(x) = x e^{x/2} - 1.5, \quad I = [0.0, 1.0] \]
 \end{itemize}
 
 \textbf{High-Degree Polynomial Functions:}
@@ -492,7 +553,7 @@ The test functions are categorized by their dominant mathematical characteristic
 \item $f_{40}(x) = x^5 - 3x^4 + 2x^3 - x + 0.1$: A fifth-degree polynomial with small coefficients, interval $[-1, 3]$
 \item $f_{41}(x) = (x + 0.3)^7 - 0.01$: A seventh-degree polynomial with small perturbation, interval $[-2, 1]$
 \item $f_{42}(x) = x^6 - 8x^5 + 24x^4 - 32x^3 + 16x^2$: A sixth-degree polynomial, interval $[0, 4]$
-\item \textbf{Van der Waals equation of state for CO$_2$ (Thermodynamics)} \[ f_45(x) = \left(10 + \frac{3.592}{x^2}\right)(x - 0.04267) - 24.618, \quad I = [2.0, 3.0] \]
+\item \textbf{Van der Waals equation of state for CO$_2$ (Thermodynamics)} \[ f_{45}(x) = \left(10 + \frac{3.592}{x^2}\right)(x - 0.04267) - 24.618, \quad I = [2.0, 3.0] \]
 \end{itemize}
 
 \textbf{Quadratic Functions:}
@@ -516,15 +577,15 @@ The test functions are categorized by their dominant mathematical characteristic
 \item $f_{28}(x) = x - 0.5\sin(x) - 1$: A mixed linear-trigonometric function, interval $[0, 3]$
 \item $f_{34}(x) = 4\sin(x) - x + 1$: A trigonometric-linear combination, interval $[-1, 0]$
 \item $f_{37}(x) = \sin(20x) - 0.3x$: A very high-frequency trigonometric function, interval $[0.05, 0.25]$
-\item \textbf{Non-linear beam deflection (Structural Engineering)} \[ f_47(x) = \cos(x) + (1 - \cos(x))^2 - 0.05 x^2, \quad I = [3.0, 6.0] \]
-\item \textbf{Kepler's equation for high eccentricity (Orbital Mechanics)} \[ f_44(x) = x - 0.99 \sin(x) - 2.0, \quad I = [2.0, 3.0] \]
+\item \textbf{Non-linear beam deflection (Structural Engineering)} \[ f_{47}(x) = \cos(x) + (1 - \cos(x))^2 - 0.05 x^2, \quad I = [3.0, 6.0] \]
+\item \textbf{Kepler's equation for high eccentricity (Orbital Mechanics)} \[ f_{44}(x) = x - 0.99 \sin(x) - 2.0, \quad I = [2.0, 3.0] \]
 \end{itemize}
 
 \textbf{Logarithmic and Mixed Functions:}
 \begin{itemize}
 \item $f_7(x) = x + \ln(x)$: A mixed linear-logarithmic function, interval $[0.1, 1]$
 \item $f_9(x) = x^2 + e^{x/2} - 5$: A quadratic-exponential combination, interval $[1, 2]$
-\item \textbf{Colebrook-White friction factor (Fluid Mechanics)} \[ f_43(x) = -2 \log_{10}\left(2.7 \times 10^{-5} + \frac{2.51}{10^7 \sqrt{x}}\right) - \frac{1}{\sqrt{x}}, \quad I = [0.008, 0.03] \]
+\item \textbf{Colebrook-White friction factor (Fluid Mechanics)} \[ f_{43}(x) = -2 \log_{10}\left(2.7 \times 10^{-5} + \frac{2.51}{10^7 \sqrt{x}}\right) - \frac{1}{\sqrt{x}}, \quad I = [0.008, 0.03] \]
 \end{itemize}
 
 \textbf{Ill-Conditioned and Challenging Functions:}
@@ -536,50 +597,6 @@ The test functions are categorized by their dominant mathematical characteristic
 \end{itemize}
 
 Each function was evaluated over carefully selected intervals that bracket the root, with initial intervals chosen to ensure the Intermediate Value Theorem conditions are satisfied.
-
-\subsection{Implementation and Compilation Pipeline}
-
-To ensure a fair assessment of computational efficiency, all algorithms were implemented using the SymPy library for symbolic definition but were \textbf{pre-compiled} for execution. 
-
-\textbf{Symbolic Function Definition:} The functions are defined using SymPy symbols, allowing for exact mathematical characterization. This ensures that the test functions are represented without initial numerical approximation errors.
-
-\textbf{Compilation for Performance (sp.lambdify):} A critical feature of our experimental setup is the use of \texttt{sp.lambdify} with the default \textbf{NumPy} backend. While SymPy handles the symbolic definition, the \textbf{actual execution during benchmarking} is performed by \textbf{vectorized NumPy} functions generated from the symbolic expressions. This \textbf{eliminates} \textbf{virtually all interpretation overhead} of the symbolic engine itself, so the reported CPU times predominantly reflect the efficiency of the numerical algorithm rather than SymPy’s expression evaluation.
-
-\textbf{Comprehensive Error Handling:} The implementation features extensive error surveillances for rare cases like division by zero, overflow conditions, and convergence failures.
-
-\textbf{Adaptive Parameters:} The modified secant step uses an adaptive \textbf{$\delta$} computed per iteration for enhanced numerical robustness.
-
-\textbf{Single-Loop Strategy:} We utilized a high-volume single-loop strategy. Each algorithm was executed $N=10,000$ times per problem.
-
-\textbf{Garbage Collection Control:} To prevent Python's automatic memory management from skewing microsecond-level measurements, the Garbage Collector (GC) was explicitly disabled immediately prior to the critical execution block and re-enabled immediately after.
-
-We used a strict timing protocol to obtain appropriate statistics while minimizing the effect of noise from the system (such as OS interrupts or memory management).
-
-\subsection{Performance Evaluation and metrics}
-
-To assure a comprehensive and fair comparison, all algorithms were evaluated on a set of theoretical, implementation-independent, and practical-real-world metrics, measurements were performed with strict statistical rigor: each algorithm was executed \textbf{10000 times on every problem}, using Python’s high-resolution \textbf{\texttt{time.perf\_counter\_ns()}} timer, with results reported in \textbf{microseconds (µs)}. All benchmarks were conducted on the same isolated machine to minimize system noise, benchmarked on a \textbf{pipeline executed on GitHub Actions}.
-
-The following metrics were recorded and analyzed:
-
-\textbf{Number of Iterations}: The number of main algorithmic loops required for convergence. Lower values indicate faster theoretical convergence, but must be interpreted alongside per-iteration cost.
-
-\textbf{Function Evaluations per Iteration (NFE/iter)}: Typical number of function calls performed in each iteration, this is a crucial measure of having efficiency unrelated to implementation
-
-\textbf{Estimated FLOPs per Iteration}: FLOP estimation per iteration through static code analysis (arithmetic operations, conditionals, and accesses to memory). The ranges reflect typical execution paths (e.g., 48-58 for Opt.BFMS, 85-100 for Brent).
-
-\textbf{Total Estimated FLOPs per Problem}: Computed as Avg Iterations $\times$ (NFE/iter range) $\times$ (FLOPs/iter range). This metric captures the complete theoretical computational workload and explains observed timing differences even when iteration counts are similar.
-
-\textbf{CPU Time ($\mu$s)}: Average wall-clock execution time per problem (across 10000 repetitions). This is the resource counting last practical performance measure reflecting extents of real-world importance in resource-constrained or high-frequency numerical applications.
-
-\textbf{Wins (Speed and Convergence)}: Number of problems (out of 48) where an algorithm achieved the lowest CPU time or fewest iterations. These counts serve as robust, non-parametric indicators of dominance across diverse function classes.
-
-\textbf{Accuracy Metrics}: 
-- Absolute function value at the computed root $|f(x)| \leq 10^{-14}$ (enforced tolerance).
-- Final bracketing interval length, confirming all methods achieve machine-precision-level accuracy when convergence is declared.
-
-By combining hardware-independent theoretical metrics (iterations, NFE, total FLOPs) with rigorous empirical timing and robustness analysis, this evaluation framework provides a complete, transparent, and scientifically sound basis for comparing root-finding algorithms — far beyond what is possible with iteration count or function evaluations alone.
-
-This methodology ensures that the performance differences reported in Section \ref{sec:results} are attributable to the algorithmic logic itself rather than implementation artifacts.
 
 \subsection{Algorithm Code Legend}
 \begin{table}[H]
@@ -796,7 +813,7 @@ Opt.TFMS & 2.4375 & 1 & 5 & 2 & 1.018706326 & 11 \\
 
 \begin{table}[H]
 \centering
-\caption{Theoretical complexity and observed performance across 48 benchmark problems. NFE = function evaluations per iteration (typical). FLOPs = approximate floating-point operations per iteration. Branches = conditional comparisons per iteration. Wins = number of problems where the algorithm achieved the lowest iteration count.}
+\caption{Theoretical complexity and observed performance across 48 benchmark problems. NFE = function evaluations per iteration (typical). FLOPs = approximate floating-point operations per iteration excluding function evaluations. Branches = conditional comparisons per iteration. Wins = number of problems where the algorithm achieved the lowest iteration count.}
 \label{tab:complexity_comparison}
 \begin{tabular}{lccccr}
 \hline
@@ -845,13 +862,13 @@ Although iteration count and total function evaluations are useful theoretical m
 
 \begin{table}[H]
 \centering
-\caption{Estimated total floating-point operations (FLOPs) per problem, computed as Avg Iterations $\times$ (NFE/iter range) $\times$ (FLOPs/iter range) from Tables~\ref{tab:iteration_count_comparison} and \ref{tab:complexity_comparison}. Values are rounded conservatively and reported in thousands of FLOPs. Lower is better.}
+\caption{Estimated total floating-point operations (FLOPs) per problem, computed as Avg Iterations $\times$ (NFE/iter range) $\times$ (FLOPs/iter range) from Tables~\ref{tab:iteration_count_comparison} and \ref{tab:complexity_comparison}. Values are rounded conservatively and reported in FLOPs. Lower is better.}
 \label{tab:total_flops}
 \begin{tabular}{lcr}
 \hline
 Algorithm                & Estimated Total FLOPs per Problem \\
 \hline
-\textbf{Opt.BFMS}        & \textbf{390 -- 670} \\
+\textbf{Opt.BFMS}        & \textbf{401 -- 650} \\
 \textbf{Opt.TFMS}        & \textbf{420 -- 780} \\
 Opt.BF                   & 510 -- 920 \\
 Brent (SciPy)            & 760 -- 1\,800 \\
@@ -1006,7 +1023,7 @@ Problem 48 & 44 & 187 & 27 & 8 & 9 & 6 & 20 & 13 & 9 & 4 & 6 & 4  \\
 The 48-problem benchmark reveals clear dominance of the proposed hybrid methods across all metrics.
 
 \begin{enumerate}
-    \item \textbf{Convergence Speed and Workload:} Opt.BFMS requires only 2.79 iterations on average (23 wins), followed by Opt.TFMS at 2.44 (11 wins). Despite higher per-iteration cost (3–4 NFE and 48–58 FLOPs), total estimated workload remains the lowest at 390–670 kFLOPs per problem — substantially below Brent (760–1800 kFLOPs) and QIR (1020–1520 kFLOPs).
+    \item \textbf{Convergence Speed and Workload:} Opt.BFMS requires only 2.79 iterations on average (23 wins), followed by Opt.TFMS at 2.44 (11 wins). Despite higher per-iteration cost (3–4 NFE and 48–58 FLOPs), total estimated workload remains the lowest at 401–650 FLOPs per problem — substantially below Brent (760–1800 FLOPs) and QIR (1020–1520 FLOPs).
     \item \textbf{Execution Time Dominance:} Opt.BFMS achieves the fastest average CPU time of 10.48 microseconds (22 wins), followed by Opt.TFMS (11.94 microseconds, 3 wins). This represents a 1.91x speedup over Brent (SciPy) and 2.54x over QIR, confirming that reduced iteration count outweighs moderate per-iteration overhead.
 \end{enumerate}
 
@@ -1028,7 +1045,7 @@ Avg CPU Time (microseconds)       & 10.48 & 36.92 \\
 Speedup                           & —     & 3.52x faster \\
 Avg Iterations                    & 2.79  & 41.56 \\
 Iteration Reduction               & —     & 14.9x fewer \\
-Total Estimated FLOPs (k)         & 390–670 & approximately 2500 \\
+Total Estimated FLOPs             & 401–650 & approximately 2500 \\
 Workload Reduction                & —     & 3.7–6.4x lower \\
 Wins (speed)                      & 22    & 2 \\
 Success Rate                      & 100\% & 100\% \\
@@ -1063,9 +1080,9 @@ QIR              & 26.62 & 2  & 2.54x slower \\
 \label{tab:state_of_art_workload}
 \begin{tabular}{lcccc}
 \hline
-Algorithm & Avg Iterations & Iter. Wins & Total NFE (range) & Total FLOPs (k) \\
+Algorithm & Avg Iterations & Iter. Wins & Total NFE (range) & Total FLOPs \\
 \hline
-Opt.BFMS         & \textbf{2.79} & \textbf{23} & \textbf{8.4–11.2} & \textbf{390–670} \\
+Opt.BFMS         & \textbf{2.79} & \textbf{23} & \textbf{8.4–11.2} & \textbf{401–650} \\
 Opt.TFMS         & \textbf{2.44} & 11 & 9.8–12.2 & 420–780 \\
 Brent (SciPy)    & 8.98  & 0  & 9.0–18.0 & 760–1800 \\
 QIR              & 6.38  & 3  & 12.8     & 1020–1520 \\
@@ -1130,7 +1147,7 @@ The proposed family establishes a new performance frontier in bracketing root-fi
 
 \section{Discussion}\label{sec:discussion}
 
-The empirical results conclusively demonstrate that carefully orchestrated multi-phase hybrid designs can simultaneously minimize iteration count, total function evaluations, and actual execution time while preserving the reliability of bracketing methods. The superior performance of Opt.BFMS stems from its three-stage architecture: an initial bisection phase rapidly halves the interval, a false-position phase exploits linearity when present, and a modified-secant correction delivers superlinear convergence with only one additional function evaluation per iteration. Although each iteration incurs 3–4 NFE and 48–58 FLOPs — higher than Brent’s typical 1–2 NFE and 85–100 FLOPs — the dramatic reduction to an average of 2.79 iterations yields the lowest total computational workload (390–670 kFLOPs per problem) and the fastest measured CPU time across the entire benchmark.
+The empirical results conclusively demonstrate that carefully orchestrated multi-phase hybrid designs can simultaneously minimize iteration count, total function evaluations, and actual execution time while preserving the reliability of bracketing methods. The superior performance of Opt.BFMS stems from its three-stage architecture: an initial bisection phase rapidly halves the interval, a false-position phase exploits linearity when present, and a modified-secant correction delivers convergence significantly faster than linear (often near-quadratic) with only one additional function evaluation per iteration. Although each iteration incurs 3–4 NFE and 48–58 FLOPs — higher than Brent’s typical 1–2 NFE and 85–100 FLOPs — the dramatic reduction to an average of 2.79 iterations yields the lowest total computational workload (401–650 FLOPs per problem) and the fastest measured CPU time across the entire benchmark.
 
 Opt.TFMS achieves the lowest average iteration count (2.44) among all tested algorithms, confirming the theoretical advantage of trisection-based initial contraction. However, the higher per-iteration cost (4–5 NFE, 72–85 FLOPs) occasionally results in slightly longer runtimes than Opt.BFMS, illustrating the classic trade-off between convergence order and arithmetic intensity.
 
@@ -1144,7 +1161,7 @@ This work presents four deterministic, parameter-free hybrid bracketing algorith
 
 Rigorous evaluation on a diverse 48-problem benchmark shows that all four consistently outperform classical methods and modern competitors (Brent, QIR) in iteration count, total workload, and execution time while preserving guaranteed convergence.
 
-Collectively, they achieve the lowest average CPU times (10.48–15.68 µs), the fewest iterations (2.44–6.69), and the smallest total estimated FLOPs (390–1430 kFLOPs per problem), securing 29 speed wins and 34 convergence wins. Within the family, Opt.BFMS offers the best overall performance, while Opt.TFMS attains the fastest theoretical convergence.
+Collectively, they achieve the lowest average CPU times (10.48–15.68 µs), the fewest iterations (2.44–6.69), and the smallest total estimated FLOPs (401–1430 FLOPs per problem), securing 29 speed wins and 34 convergence wins. Within the family, Opt.BFMS offers the best overall performance, while Opt.TFMS attains the fastest theoretical convergence.
 
 These results establish multi-phase hybridisation as a highly effective paradigm for practical root-finding. The algorithms’ simplicity, reliability, and open-source implementation make them immediately suitable for scientific libraries and real-world applications. Future. Future work will extend validation to large-scale engineering problems and explore further hybridisation strategies.
 
@@ -1159,7 +1176,7 @@ The author has no relevant financial or non-financial interests to disclose. The
 \subsection{Ethics approval}
 Not applicable. This study is purely computational and does not involve human participants or animals.
 
-\subsection{Data availability}
+\subsection{Data availability}\label{sec:dataavailability}
 The datasets generated and/or analyzed during the current study are available from the corresponding author on reasonable request. The SymPy implementations of all algorithms and experimental scripts are available at: \url{https://github.com/Abdelrhman-Ellithy/NM-Algorithms/}
 
 \subsection{Authors’ contributions}

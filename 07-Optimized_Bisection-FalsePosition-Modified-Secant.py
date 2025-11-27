@@ -23,7 +23,7 @@ def safe_eval(f, x):
 def HbisectionFalseMS(f, a, b, tol, max_iter=10000, delta=1e-4):
     fa, fb = f(a), f(b)
     n = 0
-    eps = 1e-20
+    eps = 1e-15
     
     # Check if either bound is a root
     if abs(fa) <= tol:
@@ -60,9 +60,9 @@ def HbisectionFalseMS(f, a, b, tol, max_iter=10000, delta=1e-4):
         
         delta=1e-8* max(1, abs(fp)) + 1e-15
         try:
-            xS = fp - delta * ffp / (f(fp + delta) - ffp)
+            xS = fp - (delta * ffp) / (f(fp + delta) - ffp)
         except (ValueError, OverflowError, ZeroDivisionError):
-            xS = fp - delta * ffp / ((f(fp + delta) - ffp)+eps)
+            xS = fp - (delta * ffp) / ((f(fp + delta) - ffp)+eps)
         if (a < xS< b):
             fxS = f(xS)
             if abs(fxS) < abs(ffp):
