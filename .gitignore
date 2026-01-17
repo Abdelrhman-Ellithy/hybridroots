@@ -183,10 +183,8 @@ cython_debug/
 *.pdf
 *.bib
 *.pdf
-Sample Latex Paper Format file.tex
 Results.db
-# Do not ignore the main paper PDF
-!hybrid_root_bracketing_paper.pdf
+update_db_names.py
 
 # Sample Latex Paper Format build files
 Sample Latex Paper Format file.aux
@@ -204,6 +202,3 @@ Refrence Papers/
 Submission Docs/
 # Analysis script
 analyze_results.py
-
-# Sample Latex Paper Format source
-Sample Latex Paper Format file.tex
