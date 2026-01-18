@@ -1,1 +1,0 @@
-SELECT method_name, problemId, avg(CPU_TIME) FROM results where problemId=2 GROUP by method_name;

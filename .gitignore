@@ -183,19 +183,9 @@ cython_debug/
 *.pdf
 *.bib
 *.pdf
+*.tex
 Results.db
 update_db_names.py
-
-# Sample Latex Paper Format build files
-Sample Latex Paper Format file.aux
-Sample Latex Paper Format file.bbl
-Sample Latex Paper Format file.blg
-Sample Latex Paper Format file.fdb_latexmk
-Sample Latex Paper Format file.fls
-Sample Latex Paper Format file.log
-Sample Latex Paper Format file.out
-Sample Latex Paper Format file.synctex.gz
-Sample Latex Paper Format file.pdf
 
 # Reference papers folder
 Refrence Papers/
