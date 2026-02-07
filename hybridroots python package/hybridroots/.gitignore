@@ -169,3 +169,26 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# LaTeX build files
+# Ignore all LaTeX build files in the directory
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.pdf
+*.bib
+*.pdf
+*.tex
+Results.db
+update_db_names.py
+
+# Reference papers folder
+Refrence Papers/
+Submission Docs/
+# Analysis script
+analyze_results.py

@@ -15,7 +15,7 @@ jobs:
         fetch-depth: 0
 
     - name: Clean previous results
-      run: rm -f Results.db
+      run: rm -f './Paper Experiment and Results/Results.db'
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -29,6 +29,7 @@ jobs:
 
     - name: Run Python scripts
       run: |
+        cd './Paper Experiment and Results'
         for script in $(ls [0-9][0-9]-*.py); do
           echo "Running $script..."
           python "$script"
@@ -42,12 +43,12 @@ jobs:
       
     - name: Verify results file
       run: |
-        if [ ! -f Results.db ]; then
+        if [ ! -f './Paper Experiment and Results/Results.db' ]; then
           echo "Results.db was not created!"
           exit 1
         fi
-        ls -l Results.db
-        file_size=$(stat -f%z Results.db || stat -c%s Results.db)
+        ls -l './Paper Experiment and Results/Results.db'
+        file_size=$(stat -f%z './Paper Experiment and Results/Results.db' || stat -c%s './Paper Experiment and Results/Results.db')
         if [ "$file_size" -eq 0 ]; then
           echo "Results.db is empty!"
           exit 1
@@ -58,4 +59,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: benchmark-results
-        path: ./Results.db
+        path: './Paper Experiment and Results/Results.db'

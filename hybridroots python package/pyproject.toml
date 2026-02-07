@@ -1,0 +1,54 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "hybridroots"
+version = "1.0.0"
+description = "Four Multi-phase hybrid bracketing algorithms for numerical root finding"
+readme = "README.md"
+license = "MIT"
+authors = [
+    { name = "Abdelrahman Ellithy", email = "abdelarhmanellithy@gmail.com" }
+]
+keywords = [
+    "root-finding",
+    "numerical-methods",
+    "optimization",
+    "bisection",
+    "trisection",
+    "false-position",
+    "bracketing",
+    "nonlinear-equations",
+    "scientific-computing"
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Mathematics",
+]
+requires-python = ">=3.8"
+dependencies = []
+
+[project.optional-dependencies]
+test = ["pytest>=7.0", "numpy>=1.20", "scipy>=1.7"]
+benchmark = ["numpy>=1.20", "scipy>=1.7", "pandas>=1.3"]
+
+[project.urls]
+Homepage = "https://github.com/abdelrahman-ellithy/hybridroots"
+Documentation = "https://github.com/abdelrahman-ellithy/hybridroots#readme"
+Repository = "https://github.com/abdelrahman-ellithy/hybridroots"
+Issues = "https://github.com/abdelrahman-ellithy/hybridroots/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["hybridroots"]

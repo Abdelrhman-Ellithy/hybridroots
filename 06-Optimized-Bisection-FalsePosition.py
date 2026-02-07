@@ -5,39 +5,49 @@ Created on Wed Mar 20 08:54:54 2024
 @author: Abdelrahman Ellithy
 """
 
-from benchmarker import ScientificBenchmark
-import re
-import math
+def f(x):
+    return x**2 - x - 2
 
-# Safe evaluation helper to guard domain/overflow issues
-def safe_eval(f, x):
-    try:
-        y = f(x)
-        y = float(y)
-        if math.isfinite(y):
-            return y
-        return None
-    except Exception:
-        return None
-# Define the bisection function
-def HbisectionFalse(f, a, b, tol, max_iter=10000):
-    fa, fb = f(a), f(b)
+def mpbf(f, a, b, tol=1e-14, max_iter=10000):
+    """
+    Multi-Phase Bisection-False-Position root finder.
+
+    Parameters
+    ----------
+    f : callable
+        Function to find root of.
+    a, b : float
+        Bracketing interval with opposite signs.
+    tol : float, optional
+        Absolute tolerance (default 1e-14).
+    max_iter : int, optional
+        Maximum iterations (default 10000).
+
+    Returns
+    -------
+    root : float
+        Approximate root.
+    info : dict
+        {'iterations': int, 'function_calls': int, 'converged': bool}
+    """
+    fa, fb = float(f(a)), float(f(b))
     eps = 1e-15
-    
+    nfe = 2
     # Check if either bound is a root
     if abs(fa) <= tol:
-        return 1, a, fa, a, b
+        return a, {'iterations': 1, 'function_calls': nfe, 'converged': True}
     if abs(fb) <= tol:
-        return 1, b, fb, a, b
+        return b, {'iterations': 1, 'function_calls': nfe, 'converged': True}
     
     if fa * fb >= 0:
         return None, None, None, None, None
     for n in range(1, max_iter + 1):
         mid = 0.5 * (a + b)
-        fmid = f(mid)
+        fmid = float(f(mid))
+        nfe += 1
         if abs(fmid) <= tol:
-            return n, mid, fmid, a, b
-        
+            return mid, {'iterations': n, 'function_calls': nfe, 'converged': True}
+                
         if fa * fmid < 0:
             b, fb = mid, fmid
         else:
@@ -47,33 +57,29 @@ def HbisectionFalse(f, a, b, tol, max_iter=10000):
             fp = dx / (fb - fa)
         except (ValueError, OverflowError, ZeroDivisionError):
             fp = dx / ((fb - fa)+eps)        
-        ffp = f(fp)
+        ffp = float(f(fp))
+        nfe += 1
         if abs(ffp) <= tol:
-            return n, fp, ffp, a, b
+            return fp, {'iterations': n, 'function_calls': nfe, 'converged': True}
         if fa * ffp < 0:
             b, fb = fp, ffp
         else:
             a, fa = fp, ffp
-    # Max iterations reached
+
     final_x = 0.5 * (a + b)
-    return max_iter, final_x, f(final_x), a, b
+    f_final = float(f(final_x))
+    nfe += 1
+    return final_x, {'iterations': max_iter, 'function_calls': nfe, 'converged': abs(f_final) <= tol}
 
 
 if __name__ == "__main__":
-    # A. Setup Database (Optional if already exists)
-    ScientificBenchmark.rest_data()
-
-    # B. Initialize & Run
-    # The class now auto-loads 'dataset.json' because we didn't pass a dataset!
-    bench = ScientificBenchmark('config.json')
-    
-    results = bench.run(
-        algorithm_func=HbisectionFalse, 
-        method_name='Opt.BF',
-        tol=1e-14
-    )
-    
-    # C. Save Results
-    if results:
-        ScientificBenchmark.record_speeds(results)
-        print("\nResults saved to database successfully.")
+    a = 1
+    b = 4
+    tol = 1e-14
+    root, info = mpbf(f, a, b, tol)
+    if root is not None:
+        f_root = f(root)
+        print(f"Root found: {root} with f(root) = {f_root}")
+        print(f"Iterations: {info['iterations']}, Function calls: {info['function_calls']}, Converged: {info['converged']}")
+    else:
+        print("No root found in the given interval.")
