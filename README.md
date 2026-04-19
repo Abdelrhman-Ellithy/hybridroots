@@ -5,6 +5,9 @@
 **Abstract:**
 This repository contains the official implementation, experiments, and results for the paper "Four New Multi-Phase Hybrid Bracketing Algorithms for Numerical Root Finding", published in the **Journal of the Egyptian Mathematical Society (JOEM)** via **Springer**.
 
+* **Paper Link:** [https://joems.journals.ekb.eg/article_498939.html](https://joems.journals.ekb.eg/article_498939.html)
+* **DOI:** [10.21608/joems.2026.440115.1078](https://doi.org/10.21608/joems.2026.440115.1078)
+
 The paper introduces four novel hybrid algorithms that combine classical bracketing methods (Bisection, Trisection, False Position) with accelerated steps (Modified Secant) to achieve superior convergence rates while maintaining guaranteed bracketing.
 
 ---
