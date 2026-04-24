@@ -1,0 +1,10 @@
+{
+  "name": "hybridroots",
+  "version": "1.0.0",
+  "description": "Multi-Phase Hybrid Roots Bracketing Algorithms",
+  "main": "core.js",
+  "type": "module",
+  "scripts": {
+    "benchmarks": "node benchmarks.js"
+  }
+}

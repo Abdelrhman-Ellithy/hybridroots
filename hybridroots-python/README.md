@@ -126,5 +126,5 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## Links
 
-- [Paper (DOI pending)](https://example.com)
-- [Issue Tracker](https://github.com/abdelrahman-ellithy/hybridroots/issues)
+- [Paper (DOI)](https://doi.org/10.21608/joems.2026.440115.1078)
+- [Issue Tracker](https://github.com/Abdelrhman-Ellithy/NM-Algorithms/issues)

@@ -45,10 +45,10 @@ test = ["pytest>=7.0", "numpy>=1.20", "scipy>=1.7"]
 benchmark = ["numpy>=1.20", "scipy>=1.7", "pandas>=1.3"]
 
 [project.urls]
-Homepage = "https://github.com/abdelrahman-ellithy/hybridroots"
-Documentation = "https://github.com/abdelrahman-ellithy/hybridroots#readme"
-Repository = "https://github.com/abdelrahman-ellithy/hybridroots"
-Issues = "https://github.com/abdelrahman-ellithy/hybridroots/issues"
+Homepage = "https://github.com/Abdelrhman-Ellithy/NM-Algorithms"
+Documentation = "https://github.com/Abdelrhman-Ellithy/NM-Algorithms#readme"
+Repository = "https://github.com/Abdelrhman-Ellithy/NM-Algorithms"
+Issues = "https://github.com/Abdelrhman-Ellithy/NM-Algorithms/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["hybridroots"]

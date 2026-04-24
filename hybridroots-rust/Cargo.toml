@@ -1,0 +1,10 @@
+[package]
+name = "hybridroots"
+version = "1.0.0"
+edition = "2021"
+
+[dependencies]
+
+[[bin]]
+name = "benchmarks"
+path = "src/main.rs"
