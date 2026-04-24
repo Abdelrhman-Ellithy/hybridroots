@@ -109,7 +109,7 @@ If you use this package in your research, please cite:
   journal={Journal of the Egyptian Mathematical Society},
   volume={34},
   year={2026},
-  publisher={Springer}
+  publisher={National Information and Documentation Centre (NIDOC), Academy of Scientific Research and Technology, ASRT}
 }
 ```
 

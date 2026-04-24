@@ -3,7 +3,7 @@
 **Authors:** Abdelrahman Ellithy
 
 **Abstract:**
-This repository contains the official implementation, experiments, and results for the paper "Four New Multi-Phase Hybrid Bracketing Algorithms for Numerical Root Finding", published in the **Journal of the Egyptian Mathematical Society (JOEM)** via **Springer**.
+This repository contains the official implementation, experiments, and results for the paper "Four New Multi-Phase Hybrid Bracketing Algorithms for Numerical Root Finding", published in the **Journal of the Egyptian Mathematical Society (JOEM)** via **National Information and Documentation Centre (NIDOC), Academy of Scientific Research and Technology, ASRT**.
 
 The paper introduces four novel hybrid algorithms that combine classical bracketing methods (Bisection, Trisection, False Position) with accelerated steps (Modified Secant) to achieve superior convergence rates while maintaining guaranteed bracketing.
 
@@ -18,7 +18,19 @@ This repository is organized into the following components:
   
 - **[Paper Experiment and Results/](./Paper Experiment and Results/)**
   Contains the raw experimental data, benchmark scripts, and analysis results used in the paper.
-  
+
+## Multi-Language Ports
+
+In addition to the original Python implementation, the `hybridroots` algorithms have been fully ported to several other programming languages for high-performance applications. Each port includes the core algorithms and the 48 benchmark functions to verify correctness:
+
+- **[hybridroots-c/](./hybridroots-c/)** - C (CMake)
+- **[hybridroots-cpp/](./hybridroots-cpp/)** - C++ (CMake)
+- **[hybridroots-java/](./hybridroots-java/)** - Java (Maven)
+- **[hybridroots-dotnet/](./hybridroots-dotnet/)** - C# / .NET
+- **[hybridroots-rust/](./hybridroots-rust/)** - Rust (Cargo)
+- **[hybridroots-js/](./hybridroots-js/)** - JavaScript / TypeScript (Node.js)
+- **[hybridroots-php/](./hybridroots-php/)** - PHP (Composer)
+
 ---
 
 ## The Algorithms
@@ -58,7 +70,7 @@ If you use this work, please cite:
   journal={Journal of the Egyptian Mathematical Society},
   volume={34},
   year={2026},
-  publisher={Springer}
+  publisher={National Information and Documentation Centre (NIDOC), Academy of Scientific Research and Technology, ASRT}
 }
 ```
 

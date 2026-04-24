@@ -1,0 +1,14 @@
+{
+    "name": "abdelrhman-ellithy/hybridroots",
+    "description": "Multi-Phase Hybrid Roots Bracketing Algorithms",
+    "type": "library",
+    "license": "Apache-2.0",
+    "autoload": {
+        "psr-4": {
+            "HybridRoots\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=7.4"
+    }
+}
