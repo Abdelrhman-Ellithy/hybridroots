@@ -3,18 +3,18 @@
 
 #define HR_EPS 1e-15
 
-double mpbf(double (*f)(double), double a, double b, double tol, int max_iter, HybridRootsInfo* info) {
+HybridRootsResult mpbf(double (*f)(double), double a, double b, double tol, int max_iter) {
     double fa = f(a), fb = f(b);
     int nfe = 2;
-    if (fabs(fa) <= tol) { info->iterations = 0; info->function_calls = nfe; info->converged = 1; return a; }
-    if (fabs(fb) <= tol) { info->iterations = 0; info->function_calls = nfe; info->converged = 1; return b; }
-    if (fa * fb >= 0) { info->iterations = 0; info->function_calls = nfe; info->converged = 0; return a; }
+    if (fabs(fa) <= tol) return (HybridRootsResult){a, 0, nfe, 1};
+    if (fabs(fb) <= tol) return (HybridRootsResult){b, 0, nfe, 1};
+    if (fa * fb >= 0) return (HybridRootsResult){a, 0, nfe, 0};
     
     for (int n = 1; n <= max_iter; n++) {
         double mid = 0.5 * (a + b);
         double fmid = f(mid);
         nfe++;
-        if (fabs(fmid) <= tol) { info->iterations = n; info->function_calls = nfe; info->converged = 1; return mid; }
+        if (fabs(fmid) <= tol) return (HybridRootsResult){mid, n, nfe, 1};
         if (fa * fmid < 0) { b = mid; fb = fmid; } else { a = mid; fa = fmid; }
         
         double denom = fb - fa;
@@ -22,22 +22,19 @@ double mpbf(double (*f)(double), double a, double b, double tol, int max_iter, H
         double fp = (a * fb - b * fa) / denom;
         double ffp = f(fp);
         nfe++;
-        if (fabs(ffp) <= tol) { info->iterations = n; info->function_calls = nfe; info->converged = 1; return fp; }
+        if (fabs(ffp) <= tol) return (HybridRootsResult){fp, n, nfe, 1};
         if (fa * ffp < 0) { b = fp; fb = ffp; } else { a = fp; fa = ffp; }
     }
-    info->iterations = max_iter; info->function_calls = nfe;
     double final_x = 0.5 * (a + b);
-    info->converged = fabs(f(final_x)) <= tol;
-    info->function_calls++;
-    return final_x;
+    return (HybridRootsResult){final_x, max_iter, nfe + 1, fabs(f(final_x)) <= tol};
 }
 
-double mpbfms(double (*f)(double), double a, double b, double tol, int max_iter, HybridRootsInfo* info) {
+HybridRootsResult mpbfms(double (*f)(double), double a, double b, double tol, int max_iter) {
     double fa = f(a), fb = f(b);
     int nfe = 2;
-    if (fabs(fa) <= tol) { info->iterations = 0; info->function_calls = nfe; info->converged = 1; return a; }
-    if (fabs(fb) <= tol) { info->iterations = 0; info->function_calls = nfe; info->converged = 1; return b; }
-    if (fa * fb >= 0) { info->iterations = 0; info->function_calls = nfe; info->converged = 0; return a; }
+    if (fabs(fa) <= tol) return (HybridRootsResult){a, 0, nfe, 1};
+    if (fabs(fb) <= tol) return (HybridRootsResult){b, 0, nfe, 1};
+    if (fa * fb >= 0) return (HybridRootsResult){a, 0, nfe, 0};
     
     for (int n = 1; n <= max_iter; n++) {
         double mid = 0.5 * (a + b);
@@ -51,7 +48,7 @@ double mpbfms(double (*f)(double), double a, double b, double tol, int max_iter,
         double ffp = f(fp);
         nfe++;
         if (fa * ffp < 0) { b = fp; fb = ffp; } else { a = fp; fa = ffp; }
-        if (fabs(ffp) <= tol) { info->iterations = n; info->function_calls = nfe; info->converged = 1; return fp; }
+        if (fabs(ffp) <= tol) return (HybridRootsResult){fp, n, nfe, 1};
         
         double delta = 1e-8 * fmax(1.0, fabs(fp)) + HR_EPS;
         double f_delta = f(fp + delta);
@@ -65,31 +62,28 @@ double mpbfms(double (*f)(double), double a, double b, double tol, int max_iter,
             nfe++;
             if (fabs(fxS) < fabs(ffp)) {
                 if (fa * fxS < 0) { b = xS; fb = fxS; } else { a = xS; fa = fxS; }
-                if (fabs(fxS) <= tol) { info->iterations = n; info->function_calls = nfe; info->converged = 1; return xS; }
+                if (fabs(fxS) <= tol) return (HybridRootsResult){xS, n, nfe, 1};
             }
         }
     }
-    info->iterations = max_iter; info->function_calls = nfe;
     double final_x = 0.5 * (a + b);
-    info->converged = fabs(f(final_x)) <= tol;
-    info->function_calls++;
-    return final_x;
+    return (HybridRootsResult){final_x, max_iter, nfe + 1, fabs(f(final_x)) <= tol};
 }
 
-double mptf(double (*f)(double), double a, double b, double tol, int max_iter, HybridRootsInfo* info) {
+HybridRootsResult mptf(double (*f)(double), double a, double b, double tol, int max_iter) {
     double fa = f(a), fb = f(b);
     int nfe = 2;
-    if (fabs(fa) <= tol) { info->iterations = 0; info->function_calls = nfe; info->converged = 1; return a; }
-    if (fabs(fb) <= tol) { info->iterations = 0; info->function_calls = nfe; info->converged = 1; return b; }
-    if (fa * fb >= 0) { info->iterations = 0; info->function_calls = nfe; info->converged = 0; return a; }
+    if (fabs(fa) <= tol) return (HybridRootsResult){a, 0, nfe, 1};
+    if (fabs(fb) <= tol) return (HybridRootsResult){b, 0, nfe, 1};
+    if (fa * fb >= 0) return (HybridRootsResult){a, 0, nfe, 0};
     
     for (int n = 1; n <= max_iter; n++) {
         double diff = b - a;
         double x1 = a + diff / 3.0, x2 = b - diff / 3.0;
         double fx1 = f(x1), fx2 = f(x2);
         nfe += 2;
-        if (fabs(fx1) <= tol) { info->iterations = n; info->function_calls = nfe; info->converged = 1; return x1; }
-        if (fabs(fx2) <= tol) { info->iterations = n; info->function_calls = nfe; info->converged = 1; return x2; }
+        if (fabs(fx1) <= tol) return (HybridRootsResult){x1, n, nfe, 1};
+        if (fabs(fx2) <= tol) return (HybridRootsResult){x2, n, nfe, 1};
         
         if (fa * fx1 < 0) { b = x1; fb = fx1; }
         else if (fx1 * fx2 < 0) { a = x1; b = x2; fa = fx1; fb = fx2; }
@@ -100,30 +94,27 @@ double mptf(double (*f)(double), double a, double b, double tol, int max_iter, H
         double x = (a * fb - b * fa) / denom;
         double fx = f(x);
         nfe++;
-        if (fabs(fx) <= tol) { info->iterations = n; info->function_calls = nfe; info->converged = 1; return x; }
+        if (fabs(fx) <= tol) return (HybridRootsResult){x, n, nfe, 1};
         if (fa * fx < 0) { b = x; fb = fx; } else { a = x; fa = fx; }
     }
-    info->iterations = max_iter; info->function_calls = nfe;
     double final_x = 0.5 * (a + b);
-    info->converged = fabs(f(final_x)) <= tol;
-    info->function_calls++;
-    return final_x;
+    return (HybridRootsResult){final_x, max_iter, nfe + 1, fabs(f(final_x)) <= tol};
 }
 
-double mptfms(double (*f)(double), double a, double b, double tol, int max_iter, HybridRootsInfo* info) {
+HybridRootsResult mptfms(double (*f)(double), double a, double b, double tol, int max_iter) {
     double fa = f(a), fb = f(b);
     int nfe = 2;
-    if (fabs(fa) <= tol) { info->iterations = 0; info->function_calls = nfe; info->converged = 1; return a; }
-    if (fabs(fb) <= tol) { info->iterations = 0; info->function_calls = nfe; info->converged = 1; return b; }
-    if (fa * fb >= 0) { info->iterations = 0; info->function_calls = nfe; info->converged = 0; return a; }
+    if (fabs(fa) <= tol) return (HybridRootsResult){a, 0, nfe, 1};
+    if (fabs(fb) <= tol) return (HybridRootsResult){b, 0, nfe, 1};
+    if (fa * fb >= 0) return (HybridRootsResult){a, 0, nfe, 0};
     
     for (int n = 1; n <= max_iter; n++) {
         double diff = b - a;
         double x1 = a + diff / 3.0, x2 = b - diff / 3.0;
         double fx1 = f(x1), fx2 = f(x2);
         nfe += 2;
-        if (fabs(fx1) <= tol) { info->iterations = n; info->function_calls = nfe; info->converged = 1; return x1; }
-        if (fabs(fx2) <= tol) { info->iterations = n; info->function_calls = nfe; info->converged = 1; return x2; }
+        if (fabs(fx1) <= tol) return (HybridRootsResult){x1, n, nfe, 1};
+        if (fabs(fx2) <= tol) return (HybridRootsResult){x2, n, nfe, 1};
         
         if (fa * fx1 < 0) { b = x1; fb = fx1; }
         else if (fx1 * fx2 < 0) { a = x1; b = x2; fa = fx1; fb = fx2; }
@@ -135,7 +126,7 @@ double mptfms(double (*f)(double), double a, double b, double tol, int max_iter,
         double ffp = f(fp);
         nfe++;
         if (fa * ffp < 0) { b = fp; fb = ffp; } else { a = fp; fa = ffp; }
-        if (fabs(ffp) <= tol) { info->iterations = n; info->function_calls = nfe; info->converged = 1; return fp; }
+        if (fabs(ffp) <= tol) return (HybridRootsResult){fp, n, nfe, 1};
         
         double delta = 1e-8 * fmax(1.0, fabs(fp)) + HR_EPS;
         double f_delta = f(fp + delta);
@@ -149,13 +140,10 @@ double mptfms(double (*f)(double), double a, double b, double tol, int max_iter,
             nfe++;
             if (fabs(fxS) < fabs(ffp)) {
                 if (fa * fxS < 0) { b = xS; fb = fxS; } else { a = xS; fa = fxS; }
-                if (fabs(fxS) <= tol) { info->iterations = n; info->function_calls = nfe; info->converged = 1; return xS; }
+                if (fabs(fxS) <= tol) return (HybridRootsResult){xS, n, nfe, 1};
             }
         }
     }
-    info->iterations = max_iter; info->function_calls = nfe;
     double final_x = 0.5 * (a + b);
-    info->converged = fabs(f(final_x)) <= tol;
-    info->function_calls++;
-    return final_x;
+    return (HybridRootsResult){final_x, max_iter, nfe + 1, fabs(f(final_x)) <= tol};
 }

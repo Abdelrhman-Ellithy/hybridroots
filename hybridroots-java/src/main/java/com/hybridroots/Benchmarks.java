@@ -2,27 +2,28 @@ package com.hybridroots;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+
+class BenchmarkDef {
+    String name;
+    Function<Double, Double> func;
+    double a, b;
+    String desc;
+
+    public BenchmarkDef(String name, Function<Double, Double> func, double a, double b, String desc) {
+        this.name = name;
+        this.func = func;
+        this.a = a;
+        this.b = b;
+        this.desc = desc;
+    }
+}
+
+interface AlgType {
+    HybridRootsResult run(Function<Double, Double> f, double a, double b, double tol, int maxIter);
+}
 
 public class Benchmarks {
-    static class BenchmarkDef {
-        String name;
-        Function func;
-        double a, b;
-        String desc;
-
-        BenchmarkDef(String name, Function func, double a, double b, String desc) {
-            this.name = name;
-            this.func = func;
-            this.a = a;
-            this.b = b;
-            this.desc = desc;
-        }
-    }
-
-    interface Algorithm {
-        double run(Function f, double a, double b, double tol, int maxIter, HybridRootsInfo info);
-    }
-
     public static void main(String[] args) {
         List<BenchmarkDef> benchmarks = new ArrayList<>();
         benchmarks.add(new BenchmarkDef("f1", x -> x * Math.exp(x) - 7.0, 1.0, 2.0, "x*exp(x) - 7"));
@@ -85,31 +86,33 @@ public class Benchmarks {
         double[] iters = new double[4];
         double[] nfes = new double[4];
 
-        Algorithm[] funcs = {HybridRoots::mpbf, HybridRoots::mpbfms, HybridRoots::mptf, HybridRoots::mptfms};
-        String[] names = {"mpbf", "mpbfms", "mptf", "mptfms"};
+        AlgType[] funcs = {
+            HybridRoots::mpbf, HybridRoots::mpbfms, HybridRoots::mptf, HybridRoots::mptfms
+        };
+        String[] names = { "mpbf", "mpbfms", "mptf", "mptfms" };
 
         for (int i = 0; i < benchmarks.size(); i++) {
             BenchmarkDef b = benchmarks.get(i);
             System.out.printf("\n[%2d/48] %s: %s\n", i + 1, b.name, b.desc);
 
             for (int a = 0; a < 4; a++) {
-                HybridRootsInfo info = new HybridRootsInfo();
-                funcs[a].run(b.func, b.a, b.b, tol, maxIter, info); // Warmup
+                funcs[a].run(b.func, b.a, b.b, tol, maxIter); // Warmup
 
                 int runs = 100;
-                double root = 0;
+                HybridRootsResult result = null;
                 long start = System.nanoTime();
                 for (int r = 0; r < runs; r++) {
-                    root = funcs[a].run(b.func, b.a, b.b, tol, maxIter, info);
+                    result = funcs[a].run(b.func, b.a, b.b, tol, maxIter);
                 }
-                double elapsedUs = (System.nanoTime() - start) / 1000.0 / runs;
+                long end = System.nanoTime();
+                double elapsedUs = (end - start) / 1000.0 / runs;
 
-                if (info.converged) {
-                    System.out.printf("       %-8s: root=%.10f, iter=%2d, nfe=%3d\n", names[a], root, info.iterations, info.functionCalls);
+                if (result.converged) {
+                    System.out.printf("       %-8s: root=%.10f, iter=%2d, nfe=%3d\n", names[a], result.root, result.iterations, result.functionCalls);
                     times[a] += elapsedUs;
                     convs[a]++;
-                    iters[a] += info.iterations;
-                    nfes[a] += info.functionCalls;
+                    iters[a] += result.iterations;
+                    nfes[a] += result.functionCalls;
                 } else {
                     System.out.printf("       %-8s: FAILED\n", names[a]);
                 }
@@ -121,8 +124,7 @@ public class Benchmarks {
         System.out.println("Algorithm  | Converged  | Total Time (us)    | Avg NFE    | Avg Iterations");
         System.out.println("--------------------------------------------------------------------------------");
         for (int a = 0; a < 4; a++) {
-            System.out.printf("%-10s | %2d/%-7d | %18.2f | %10.2f | %15.2f\n",
-                    names[a], convs[a], benchmarks.size(), times[a], nfes[a] / convs[a], iters[a] / convs[a]);
+            System.out.printf("%-10s | %2d/%-7d | %18.2f | %10.2f | %15.2f\n", names[a], convs[a], benchmarks.size(), times[a], nfes[a] / convs[a], iters[a] / convs[a]);
         }
     }
 }

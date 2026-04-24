@@ -21,7 +21,7 @@ double get_time_us() {
 #endif
 
 typedef double (*FuncPtr)(double);
-typedef double (*AlgorithmPtr)(FuncPtr, double, double, double, int, HybridRootsInfo*);
+typedef HybridRootsResult (*AlgorithmPtr)(FuncPtr, double, double, double, int);
 typedef struct {
     char name[10];
     FuncPtr func;
@@ -157,24 +157,23 @@ int main() {
         double* nfes[] = {&nfe_mpbf, &nfe_mpbfms, &nfe_mptf, &nfe_mptfms};
         
         for (int a = 0; a < 4; a++) {
-            HybridRootsInfo info;
             // Warmup
-            funcs[a](b.func, b.a, b.b, tol, max_iter, &info);
+            funcs[a](b.func, b.a, b.b, tol, max_iter);
             
             int runs = 100;
-            double root;
+            HybridRootsResult result;
             double start = get_time_us();
             for (int r = 0; r < runs; r++) {
-                root = funcs[a](b.func, b.a, b.b, tol, max_iter, &info);
+                result = funcs[a](b.func, b.a, b.b, tol, max_iter);
             }
             double elapsed = (get_time_us() - start) / runs;
             
-            if (info.converged) {
-                printf("       %-8s: root=%.10f, iter=%2d, nfe=%3d\n", names[a], root, info.iterations, info.function_calls);
+            if (result.converged) {
+                printf("       %-8s: root=%.10f, iter=%2d, nfe=%3d\n", names[a], result.root, result.iterations, result.function_calls);
                 *(times[a]) += elapsed;
                 *(convs[a]) += 1;
-                *(iters[a]) += info.iterations;
-                *(nfes[a]) += info.function_calls;
+                *(iters[a]) += result.iterations;
+                *(nfes[a]) += result.function_calls;
             } else {
                 printf("       %-8s: FAILED\n", names[a]);
             }
