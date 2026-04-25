@@ -19,10 +19,10 @@ A Python package implementing four novel root-finding algorithms that combine bi
 
 | Algorithm | Method | Avg Iterations | NFE/iter |
 |-----------|--------|---------------|----------|
-| `mpbf` | Bisection + False Position | ~6.7 | 2 |
 | `mpbfms` | Bisection + False Position + Modified Secant | ~2.8 | 3-4 |
-| `mptf` | Trisection + False Position | ~5.3 | 3 |
 | `mptfms` | Trisection + False Position + Modified Secant | ~2.4 | 4-5 |
+| `mpbf` | Bisection + False Position | ~6.7 | 2 |
+| `mptf` | Trisection + False Position | ~5.3 | 3 |
 
 ##  Installation
 
@@ -76,27 +76,27 @@ root4, _ = mptfms(f, 1, 2)  # Opt.TFMS
 
 ## 📖 Algorithm Overview
 
-### Opt.BF (`mpbf`)
-Multi-phase **Bisection-False Position** method. Each iteration:
-1. Bisection step to reduce interval
-2. False position step for refinement
-
 ### Opt.BFMS (`mpbfms`)
 Multi-phase **Bisection-False Position-Modified Secant** method:
 1. Bisection step to reduce interval
 2. False position step for refinement
 3. Modified secant with adaptive δ
 
-### Opt.TF (`mptf`)
-Multi-phase **Trisection-False Position** method:
-1. Trisection (divides interval into thirds)
-2. False position refinement
-
 ### Opt.TFMS (`mptfms`)
 Multi-phase **Trisection-False Position-Modified Secant** method:
 1. Trisection for interval reduction
 2. False position refinement
 3. Modified secant with adaptive δ
+
+### Opt.BF (`mpbf`)
+Multi-phase **Bisection-False Position** method. Each iteration:
+1. Bisection step to reduce interval
+2. False position step for refinement
+
+### Opt.TF (`mptf`)
+Multi-phase **Trisection-False Position** method:
+1. Trisection (divides interval into thirds)
+2. False position refinement
 
 ## 📚 Citation
 

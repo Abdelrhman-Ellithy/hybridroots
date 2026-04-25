@@ -1,7 +1,7 @@
 {
   "name": "hybridroots",
   "version": "1.0.0",
-  "description": "Four Multi-Phase Hybrid Bracketing Algorithms for Numerical Root Finding",
+  "description": "Four novel multi-phase hybrid bracketing algorithms (Opt.BF, Opt.BFMS, Opt.TF, Opt.TFMS) for numerical root finding with superior convergence. Combines bisection/trisection, false position, and modified secant. Reference DOI: 10.21608/joems.2026.440115.1078",
   "main": "core.js",
   "type": "module",
   "exports": {

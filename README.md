@@ -25,17 +25,17 @@ Every algorithm returns a standardized **`HybridRootsResult`** object containing
 | `function_calls` | Number of function evaluations |
 | `converged` | Whether `|f(root)| <= tol` |
 
-### 1. Opt.BF (`mpbf`)
-**Multi-Phase Bisection–False Position** — Combines the reliability of bisection with the speed of the false position method. (Section 2)
-
-### 2. Opt.BFMS (`mpbfms`)
+### 1. Opt.BFMS (`mpbfms`)
 **Multi-Phase Bisection–False Position–Modified Secant** — Extends Opt.BF with a modified secant acceleration step. (Section 3)
 
-### 3. Opt.TF (`mptf`)
-**Multi-Phase Trisection–False Position** — Uses trisection for faster interval reduction, followed by false position refinement. (Section 4)
-
-### 4. Opt.TFMS (`mptfms`)
+### 2. Opt.TFMS (`mptfms`)
 **Multi-Phase Trisection–False Position–Modified Secant** — Combines trisection, false position, and modified secant for maximum efficiency. The fastest of the four. (Section 5)
+
+### 3. Opt.BF (`mpbf`)
+**Multi-Phase Bisection–False Position** — Combines the reliability of bisection with the speed of the false position method. (Section 2)
+
+### 4. Opt.TF (`mptf`)
+**Multi-Phase Trisection–False Position** — Uses trisection for faster interval reduction, followed by false position refinement. (Section 4)
 
 **Common signature:** `(f, a, b, tol=1e-14, max_iter=10000)` → `HybridRootsResult`
 

@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.abdelrhman-ellithy</groupId>
     <artifactId>hybridroots</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -14,15 +14,15 @@
         <installToLocalRepository>mvn clean install -DskipTests</installToLocalRepository>
         <publishJavaDocs>mvn resources:resources javadoc:javadoc scm-publish:publish-scm</publishJavaDocs>
         <deployToMavenCentral>
-            gpg -ab target/hybridroots-1.0.0.jar
-            gpg -ab target/hybridroots-1.0.0-javadoc.jar
-            gpg -ab target/hybridroots-1.0.0-sources.jar
-            gpg -ab target/hybridroots-1.0.0.pom
+            gpg -ab target/hybridroots-1.0.1.jar
+            gpg -ab target/hybridroots-1.0.1-javadoc.jar
+            gpg -ab target/hybridroots-1.0.1-sources.jar
+            gpg -ab target/hybridroots-1.0.1.pom
             gpg --keyserver keyserver.ubuntu.com --send-keys
             mvn deploy -P central -DskipTests -X</deployToMavenCentral>
     </properties>
     <name>HybridRoots</name>
-    <description>Four New Multi-Phase Hybrid Bracketing Algorithms for Numerical Root Finding</description>
+    <description>Four novel multi-phase hybrid bracketing algorithms (Opt.BF, Opt.BFMS, Opt.TF, Opt.TFMS) for numerical root finding with superior convergence. Combines bisection/trisection, false position, and modified secant. Reference DOI: 10.21608/joems.2026.440115.1078</description>
     <url>https://github.com/Abdelrhman-Ellithy/hybridroots</url>
     <developers>
         <developer>

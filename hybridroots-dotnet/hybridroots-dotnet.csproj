@@ -9,7 +9,7 @@
     <PackageId>HybridRoots</PackageId>
     <Version>1.0.0</Version>
     <Authors>Abdelrahman Ellithy</Authors>
-    <Description>Four Multi-Phase Hybrid Bracketing Algorithms for Numerical Root Finding. Implements the algorithms from DOI: 10.21608/joems.2026.440115.1078</Description>
+    <Description>Four novel multi-phase hybrid bracketing algorithms for numerical root finding: Opt.BF (mpbf), Opt.BFMS (mpbfms), Opt.TF (mptf), Opt.TFMS (mptfms). Combines classical methods with modified secant for superior convergence (e.g., mptfms averages 2.3 iterations). Reference DOI: 10.21608/joems.2026.440115.1078</Description>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Abdelrhman-Ellithy/hybridroots</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Abdelrhman-Ellithy/hybridroots.git</RepositoryUrl>

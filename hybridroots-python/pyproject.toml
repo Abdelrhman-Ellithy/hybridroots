@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "hybridroots"
 version = "1.0.0"
-description = "Four Multi-phase hybrid bracketing algorithms for numerical root finding"
+description = "Four novel multi-phase hybrid bracketing algorithms for numerical root finding: Opt.BF (mpbf), Opt.BFMS (mpbfms), Opt.TF (mptf), Opt.TFMS (mptfms). Combines classical methods with modified secant for superior convergence (e.g., mptfms averages 2.3 iterations). Reference DOI: 10.21608/joems.2026.440115.1078"
 readme = "README.md"
 license = "MIT"
 authors = [
