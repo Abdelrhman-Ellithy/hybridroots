@@ -1,14 +1,33 @@
 {
     "name": "abdelrhman-ellithy/hybridroots",
-    "description": "Multi-Phase Hybrid Roots Bracketing Algorithms",
+    "description": "Four Multi-Phase Hybrid Bracketing Algorithms for Numerical Root Finding",
     "type": "library",
     "license": "Apache-2.0",
+    "version": "1.0.0",
+    "keywords": [
+        "root-finding",
+        "numerical",
+        "bracketing",
+        "bisection",
+        "mathematics"
+    ],
+    "authors": [
+        {
+            "name": "Abdelrahman Ellithy",
+            "homepage": "https://github.com/Abdelrhman-Ellithy"
+        }
+    ],
+    "homepage": "https://doi.org/10.21608/joems.2026.440115.1078",
+    "support": {
+        "source": "https://github.com/Abdelrhman-Ellithy/hybridroots",
+        "issues": "https://github.com/Abdelrhman-Ellithy/hybridroots/issues"
+    },
     "autoload": {
         "psr-4": {
             "HybridRoots\\": "src/"
         }
     },
     "require": {
-        "php": ">=7.4"
+        "php": ">=8.1"
     }
 }

@@ -6,11 +6,11 @@ namespace HybridRoots
 {
     class BenchmarkDef
     {
-        public string Name { get; set; }
-        public Func<double, double> Func { get; set; }
+        public required string Name { get; set; }
+        public required Func<double, double> Func { get; set; }
         public double A { get; set; }
         public double B { get; set; }
-        public string Desc { get; set; }
+        public required string Desc { get; set; }
     }
 
     class Program
@@ -80,7 +80,7 @@ namespace HybridRoots
             double[] iters = new double[4];
             double[] nfes = new double[4];
 
-            Func<Func<double, double>, double, double, double, int, HybridRootsInfo, double>[] funcs = {
+            Func<Func<double, double>, double, double, double, int, HybridRootsResult>[] funcs = {
                 Core.Mpbf, Core.Mpbfms, Core.Mptf, Core.Mptfms
             };
             string[] names = { "mpbf", "mpbfms", "mptf", "mptfms" };
@@ -92,26 +92,24 @@ namespace HybridRoots
 
                 for (int a = 0; a < 4; a++)
                 {
-                    HybridRootsInfo info = new HybridRootsInfo();
-                    funcs[a](b.Func, b.A, b.B, tol, maxIter, info); // Warmup
+                    var result = funcs[a](b.Func, b.A, b.B, tol, maxIter); // Warmup
 
                     int runs = 100;
-                    double root = 0;
                     Stopwatch sw = Stopwatch.StartNew();
                     for (int r = 0; r < runs; r++)
                     {
-                        root = funcs[a](b.Func, b.A, b.B, tol, maxIter, info);
+                        result = funcs[a](b.Func, b.A, b.B, tol, maxIter);
                     }
                     sw.Stop();
                     double elapsedUs = sw.Elapsed.TotalMilliseconds * 1000.0 / runs;
 
-                    if (info.Converged)
+                    if (result.Converged)
                     {
-                        Console.WriteLine($"       {names[a],-8}: root={root:F10}, iter={info.Iterations,2}, nfe={info.FunctionCalls,3}");
+                        Console.WriteLine($"       {names[a],-8}: root={result.Root:F10}, iter={result.Iterations,2}, nfe={result.FunctionCalls,3}");
                         times[a] += elapsedUs;
                         convs[a]++;
-                        iters[a] += info.Iterations;
-                        nfes[a] += info.FunctionCalls;
+                        iters[a] += result.Iterations;
+                        nfes[a] += result.FunctionCalls;
                     }
                     else
                     {

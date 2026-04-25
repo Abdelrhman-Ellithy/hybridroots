@@ -3,20 +3,44 @@ package com.hybridroots;
 import java.util.function.Function;
 
 /**
- * Core HybridRoots numerical root finding algorithms.
+ * Four Multi-Phase Hybrid Bracketing Algorithms for Numerical Root Finding.
+ *
+ * <p>All algorithms are deterministic and guarantee convergence for any continuous
+ * function {@code f} on a bracket {@code [a, b]} where {@code f(a)*f(b) < 0}.</p>
+ *
+ * <p>Reference: Ellithy, A. (2026). <em>Four New Multi-Phase Hybrid Bracketing
+ * Algorithms for Numerical Root Finding.</em> Journal of the Egyptian Mathematical
+ * Society, 34.<br>
+ * DOI: <a href="https://doi.org/10.21608/joems.2026.440115.1078">
+ * 10.21608/joems.2026.440115.1078</a></p>
+ *
+ * @author Abdelrahman Ellithy
+ * @version 1.0.0
  */
-public class HybridRoots {
+public final class HybridRoots {
+
+    /** Default absolute tolerance. */
+    public static final double DEFAULT_TOL = 1e-14;
+    /** Default maximum iterations. */
+    public static final int DEFAULT_MAX_ITER = 10000;
+
+    private HybridRoots() { /* utility class */ }
 
     private static final double EPS = 1e-15;
 
     /**
      * Multi-Phase Bisection-False Position (Opt.BF) Algorithm.
-     * @param f the function to find the root of
-     * @param a the lower bound of the bracket
-     * @param b the upper bound of the bracket
-     * @param tol the tolerance for convergence
-     * @param maxIter the maximum number of iterations
-     * @return the result of the root finding algorithm
+     *
+     * <p>Combines Bisection with False Position for guaranteed convergence
+     * with faster interval reduction. See Section 2 of the paper.</p>
+     *
+     * @param f the continuous function whose root is sought
+     * @param a the left endpoint of the bracket ({@code f(a)*f(b) < 0})
+     * @param b the right endpoint of the bracket
+     * @param tol absolute tolerance; convergence when {@code |f(x)| <= tol}
+     * @param maxIter maximum number of iterations
+     * @return a {@link HybridRootsResult} with root, iterations, functionCalls, converged
+     * @see <a href="https://doi.org/10.21608/joems.2026.440115.1078">Paper DOI</a>
      */
     public static HybridRootsResult mpbf(Function<Double, Double> f, double a, double b, double tol, int maxIter) {
         double fa = f.apply(a), fb = f.apply(b);
@@ -192,5 +216,27 @@ public class HybridRoots {
         double finalX = 0.5 * (a + b);
         boolean converged = Math.abs(f.apply(finalX)) <= tol;
         return new HybridRootsResult(finalX, maxIter, nfe + 1, converged);
+    }
+
+    // ── Convenience overloads with default tol and maxIter ──────────────
+
+    /** Calls {@link #mpbf(Function, double, double, double, int)} with default tolerance and max iterations. */
+    public static HybridRootsResult mpbf(Function<Double, Double> f, double a, double b) {
+        return mpbf(f, a, b, DEFAULT_TOL, DEFAULT_MAX_ITER);
+    }
+
+    /** Calls {@link #mpbfms(Function, double, double, double, int)} with default tolerance and max iterations. */
+    public static HybridRootsResult mpbfms(Function<Double, Double> f, double a, double b) {
+        return mpbfms(f, a, b, DEFAULT_TOL, DEFAULT_MAX_ITER);
+    }
+
+    /** Calls {@link #mptf(Function, double, double, double, int)} with default tolerance and max iterations. */
+    public static HybridRootsResult mptf(Function<Double, Double> f, double a, double b) {
+        return mptf(f, a, b, DEFAULT_TOL, DEFAULT_MAX_ITER);
+    }
+
+    /** Calls {@link #mptfms(Function, double, double, double, int)} with default tolerance and max iterations. */
+    public static HybridRootsResult mptfms(Function<Double, Double> f, double a, double b) {
+        return mptfms(f, a, b, DEFAULT_TOL, DEFAULT_MAX_ITER);
     }
 }

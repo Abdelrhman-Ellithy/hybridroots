@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>hybridroots-dotnet</name>
+    </assembly>
+    <members>
+        <member name="T:HybridRoots.HybridRootsResult">
+            <summary>
+            Holds the result of a HybridRoots algorithm call.
+            Mirrors scipy.optimize.RootResults for cross-language consistency.
+            </summary>
+        </member>
+        <member name="P:HybridRoots.HybridRootsResult.Root">
+            <summary>Gets the estimated root location.</summary>
+        </member>
+        <member name="P:HybridRoots.HybridRootsResult.Iterations">
+            <summary>Gets the number of iterations performed.</summary>
+        </member>
+        <member name="P:HybridRoots.HybridRootsResult.FunctionCalls">
+            <summary>Gets the number of function evaluations performed.</summary>
+        </member>
+        <member name="P:HybridRoots.HybridRootsResult.Converged">
+            <summary>Gets a value indicating whether |f(root)| &lt;= tol.</summary>
+        </member>
+        <member name="M:HybridRoots.HybridRootsResult.#ctor(System.Double,System.Int32,System.Int32,System.Boolean)">
+            <summary>Initializes a new instance of <see cref="T:HybridRoots.HybridRootsResult"/>.</summary>
+        </member>
+        <member name="M:HybridRoots.HybridRootsResult.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:HybridRoots.Core">
+            <summary>
+            Four Multi-Phase Hybrid Bracketing Algorithms for Numerical Root Finding.
+            <para>
+            All algorithms are deterministic and guarantee convergence for any continuous
+            function f on a bracket [a, b] where f(a)*f(b) &lt; 0.
+            </para>
+            <para>
+            Reference: Ellithy, A. (2026). Journal of the Egyptian Mathematical Society, 34.
+            DOI: <see href="https://doi.org/10.21608/joems.2026.440115.1078"/>
+            </para>
+            </summary>
+        </member>
+        <member name="M:HybridRoots.Core.Mpbf(System.Func{System.Double,System.Double},System.Double,System.Double,System.Double,System.Int32)">
+            <summary>
+            Multi-Phase Bisection–False Position (Opt.BF).
+            <para>
+            Combines classical Bisection with False Position for guaranteed convergence
+            with faster interval reduction. See Section 2 of the paper.
+            </para>
+            </summary>
+            <param name="f">The continuous function whose root is sought.</param>
+            <param name="a">Left endpoint of the initial bracket (f(a)*f(b) &lt; 0).</param>
+            <param name="b">Right endpoint of the initial bracket.</param>
+            <param name="tol">Absolute tolerance; convergence declared when |f(x)| &lt;= tol.</param>
+            <param name="maxIter">Maximum number of iterations allowed.</param>
+            <returns>A <see cref="T:HybridRoots.HybridRootsResult"/> with root, iterations, functionCalls, and converged.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when f is null.</exception>
+        </member>
+        <member name="M:HybridRoots.Core.Mpbfms(System.Func{System.Double,System.Double},System.Double,System.Double,System.Double,System.Int32)">
+            <summary>
+            Multi-Phase Bisection–False Position–Modified Secant (Opt.BFMS).
+            <para>
+            Extends Opt.BF with an adaptive Modified Secant acceleration step that
+            is accepted only when it reduces the residual and remains in-bracket.
+            See Section 3 of the paper.
+            </para>
+            </summary>
+            <param name="f">The continuous function whose root is sought.</param>
+            <param name="a">Left endpoint of the initial bracket.</param>
+            <param name="b">Right endpoint of the initial bracket.</param>
+            <param name="tol">Absolute tolerance.</param>
+            <param name="maxIter">Maximum number of iterations.</param>
+            <returns>A <see cref="T:HybridRoots.HybridRootsResult"/>.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when f is null.</exception>
+        </member>
+        <member name="M:HybridRoots.Core.Mptf(System.Func{System.Double,System.Double},System.Double,System.Double,System.Double,System.Int32)">
+            <summary>
+            Multi-Phase Trisection–False Position (Opt.TF).
+            <para>
+            Divides the bracket into thirds for faster interval reduction, then applies
+            False Position refinement. See Section 4 of the paper.
+            </para>
+            </summary>
+            <param name="f">The continuous function whose root is sought.</param>
+            <param name="a">Left endpoint of the initial bracket.</param>
+            <param name="b">Right endpoint of the initial bracket.</param>
+            <param name="tol">Absolute tolerance.</param>
+            <param name="maxIter">Maximum number of iterations.</param>
+            <returns>A <see cref="T:HybridRoots.HybridRootsResult"/>.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when f is null.</exception>
+        </member>
+        <member name="M:HybridRoots.Core.Mptfms(System.Func{System.Double,System.Double},System.Double,System.Double,System.Double,System.Int32)">
+            <summary>
+            Multi-Phase Trisection–False Position–Modified Secant (Opt.TFMS).
+            <para>
+            Combines Trisection, False Position, and an adaptive Modified Secant step
+            for maximum efficiency. The fastest of the four algorithms for smooth functions.
+            See Section 5 of the paper.
+            </para>
+            </summary>
+            <param name="f">The continuous function whose root is sought.</param>
+            <param name="a">Left endpoint of the initial bracket.</param>
+            <param name="b">Right endpoint of the initial bracket.</param>
+            <param name="tol">Absolute tolerance.</param>
+            <param name="maxIter">Maximum number of iterations.</param>
+            <returns>A <see cref="T:HybridRoots.HybridRootsResult"/>.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when f is null.</exception>
+        </member>
+    </members>
+</doc>

@@ -79,9 +79,8 @@ int main() {
     double iter_mpbf = 0, iter_mpbfms = 0, iter_mptf = 0, iter_mptfms = 0;
     double nfe_mpbf = 0, nfe_mpbfms = 0, nfe_mptf = 0, nfe_mptfms = 0;
 
-    vector<std::function<double(const std::function<double(double)>&, double, double, double, int, HybridRootsInfo&)>> funcs = {
-        mpbf, mpbfms, mptf, mptfms
-    };
+    using AlgFunc = std::function<HybridRootsResult(const std::function<double(double)>&, double, double, double, int)>;
+    vector<AlgFunc> funcs = { mpbf, mpbfms, mptf, mptfms };
     vector<string> names = {"mpbf", "mpbfms", "mptf", "mptfms"};
     vector<double*> times = {&time_mpbf, &time_mpbfms, &time_mptf, &time_mptfms};
     vector<int*> convs = {&conv_mpbf, &conv_mpbfms, &conv_mptf, &conv_mptfms};
@@ -93,24 +92,23 @@ int main() {
         printf("\n[%2zu/48] %s: %s\n", i+1, b.name.c_str(), b.desc.c_str());
         
         for (int a = 0; a < 4; a++) {
-            HybridRootsInfo info;
-            funcs[a](b.func, b.a, b.b, tol, max_iter, info); // Warmup
+            funcs[a](b.func, b.a, b.b, tol, max_iter); // Warmup
             
             int runs = 100;
-            double root;
+            HybridRootsResult result{};
             auto start = chrono::high_resolution_clock::now();
             for (int r = 0; r < runs; r++) {
-                root = funcs[a](b.func, b.a, b.b, tol, max_iter, info);
+                result = funcs[a](b.func, b.a, b.b, tol, max_iter);
             }
             auto end = chrono::high_resolution_clock::now();
             double elapsed = chrono::duration_cast<chrono::nanoseconds>(end - start).count() / 1000.0 / runs;
             
-            if (info.converged) {
-                printf("       %-8s: root=%.10f, iter=%2d, nfe=%3d\n", names[a].c_str(), root, info.iterations, info.function_calls);
+            if (result.converged) {
+                printf("       %-8s: root=%.10f, iter=%2d, nfe=%3d\n", names[a].c_str(), result.root, result.iterations, result.function_calls);
                 *(times[a]) += elapsed;
                 *(convs[a]) += 1;
-                *(iters[a]) += info.iterations;
-                *(nfes[a]) += info.function_calls;
+                *(iters[a]) += result.iterations;
+                *(nfes[a]) += result.function_calls;
             } else {
                 printf("       %-8s: FAILED\n", names[a].c_str());
             }

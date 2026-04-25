@@ -1,32 +1,94 @@
+// <copyright file="Core.cs" company="HybridRoots">
+// Licensed under the Apache License, Version 2.0.
+// </copyright>
+//
+// This library implements the four novel hybrid root-finding algorithms introduced in:
+//
+//   Ellithy, A. (2026). "Four New Multi-Phase Hybrid Bracketing Algorithms for
+//   Numerical Root Finding." Journal of the Egyptian Mathematical Society, 34.
+//   DOI: https://doi.org/10.21608/joems.2026.440115.1078
+//
+// Author: Abdelrahman Ellithy
+
 using System;
 
 namespace HybridRoots
 {
-    public class HybridRootsInfo
+    /// <summary>
+    /// Holds the result of a HybridRoots algorithm call.
+    /// Mirrors scipy.optimize.RootResults for cross-language consistency.
+    /// </summary>
+    public sealed class HybridRootsResult
     {
-        public int Iterations { get; set; }
-        public int FunctionCalls { get; set; }
-        public bool Converged { get; set; }
+        /// <summary>Gets the estimated root location.</summary>
+        public double Root { get; }
+        /// <summary>Gets the number of iterations performed.</summary>
+        public int Iterations { get; }
+        /// <summary>Gets the number of function evaluations performed.</summary>
+        public int FunctionCalls { get; }
+        /// <summary>Gets a value indicating whether |f(root)| &lt;= tol.</summary>
+        public bool Converged { get; }
+
+        /// <summary>Initializes a new instance of <see cref="HybridRootsResult"/>.</summary>
+        public HybridRootsResult(double root, int iterations, int functionCalls, bool converged)
+        {
+            Root = root;
+            Iterations = iterations;
+            FunctionCalls = functionCalls;
+            Converged = converged;
+        }
+
+        /// <inheritdoc/>
+        public override string ToString() =>
+            $"HybridRootsResult(root={Root:G17}, iterations={Iterations}, " +
+            $"functionCalls={FunctionCalls}, converged={Converged})";
     }
 
+    /// <summary>
+    /// Four Multi-Phase Hybrid Bracketing Algorithms for Numerical Root Finding.
+    /// <para>
+    /// All algorithms are deterministic and guarantee convergence for any continuous
+    /// function f on a bracket [a, b] where f(a)*f(b) &lt; 0.
+    /// </para>
+    /// <para>
+    /// Reference: Ellithy, A. (2026). Journal of the Egyptian Mathematical Society, 34.
+    /// DOI: <see href="https://doi.org/10.21608/joems.2026.440115.1078"/>
+    /// </para>
+    /// </summary>
     public static class Core
     {
         private const double EPS = 1e-15;
 
-        public static double Mpbf(Func<double, double> f, double a, double b, double tol, int maxIter, HybridRootsInfo info)
+        /// <summary>
+        /// Multi-Phase Bisection–False Position (Opt.BF).
+        /// <para>
+        /// Combines classical Bisection with False Position for guaranteed convergence
+        /// with faster interval reduction. See Section 2 of the paper.
+        /// </para>
+        /// </summary>
+        /// <param name="f">The continuous function whose root is sought.</param>
+        /// <param name="a">Left endpoint of the initial bracket (f(a)*f(b) &lt; 0).</param>
+        /// <param name="b">Right endpoint of the initial bracket.</param>
+        /// <param name="tol">Absolute tolerance; convergence declared when |f(x)| &lt;= tol.</param>
+        /// <param name="maxIter">Maximum number of iterations allowed.</param>
+        /// <returns>A <see cref="HybridRootsResult"/> with root, iterations, functionCalls, and converged.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when f is null.</exception>
+        public static HybridRootsResult Mpbf(Func<double, double> f, double a, double b,
+                                              double tol = 1e-14, int maxIter = 10000)
         {
+            if (f == null) throw new ArgumentNullException(nameof(f));
             double fa = f(a), fb = f(b);
             int nfe = 2;
-            if (Math.Abs(fa) <= tol) { info.Iterations = 0; info.FunctionCalls = nfe; info.Converged = true; return a; }
-            if (Math.Abs(fb) <= tol) { info.Iterations = 0; info.FunctionCalls = nfe; info.Converged = true; return b; }
-            if (fa * fb >= 0) { info.Iterations = 0; info.FunctionCalls = nfe; info.Converged = false; return a; }
+            if (Math.Abs(fa) <= tol) return new HybridRootsResult(a, 0, nfe, true);
+            if (Math.Abs(fb) <= tol) return new HybridRootsResult(b, 0, nfe, true);
+            if (fa * fb >= 0) return new HybridRootsResult(a, 0, nfe, false);
 
             for (int n = 1; n <= maxIter; n++)
             {
                 double mid = 0.5 * (a + b);
                 double fmid = f(mid);
                 nfe++;
-                if (Math.Abs(fmid) <= tol) { info.Iterations = n; info.FunctionCalls = nfe; info.Converged = true; return mid; }
+                if (Math.Abs(fmid) <= tol) return new HybridRootsResult(mid, n, nfe, true);
                 if (fa * fmid < 0) { b = mid; fb = fmid; } else { a = mid; fa = fmid; }
 
                 double denom = fb - fa;
@@ -34,23 +96,38 @@ namespace HybridRoots
                 double fp = (a * fb - b * fa) / denom;
                 double ffp = f(fp);
                 nfe++;
-                if (Math.Abs(ffp) <= tol) { info.Iterations = n; info.FunctionCalls = nfe; info.Converged = true; return fp; }
+                if (Math.Abs(ffp) <= tol) return new HybridRootsResult(fp, n, nfe, true);
                 if (fa * ffp < 0) { b = fp; fb = ffp; } else { a = fp; fa = ffp; }
             }
-            info.Iterations = maxIter; info.FunctionCalls = nfe;
             double finalX = 0.5 * (a + b);
-            info.Converged = Math.Abs(f(finalX)) <= tol;
-            info.FunctionCalls++;
-            return finalX;
+            bool converged = Math.Abs(f(finalX)) <= tol;
+            return new HybridRootsResult(finalX, maxIter, nfe + 1, converged);
         }
 
-        public static double Mpbfms(Func<double, double> f, double a, double b, double tol, int maxIter, HybridRootsInfo info)
+        /// <summary>
+        /// Multi-Phase Bisection–False Position–Modified Secant (Opt.BFMS).
+        /// <para>
+        /// Extends Opt.BF with an adaptive Modified Secant acceleration step that
+        /// is accepted only when it reduces the residual and remains in-bracket.
+        /// See Section 3 of the paper.
+        /// </para>
+        /// </summary>
+        /// <param name="f">The continuous function whose root is sought.</param>
+        /// <param name="a">Left endpoint of the initial bracket.</param>
+        /// <param name="b">Right endpoint of the initial bracket.</param>
+        /// <param name="tol">Absolute tolerance.</param>
+        /// <param name="maxIter">Maximum number of iterations.</param>
+        /// <returns>A <see cref="HybridRootsResult"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when f is null.</exception>
+        public static HybridRootsResult Mpbfms(Func<double, double> f, double a, double b,
+                                                double tol = 1e-14, int maxIter = 10000)
         {
+            if (f == null) throw new ArgumentNullException(nameof(f));
             double fa = f(a), fb = f(b);
             int nfe = 2;
-            if (Math.Abs(fa) <= tol) { info.Iterations = 0; info.FunctionCalls = nfe; info.Converged = true; return a; }
-            if (Math.Abs(fb) <= tol) { info.Iterations = 0; info.FunctionCalls = nfe; info.Converged = true; return b; }
-            if (fa * fb >= 0) { info.Iterations = 0; info.FunctionCalls = nfe; info.Converged = false; return a; }
+            if (Math.Abs(fa) <= tol) return new HybridRootsResult(a, 0, nfe, true);
+            if (Math.Abs(fb) <= tol) return new HybridRootsResult(b, 0, nfe, true);
+            if (fa * fb >= 0) return new HybridRootsResult(a, 0, nfe, false);
 
             for (int n = 1; n <= maxIter; n++)
             {
@@ -65,7 +142,7 @@ namespace HybridRoots
                 double ffp = f(fp);
                 nfe++;
                 if (fa * ffp < 0) { b = fp; fb = ffp; } else { a = fp; fa = ffp; }
-                if (Math.Abs(ffp) <= tol) { info.Iterations = n; info.FunctionCalls = nfe; info.Converged = true; return fp; }
+                if (Math.Abs(ffp) <= tol) return new HybridRootsResult(fp, n, nfe, true);
 
                 double delta = 1e-8 * Math.Max(1.0, Math.Abs(fp)) + EPS;
                 double fDelta = f(fp + delta);
@@ -81,24 +158,38 @@ namespace HybridRoots
                     if (Math.Abs(fxS) < Math.Abs(ffp))
                     {
                         if (fa * fxS < 0) { b = xS; fb = fxS; } else { a = xS; fa = fxS; }
-                        if (Math.Abs(fxS) <= tol) { info.Iterations = n; info.FunctionCalls = nfe; info.Converged = true; return xS; }
+                        if (Math.Abs(fxS) <= tol) return new HybridRootsResult(xS, n, nfe, true);
                     }
                 }
             }
-            info.Iterations = maxIter; info.FunctionCalls = nfe;
-            double finalX = 0.5 * (a + b);
-            info.Converged = Math.Abs(f(finalX)) <= tol;
-            info.FunctionCalls++;
-            return finalX;
+            double finalX2 = 0.5 * (a + b);
+            bool converged2 = Math.Abs(f(finalX2)) <= tol;
+            return new HybridRootsResult(finalX2, maxIter, nfe + 1, converged2);
         }
 
-        public static double Mptf(Func<double, double> f, double a, double b, double tol, int maxIter, HybridRootsInfo info)
+        /// <summary>
+        /// Multi-Phase Trisection–False Position (Opt.TF).
+        /// <para>
+        /// Divides the bracket into thirds for faster interval reduction, then applies
+        /// False Position refinement. See Section 4 of the paper.
+        /// </para>
+        /// </summary>
+        /// <param name="f">The continuous function whose root is sought.</param>
+        /// <param name="a">Left endpoint of the initial bracket.</param>
+        /// <param name="b">Right endpoint of the initial bracket.</param>
+        /// <param name="tol">Absolute tolerance.</param>
+        /// <param name="maxIter">Maximum number of iterations.</param>
+        /// <returns>A <see cref="HybridRootsResult"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when f is null.</exception>
+        public static HybridRootsResult Mptf(Func<double, double> f, double a, double b,
+                                              double tol = 1e-14, int maxIter = 10000)
         {
+            if (f == null) throw new ArgumentNullException(nameof(f));
             double fa = f(a), fb = f(b);
             int nfe = 2;
-            if (Math.Abs(fa) <= tol) { info.Iterations = 0; info.FunctionCalls = nfe; info.Converged = true; return a; }
-            if (Math.Abs(fb) <= tol) { info.Iterations = 0; info.FunctionCalls = nfe; info.Converged = true; return b; }
-            if (fa * fb >= 0) { info.Iterations = 0; info.FunctionCalls = nfe; info.Converged = false; return a; }
+            if (Math.Abs(fa) <= tol) return new HybridRootsResult(a, 0, nfe, true);
+            if (Math.Abs(fb) <= tol) return new HybridRootsResult(b, 0, nfe, true);
+            if (fa * fb >= 0) return new HybridRootsResult(a, 0, nfe, false);
 
             for (int n = 1; n <= maxIter; n++)
             {
@@ -106,8 +197,8 @@ namespace HybridRoots
                 double x1 = a + diff / 3.0, x2 = b - diff / 3.0;
                 double fx1 = f(x1), fx2 = f(x2);
                 nfe += 2;
-                if (Math.Abs(fx1) <= tol) { info.Iterations = n; info.FunctionCalls = nfe; info.Converged = true; return x1; }
-                if (Math.Abs(fx2) <= tol) { info.Iterations = n; info.FunctionCalls = nfe; info.Converged = true; return x2; }
+                if (Math.Abs(fx1) <= tol) return new HybridRootsResult(x1, n, nfe, true);
+                if (Math.Abs(fx2) <= tol) return new HybridRootsResult(x2, n, nfe, true);
 
                 if (fa * fx1 < 0) { b = x1; fb = fx1; }
                 else if (fx1 * fx2 < 0) { a = x1; b = x2; fa = fx1; fb = fx2; }
@@ -118,23 +209,38 @@ namespace HybridRoots
                 double x = (a * fb - b * fa) / denom;
                 double fx = f(x);
                 nfe++;
-                if (Math.Abs(fx) <= tol) { info.Iterations = n; info.FunctionCalls = nfe; info.Converged = true; return x; }
+                if (Math.Abs(fx) <= tol) return new HybridRootsResult(x, n, nfe, true);
                 if (fa * fx < 0) { b = x; fb = fx; } else { a = x; fa = fx; }
             }
-            info.Iterations = maxIter; info.FunctionCalls = nfe;
-            double finalX = 0.5 * (a + b);
-            info.Converged = Math.Abs(f(finalX)) <= tol;
-            info.FunctionCalls++;
-            return finalX;
+            double finalX3 = 0.5 * (a + b);
+            bool converged3 = Math.Abs(f(finalX3)) <= tol;
+            return new HybridRootsResult(finalX3, maxIter, nfe + 1, converged3);
         }
 
-        public static double Mptfms(Func<double, double> f, double a, double b, double tol, int maxIter, HybridRootsInfo info)
+        /// <summary>
+        /// Multi-Phase Trisection–False Position–Modified Secant (Opt.TFMS).
+        /// <para>
+        /// Combines Trisection, False Position, and an adaptive Modified Secant step
+        /// for maximum efficiency. The fastest of the four algorithms for smooth functions.
+        /// See Section 5 of the paper.
+        /// </para>
+        /// </summary>
+        /// <param name="f">The continuous function whose root is sought.</param>
+        /// <param name="a">Left endpoint of the initial bracket.</param>
+        /// <param name="b">Right endpoint of the initial bracket.</param>
+        /// <param name="tol">Absolute tolerance.</param>
+        /// <param name="maxIter">Maximum number of iterations.</param>
+        /// <returns>A <see cref="HybridRootsResult"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when f is null.</exception>
+        public static HybridRootsResult Mptfms(Func<double, double> f, double a, double b,
+                                                double tol = 1e-14, int maxIter = 10000)
         {
+            if (f == null) throw new ArgumentNullException(nameof(f));
             double fa = f(a), fb = f(b);
             int nfe = 2;
-            if (Math.Abs(fa) <= tol) { info.Iterations = 0; info.FunctionCalls = nfe; info.Converged = true; return a; }
-            if (Math.Abs(fb) <= tol) { info.Iterations = 0; info.FunctionCalls = nfe; info.Converged = true; return b; }
-            if (fa * fb >= 0) { info.Iterations = 0; info.FunctionCalls = nfe; info.Converged = false; return a; }
+            if (Math.Abs(fa) <= tol) return new HybridRootsResult(a, 0, nfe, true);
+            if (Math.Abs(fb) <= tol) return new HybridRootsResult(b, 0, nfe, true);
+            if (fa * fb >= 0) return new HybridRootsResult(a, 0, nfe, false);
 
             for (int n = 1; n <= maxIter; n++)
             {
@@ -142,8 +248,8 @@ namespace HybridRoots
                 double x1 = a + diff / 3.0, x2 = b - diff / 3.0;
                 double fx1 = f(x1), fx2 = f(x2);
                 nfe += 2;
-                if (Math.Abs(fx1) <= tol) { info.Iterations = n; info.FunctionCalls = nfe; info.Converged = true; return x1; }
-                if (Math.Abs(fx2) <= tol) { info.Iterations = n; info.FunctionCalls = nfe; info.Converged = true; return x2; }
+                if (Math.Abs(fx1) <= tol) return new HybridRootsResult(x1, n, nfe, true);
+                if (Math.Abs(fx2) <= tol) return new HybridRootsResult(x2, n, nfe, true);
 
                 if (fa * fx1 < 0) { b = x1; fb = fx1; }
                 else if (fx1 * fx2 < 0) { a = x1; b = x2; fa = fx1; fb = fx2; }
@@ -155,7 +261,7 @@ namespace HybridRoots
                 double ffp = f(fp);
                 nfe++;
                 if (fa * ffp < 0) { b = fp; fb = ffp; } else { a = fp; fa = ffp; }
-                if (Math.Abs(ffp) <= tol) { info.Iterations = n; info.FunctionCalls = nfe; info.Converged = true; return fp; }
+                if (Math.Abs(ffp) <= tol) return new HybridRootsResult(fp, n, nfe, true);
 
                 double delta = 1e-8 * Math.Max(1.0, Math.Abs(fp)) + EPS;
                 double fDelta = f(fp + delta);
@@ -171,15 +277,13 @@ namespace HybridRoots
                     if (Math.Abs(fxS) < Math.Abs(ffp))
                     {
                         if (fa * fxS < 0) { b = xS; fb = fxS; } else { a = xS; fa = fxS; }
-                        if (Math.Abs(fxS) <= tol) { info.Iterations = n; info.FunctionCalls = nfe; info.Converged = true; return xS; }
+                        if (Math.Abs(fxS) <= tol) return new HybridRootsResult(xS, n, nfe, true);
                     }
                 }
             }
-            info.Iterations = maxIter; info.FunctionCalls = nfe;
-            double finalX = 0.5 * (a + b);
-            info.Converged = Math.Abs(f(finalX)) <= tol;
-            info.FunctionCalls++;
-            return finalX;
+            double finalX4 = 0.5 * (a + b);
+            bool converged4 = Math.Abs(f(finalX4)) <= tol;
+            return new HybridRootsResult(finalX4, maxIter, nfe + 1, converged4);
         }
     }
 }

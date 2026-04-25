@@ -13,3 +13,5 @@ C:\Users\lenovo\Documents\New Paper Folder\Paper Repo\hybridroots-dotnet\obj\Rel
 C:\Users\lenovo\Documents\New Paper Folder\Paper Repo\hybridroots-dotnet\obj\Release\net8.0\hybridroots-dotnet.pdb
 C:\Users\lenovo\Documents\New Paper Folder\Paper Repo\hybridroots-dotnet\obj\Release\net8.0\hybridroots-dotnet.genruntimeconfig.cache
 C:\Users\lenovo\Documents\New Paper Folder\Paper Repo\hybridroots-dotnet\obj\Release\net8.0\ref\hybridroots-dotnet.dll
+C:\Users\lenovo\Documents\New Paper Folder\Paper Repo\hybridroots-dotnet\bin\Release\net8.0\hybridroots-dotnet.xml
+C:\Users\lenovo\Documents\New Paper Folder\Paper Repo\hybridroots-dotnet\obj\Release\net8.0\hybridroots-dotnet.xml

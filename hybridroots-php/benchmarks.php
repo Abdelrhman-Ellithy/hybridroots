@@ -3,7 +3,6 @@
 require_once __DIR__ . '/src/Core.php';
 
 use HybridRoots\Core;
-use HybridRoots\HybridRootsInfo;
 
 $benchmarks = [
     ['name' => 'f1', 'func' => function($x) { return $x * e$xp($x) - 7.0; }, 'a' => 1.0, 'b' => 2.0, 'desc' => 'x*exp(x) - 7'],
@@ -74,24 +73,23 @@ foreach ($benchmarks as $i => $b) {
     printf("\n[%2d/48] %s: %s\n", $i + 1, $b['name'], $b['desc']);
 
     for ($a = 0; $a < 4; $a++) {
-        $info = new HybridRootsInfo();
-        $funcs[$a]($b['func'], $b['a'], $b['b'], $tol, $maxIter, $info); // Warmup
+        $funcs[$a]($b['func'], $b['a'], $b['b'], $tol, $maxIter); // Warmup
 
         $runs = 100;
-        $root = 0;
+        $result = null;
         $start = hrtime(true);
         for ($r = 0; $r < $runs; $r++) {
-            $root = $funcs[$a]($b['func'], $b['a'], $b['b'], $tol, $maxIter, $info);
+            $result = $funcs[$a]($b['func'], $b['a'], $b['b'], $tol, $maxIter);
         }
         $end = hrtime(true);
         $elapsedUs = ($end - $start) / 1000.0 / $runs;
 
-        if ($info->converged) {
-            printf("       %-8s: root=%.10f, iter=%2d, nfe=%3d\n", $names[$a], $root, $info->iterations, $info->functionCalls);
+        if ($result->converged) {
+            printf("       %-8s: root=%.10f, iter=%2d, nfe=%3d\n", $names[$a], $result->root, $result->iterations, $result->functionCalls);
             $times[$a] += $elapsedUs;
             $convs[$a]++;
-            $iters[$a] += $info->iterations;
-            $nfes[$a] += $info->functionCalls;
+            $iters[$a] += $result->iterations;
+            $nfes[$a] += $result->functionCalls;
         } else {
             printf("       %-8s: FAILED\n", $names[$a]);
         }

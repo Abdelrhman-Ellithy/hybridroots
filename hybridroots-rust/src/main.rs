@@ -72,7 +72,7 @@ fn main() {
     let mut iters = vec![0; 4];
     let mut nfes = vec![0; 4];
 
-    type AlgType = fn(&(dyn Fn(f64) -> f64), f64, f64, f64, usize) -> (f64, HybridRootsInfo);
+    type AlgType = fn(&(dyn Fn(f64) -> f64), f64, f64, f64, usize) -> HybridRootsResult;
     
     // We wrap functions so they match the expected signature dynamically or just use simple closure array
     let names = ["mpbf", "mpbfms", "mptf", "mptfms"];
@@ -93,23 +93,20 @@ fn main() {
             func(&b.func, b.a, b.b, tol, max_iter);
 
             let runs = 100;
-            let mut root = 0.0;
-            let mut last_info = HybridRootsInfo { iterations: 0, function_calls: 0, converged: false };
+            let mut result = HybridRootsResult { root: 0.0, iterations: 0, function_calls: 0, converged: false };
             
             let start = Instant::now();
             for _ in 0..runs {
-                let (r, info) = func(&b.func, b.a, b.b, tol, max_iter);
-                root = r;
-                last_info = info;
+                result = func(&b.func, b.a, b.b, tol, max_iter);
             }
             let elapsed_us = start.elapsed().as_nanos() as f64 / 1000.0 / runs as f64;
 
-            if last_info.converged {
-                println!("       {:-8}: root={:.10}, iter={:2}, nfe={:3}", names[a], root, last_info.iterations, last_info.function_calls);
+            if result.converged {
+                println!("       {:-8}: root={:.10}, iter={:2}, nfe={:3}", names[a], result.root, result.iterations, result.function_calls);
                 times[a] += elapsed_us;
                 convs[a] += 1;
-                iters[a] += last_info.iterations;
-                nfes[a] += last_info.function_calls;
+                iters[a] += result.iterations;
+                nfes[a] += result.function_calls;
             } else {
                 println!("       {:-8}: FAILED", names[a]);
             }

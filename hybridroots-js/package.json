@@ -1,10 +1,40 @@
 {
   "name": "hybridroots",
   "version": "1.0.0",
-  "description": "Multi-Phase Hybrid Roots Bracketing Algorithms",
+  "description": "Four Multi-Phase Hybrid Bracketing Algorithms for Numerical Root Finding",
   "main": "core.js",
   "type": "module",
+  "exports": {
+    ".": "./core.js"
+  },
   "scripts": {
-    "benchmarks": "node benchmarks.js"
+    "benchmarks": "node benchmarks.js",
+    "test": "node -e \"import('./core.js').then(m => { const r = m.mpbf(x => x*x - 2, 1, 2); console.log('sqrt(2) ≈', r.root, 'converged:', r.converged); })\""
+  },
+  "keywords": [
+    "root-finding",
+    "numerical",
+    "bracketing",
+    "bisection",
+    "false-position",
+    "mathematics"
+  ],
+  "author": "Abdelrahman Ellithy",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Abdelrhman-Ellithy/hybridroots.git"
+  },
+  "homepage": "https://doi.org/10.21608/joems.2026.440115.1078",
+  "bugs": {
+    "url": "https://github.com/Abdelrhman-Ellithy/hybridroots/issues"
+  },
+  "files": [
+    "core.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
   }
 }
