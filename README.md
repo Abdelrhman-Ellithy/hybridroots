@@ -1,3 +1,41 @@
+<div align="center">
+  <table border="0" align="center">
+    <tr>
+      <td align="center">
+        <h2>HybridRoots: Multi-Phase Hybrid Bracketing Algorithms</h2>
+      </td>
+    </tr>
+    <tr>
+       <td align="center">
+          <a href="https://pypi.org/project/hybridroots/" target="_blank">
+              <img alt="Python" src="https://img.shields.io/pypi/v/hybridroots?style=for-the-badge&color=blue&label=Python&logo=python">
+          </a>
+          <a href="https://crates.io/crates/hybridroots" target="_blank">
+              <img alt="Rust" src="https://img.shields.io/crates/v/hybridroots?style=for-the-badge&color=orange&label=Rust&logo=rust">
+          </a>
+          <a href="https://central.sonatype.com/artifact/io.github.abdelrhman-ellithy/hybridroots" target="_blank">
+              <img alt="Java" src="https://img.shields.io/maven-central/v/io.github.abdelrhman-ellithy/hybridroots?style=for-the-badge&color=red&label=Java&logo=java">
+          </a>
+          <a href="https://www.nuget.org/packages/HybridRoots/" target="_blank">
+              <img alt="C#" src="https://img.shields.io/nuget/v/HybridRoots?style=for-the-badge&color=blueviolet&label=C%23&logo=dotnet">
+          </a>
+          <a href="https://www.npmjs.com/package/hybridroots" target="_blank">
+              <img alt="Node" src="https://img.shields.io/npm/v/hybridroots?style=for-the-badge&color=cb3837&label=JS%2FTS&logo=npm">
+          </a>
+          <a href="https://packagist.org/packages/abdelrhman-ellithy/hybridroots" target="_blank">
+              <img alt="PHP" src="https://img.shields.io/packagist/v/abdelrhman-ellithy/hybridroots?style=for-the-badge&color=8892BF&label=PHP&logo=php">
+          </a>
+          <a href="https://github.com/Abdelrhman-Ellithy/hybridroots/tree/main/hybridroots-c" target="_blank">
+              <img alt="C" src="https://img.shields.io/badge/C-Source-A8B9CC?style=for-the-badge&logo=c">
+          </a>
+          <a href="https://github.com/Abdelrhman-Ellithy/hybridroots/tree/main/hybridroots-cpp" target="_blank">
+              <img alt="C++" src="https://img.shields.io/badge/C++-Header%20Only-00599C?style=for-the-badge&logo=c%2B%2B">
+          </a>
+      </td>
+    </tr>
+  </table>
+</div>
+
 # Four New Multi-Phase Hybrid Bracketing Algorithms for Numerical Root Finding
 
 **Author:** Abdelrahman Ellithy
@@ -9,6 +47,17 @@ This repository contains the official implementation, experiments, and results f
 * **DOI:** [10.21608/joems.2026.440115.1078](https://doi.org/10.21608/joems.2026.440115.1078)
 
 The paper introduces four novel hybrid algorithms that combine classical bracketing methods (Bisection, Trisection, False Position) with accelerated steps (Modified Secant) to achieve superior convergence rates while maintaining guaranteed bracketing.
+
+### 🚀 Available Packages
+These algorithms are fully implemented and published as native packages for 8 languages:
+1. **Python** (PyPI): [hybridroots](https://pypi.org/project/hybridroots/)
+2. **Rust** (crates.io): [hybridroots](https://crates.io/crates/hybridroots)
+3. **Java** (Maven Central): [io.github.abdelrhman-ellithy:hybridroots](https://central.sonatype.com/artifact/io.github.abdelrhman-ellithy/hybridroots)
+4. **C# / .NET** (NuGet): [HybridRoots](https://www.nuget.org/packages/HybridRoots/)
+5. **JavaScript / TypeScript** (npm): [hybridroots](https://www.npmjs.com/package/hybridroots)
+6. **PHP** (Packagist): [abdelrhman-ellithy/hybridroots](https://packagist.org/packages/abdelrhman-ellithy/hybridroots)
+7. **C**: [Source files available here](https://github.com/Abdelrhman-Ellithy/hybridroots/tree/main/hybridroots-c)
+8. **C++**: [Header-only available here](https://github.com/Abdelrhman-Ellithy/hybridroots/tree/main/hybridroots-cpp)
 
 ---
 
