@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Four Multi-Phase Hybrid Bracketing Algorithms for Numerical Root Finding. Impleme" +
     "nts the algorithms from DOI: 10.21608/joems.2026.440115.1078")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d726a5f4b02d00cb879bc5cff8b3c67cf1ca9f0c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+630697156b4dc90df588eff418a39109772034ee")]
 [assembly: System.Reflection.AssemblyProductAttribute("hybridroots-dotnet")]
 [assembly: System.Reflection.AssemblyTitleAttribute("hybridroots-dotnet")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

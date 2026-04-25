@@ -50,8 +50,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            
+            </plugin>       
             <!-- Javadoc plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

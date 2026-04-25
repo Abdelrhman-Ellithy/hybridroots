@@ -184,7 +184,7 @@ python -m hybridroots.benchmarks
 ```bash
 cd hybridroots-java
 mvn clean package -q
-mvn exec:java -Dexec.mainClass="com.hybridroots.Benchmarks"
+mvn exec:java "-Dexec.mainClass=com.hybridroots.Benchmarks"
 ```
 
 ### C# (.NET)

@@ -1,0 +1,23 @@
+# Enforce GitHub Linguist language detection for the various ports
+
+hybridroots-c/**/* linguist-language=C
+hybridroots-cpp/**/* linguist-language=C++
+hybridroots-dotnet/**/* linguist-language=C#
+hybridroots-java/**/* linguist-language=Java
+hybridroots-js/**/* linguist-language=JavaScript
+hybridroots-php/**/* linguist-language=PHP
+hybridroots-python/**/* linguist-language=Python
+hybridroots-rust/**/* linguist-language=Rust
+
+# Ignore generated/build files from language statistics
+hybridroots-c/build/** linguist-vendored
+hybridroots-cpp/build/** linguist-vendored
+hybridroots-java/target/** linguist-vendored
+hybridroots-dotnet/bin/** linguist-vendored
+hybridroots-dotnet/obj/** linguist-vendored
+hybridroots-rust/target/** linguist-vendored
+hybridroots-js/node_modules/** linguist-vendored
+hybridroots-php/vendor/** linguist-vendored
+
+# Normalize line endings
+* text=auto

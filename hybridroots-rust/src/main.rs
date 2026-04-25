@@ -72,7 +72,7 @@ fn main() {
     let mut iters = vec![0; 4];
     let mut nfes = vec![0; 4];
 
-    type AlgType = fn(&(dyn Fn(f64) -> f64), f64, f64, f64, usize) -> HybridRootsResult;
+    type AlgType = fn(&fn(f64) -> f64, f64, f64, f64, usize) -> HybridRootsResult;
     
     // We wrap functions so they match the expected signature dynamically or just use simple closure array
     let names = ["mpbf", "mpbfms", "mptf", "mptfms"];
