@@ -48,7 +48,7 @@ This repository contains the official implementation, experiments, and results f
 
 The paper introduces four novel hybrid algorithms that combine classical bracketing methods (Bisection, Trisection, False Position) with accelerated steps (Modified Secant) to achieve superior convergence rates while maintaining guaranteed bracketing.
 
-### 🚀 Available Packages
+###  Available Packages
 These algorithms are fully implemented and published as native packages for 8 languages:
 1. **Python** (PyPI): [hybridroots](https://pypi.org/project/hybridroots/)
 2. **Rust** (crates.io): [hybridroots](https://crates.io/crates/hybridroots)
