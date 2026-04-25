@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>HybridRoots</id>
+    <version>1.0.1</version>
+    <authors>Abdelrahman Ellithy</authors>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/Abdelrhman-Ellithy/hybridroots</projectUrl>
+    <description>Four novel multi-phase hybrid bracketing algorithms for numerical root finding: Opt.BF (mpbf), Opt.BFMS (mpbfms), Opt.TF (mptf), Opt.TFMS (mptfms). Combines classical methods with modified secant for superior convergence (e.g., mptfms averages 2.3 iterations). Reference DOI: 10.21608/joems.2026.440115.1078</description>
+    <tags>root-finding numerical bracketing bisection mathematics</tags>
+    <repository type="git" url="https://github.com/Abdelrhman-Ellithy/hybridroots.git" commit="07cca89f89af0b9609d147cf7dd58c205c998ad9" />
+    <dependencies>
+      <group targetFramework="net8.0" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="C:\Users\lenovo\Documents\New Paper Folder\Paper Repo\hybridroots-dotnet\bin\Release\net8.0\hybridroots-dotnet.runtimeconfig.json" target="lib\net8.0\hybridroots-dotnet.runtimeconfig.json" />
+    <file src="C:\Users\lenovo\Documents\New Paper Folder\Paper Repo\hybridroots-dotnet\bin\Release\net8.0\hybridroots-dotnet.dll" target="lib\net8.0\hybridroots-dotnet.dll" />
+    <file src="C:\Users\lenovo\Documents\New Paper Folder\Paper Repo\hybridroots-dotnet\bin\Release\net8.0\hybridroots-dotnet.xml" target="lib\net8.0\hybridroots-dotnet.xml" />
+    <file src="C:\Users\lenovo\Documents\New Paper Folder\Paper Repo\hybridroots-dotnet\README.md" target="\README.md" />
+  </files>
+</package>
