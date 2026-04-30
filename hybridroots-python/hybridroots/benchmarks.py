@@ -355,12 +355,22 @@ def run_benchmarks(tol: float = 1e-14, verbose: bool = True) -> Dict:
     return results
 
 
-def compare_with_scipy(tol: float = 1e-14, verbose: bool = True) -> Dict:
+def compare_with_scipy(tol: float = 1e-14, verbose: bool = True, trials: int = 1000, warmup_runs: int = 100) -> Dict:
     """
     Compare hybridroots algorithms with scipy.optimize.brentq.
     
+    Designed for strict benchmarking fairness:
+    - Uses identical inline timing loops for all algorithms.
+    - Disables garbage collection during timing to prevent latency spikes.
+    - Includes localized warmup for instruction cache priming per problem.
+    - Separates raw execution timing from metadata extraction.
+    
     Requires: pip install scipy
     """
+    import gc
+    import time
+    from typing import Dict
+    
     try:
         from scipy.optimize import brentq
     except ImportError:
@@ -374,107 +384,111 @@ def compare_with_scipy(tol: float = 1e-14, verbose: bool = True) -> Dict:
         "mptfms": mptfms,
     }
     
-    results = {name: [] for name in algorithms}
-    results["brentq"] = []
+    all_algs = ["brentq"] + list(algorithms.keys())
+    results = {name: [] for name in all_algs}
     
     if verbose:
         print("=" * 80)
-        print("Comparison: HybridRoots vs SciPy brentq")
+        print(f"Comparison: HybridRoots vs SciPy brentq ({trials} trials/benchmark)")
         print("=" * 80)
-        print("Warming up to avoid CPU bias...")
-    for _ in range(10):        
-        for benchmark in BENCHMARK_FUNCTIONS:
-            func = benchmark["func"]
-            a, b = benchmark["a"], benchmark["b"]
-            try:
-                brentq(func, a, b, xtol=tol, full_output=False)
-            except Exception:
-                pass
-            for alg_func in algorithms.values():
-                try:
-                    alg_func(func, a, b, tol=tol)
-                except Exception:
-                    pass
     
     for i, benchmark in enumerate(BENCHMARK_FUNCTIONS):
         if verbose:
-            print(f"\n[{i+1:2d}/48] {benchmark['name']}: {benchmark['description']}")
+            print(f"\n[{i+1:2d}/{len(BENCHMARK_FUNCTIONS)}] {benchmark['name']}: {benchmark['description']}")
         
-        # Run brentq
-        try:
-            brentq(benchmark["func"], benchmark["a"], benchmark["b"], xtol=tol, full_output=False)
-        except Exception:
-            pass
+        func = benchmark["func"]
+        a, b = benchmark["a"], benchmark["b"]
+        
+        for alg_name in all_algs:
+            # --- 1. Validation and Metadata Extraction ---
+            try:
+                if alg_name == "brentq":
+                    root, info = brentq(func, a, b, xtol=tol, full_output=True)
+                    nfe = info.function_calls
+                    iters = max(0, nfe - 1)
+                    converged = info.converged
+                else:
+                    alg_func = algorithms[alg_name]
+                    root, info = alg_func(func, a, b, tol=tol)
+                    nfe = info["function_calls"]
+                    iters = info["iterations"]
+                    converged = info["converged"]
+                    
+                f_root = func(root)
+            except Exception as e:
+                results[alg_name].append({
+                    "problem": benchmark["name"],
+                    "root": None,
+                    "iterations": 0,
+                    "function_calls": 0,
+                    "converged": False,
+                    "error": str(e),
+                    "time_us": float('inf')
+                })
+                if verbose:
+                    print(f"       {alg_name:<8s}: FAILED - {e}")
+                continue
+
+            # --- 2. Localized Warmup ---
+            # Primes the CPU cache and branch predictor specifically for this function + algorithm
+            if alg_name == "brentq":
+                for _ in range(warmup_runs):
+                    brentq(func, a, b, xtol=tol, full_output=False)
+            else:
+                alg_func = algorithms[alg_name]
+                for _ in range(warmup_runs):
+                    alg_func(func, a, b, tol=tol)
             
-        runs = 100
-        start = time.perf_counter()
-        try:
-            for _ in range(runs):
-                root_brent, r_brent = brentq(benchmark["func"], benchmark["a"], benchmark["b"], xtol=tol, full_output=True)
-            elapsed = (time.perf_counter() - start) * 1e6 / runs
+            # --- 3. Fair Performance Timing ---
+            gc.disable()  # Prevent random garbage collection pauses during timing
+            start = time.perf_counter()
             
-            nfe = r_brent.function_calls
-            iters = max(0, nfe - 1)
+            if alg_name == "brentq":
+                for _ in range(trials):
+                    brentq(func, a, b, xtol=tol, full_output=False)
+            else:
+                # Custom algorithms are timed doing their standard operational return
+                for _ in range(trials):
+                    alg_func(func, a, b, tol=tol)
+                    
+            end = time.perf_counter()
+            gc.enable()  # Re-enable GC
             
-            results["brentq"].append({
+            elapsed_us = (end - start) * 1e6 / trials
+            
+            results[alg_name].append({
                 "problem": benchmark["name"],
-                "root": root_brent,
-                "f_root": benchmark["func"](root_brent),
-                "time_us": elapsed,
+                "root": root,
+                "f_root": f_root,
+                "time_us": elapsed_us,
                 "iterations": iters,
                 "function_calls": nfe,
-                "converged": r_brent.converged,
+                "converged": converged,
                 "error": None
             })
-            if verbose:
-                print(f"       brentq  : root={root_brent:.10f}, "
-                      f"iter={iters:2d}, nfe={nfe:3d}")
-        except Exception as e:
-            elapsed = (time.perf_counter() - start) * 1e6
-            results["brentq"].append({
-                "problem": benchmark["name"],
-                "root": None,
-                "iterations": 0,
-                "function_calls": 0,
-                "converged": False,
-                "error": str(e),
-                "time_us": elapsed
-            })
-            if verbose:
-                print(f"       brentq   : FAILED - {e}")
-        
-        # Run hybridroots
-        for alg_name, alg_func in algorithms.items():
-            result = run_single_benchmark(
-                benchmark["func"], benchmark["a"], benchmark["b"],
-                alg_func, tol
-            )
-            result["problem"] = benchmark["name"]
-            results[alg_name].append(result)
             
-            if verbose and result["converged"]:
-                print(f"       {alg_name:8s}: root={result['root']:.10f}, "
-                      f"iter={result['iterations']:2d}, nfe={result['function_calls']:3d}")
-    
+            if verbose:
+                print(f"       {alg_name:<8s}: root={root:.10f}, "
+                      f"iter={iters:2d}, nfe={nfe:3d}, time={elapsed_us:6.2f} µs")
+                      
     if verbose:
         print("\n" + "=" * 80)
-        print("SUMMARY RESULTS (Over 48 Benchmark Problems)")
+        print(f"SUMMARY RESULTS (Over {len(BENCHMARK_FUNCTIONS)} Benchmark Problems)")
         print("=" * 80)
         print(f"{'Algorithm':<10s} | {'Converged':<10s} | {'Total Time (us)':<18s} | {'Avg NFE':<10s} | {'Avg Iterations':<15s}")
         print("-" * 80)
         
-        all_algs = ["brentq"] + list(algorithms.keys())
         for alg_name in all_algs:
             alg_results = results[alg_name]
             converged_runs = [r for r in alg_results if r.get("converged", False)]
-            converged = len(converged_runs)
+            converged_count = len(converged_runs)
             total_problems = len(alg_results)
             
-            if converged > 0:
-                avg_nfe = sum(r.get("function_calls", 0) for r in converged_runs) / converged
-                avg_iter = sum(r.get("iterations", 0) for r in converged_runs) / converged
+            if converged_count > 0:
+                avg_nfe = sum(r.get("function_calls", 0) for r in converged_runs) / converged_count
+                avg_iter = sum(r.get("iterations", 0) for r in converged_runs) / converged_count
                 total_time = sum(r.get("time_us", 0) for r in converged_runs)
-                print(f"{alg_name:<10s} | {converged:>2d}/{total_problems:<7d} | {total_time:>18.2f} | {avg_nfe:>10.2f} | {avg_iter:>15.2f}")
+                print(f"{alg_name:<10s} | {converged_count:>2d}/{total_problems:<7d} | {total_time:>18.2f} | {avg_nfe:>10.2f} | {avg_iter:>15.2f}")
             else:
                 print(f"{alg_name:<10s} | {0:>2d}/{total_problems:<7d} | {'N/A':>18s} | {'N/A':>10s} | {'N/A':>15s}")
         print("=" * 80)
